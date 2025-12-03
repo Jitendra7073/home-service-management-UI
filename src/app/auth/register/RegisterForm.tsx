@@ -3,169 +3,180 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { registrationSchema } from "@/lib/validator/auth-validator";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { User, Wrench } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [role, setRole] = useState<"customer" | "provider">("customer");
+  const [showPassword, setShowPassword] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(registrationSchema),
+    defaultValues: {
+      role: role,
+      name: "",
+      email: "",
+      mobile: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    const formData = new FormData(e.currentTarget);
-    formData.append("role", role);
+  const handleRoleChange = (checked: boolean) => {
+    const newRole = checked ? "provider" : "customer";
+    setRole(newRole);
+    setValue("role", newRole);
+  };
 
-    console.log("formData", formData);
-  }
+  const onSubmit = async (data: any) => {
+    try {
+      const payload = {
+        role: data.role,
+        name: data.name,
+        email: data.email,
+        mobile: data.mobile,
+        password: data.password,
+      };
+
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success("Registration successful! Please login.");
+        router.push("/auth/login");
+        return
+      }
+
+      toast.error(result.message || "Registration failed. Please try again.");
+
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
       <div className="w-full max-w-5xl rounded-xl border bg-white shadow-lg grid grid-cols-1 md:grid-cols-2">
+
+        {/* LEFT FORM */}
         <div className="p-8 flex items-center">
           <Card className="w-full border-0 shadow-none">
+
             <CardHeader className="px-0">
-              <CardTitle className="text-2xl font-bold">
-                Create your account
-              </CardTitle>
+              <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
               <CardDescription>
-                Enter your details to create an account. <br />
+                Enter your details to create an account.
                 Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-primary hover:underline font-medium">
+                <Link href="/auth/login" className="text-primary hover:underline font-medium">
                   Login
                 </Link>
               </CardDescription>
             </CardHeader>
 
             <CardContent className="px-0">
-              {/* Role Toggle */}
+
+              {/* ROLE SWITCH */}
               <div className="flex items-center justify-between mb-6 p-3 border rounded-lg">
                 <span className="font-medium hidden sm:block">Register as</span>
-
                 <div className="flex items-center gap-3">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <User
-                        className={`w-5 h-5 cursor-pointer ${
-                          role === "customer"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
+                      <User className={`w-5 h-5 ${role === "customer" ? "text-primary" : "text-muted-foreground"}`} />
                     </TooltipTrigger>
-
-                    <TooltipContent side="top">Customer</TooltipContent>
+                    <TooltipContent>Customer</TooltipContent>
                   </Tooltip>
 
-                  {/* --- Switch --- */}
-                  <Switch
-                    checked={role === "provider"}
-                    onCheckedChange={(checked: boolean) =>
-                      setRole(checked ? "provider" : "customer")
-                    }
-                  />
+                  <Switch checked={role === "provider"} onCheckedChange={handleRoleChange} />
 
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Wrench
-                        className={`w-5 h-5  cursor-pointer ${
-                          role === "provider"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
+                      <Wrench className={`w-5 h-5 ${role === "provider" ? "text-primary" : "text-muted-foreground"}`} />
                     </TooltipTrigger>
-
-                    <TooltipContent side="top">Provider</TooltipContent>
+                    <TooltipContent>Provider</TooltipContent>
                   </Tooltip>
                 </div>
               </div>
 
-              {/* GRID FORM */}
-              <form
-                onSubmit={handleSubmit}
-                className=" flex flex-col sm:grid sm:grid-cols-auto md:grid-cols-2 gap-5">
-                {/* Full Name */}
-                <div className="grid gap-1 col-span-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="John Doe"
-                    required
-                  />
+              {/* FORM */}
+              <form onSubmit={handleSubmit(onSubmit)} className="grid md:grid-cols-2 gap-5">
+
+                <input type="hidden" {...register("role")} />
+
+                {/* Name */}
+                <div className="col-span-2">
+                  <Label>Full Name</Label>
+                  <Input placeholder="John Doe" {...register("name")} />
+                  {errors.name && <p className="text-red-600 text-sm">{errors.name.message}</p>}
                 </div>
 
                 {/* Email */}
-                <div className="grid gap-1">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                  />
+                <div>
+                  <Label>Email</Label>
+                  <Input placeholder="example@gmail.com" {...register("email")} />
+                  {errors.email && <p className="text-red-600 text-sm">{errors.email.message}</p>}
                 </div>
 
-                {/* Phone */}
-                <div className="grid gap-1">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="+91 9876543210"
-                    required
-                  />
+                {/* Mobile */}
+                <div>
+                  <Label>Mobile</Label>
+                  <Input placeholder="9876543210" {...register("mobile")} />
+                  {errors.mobile && <p className="text-red-600 text-sm">{errors.mobile.message}</p>}
                 </div>
 
                 {/* Password */}
-                <div className="grid gap-1">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                  />
+                <div>
+                  <Label>Password</Label>
+                  <Input type={showPassword ? "text" : "password"} {...register("password")} />
+                  {errors.password && <p className="text-red-600 text-sm">{errors.password.message}</p>}
                 </div>
 
                 {/* Confirm Password */}
-                <div className="grid gap-1">
-                  <Label htmlFor="confirm">Confirm Password</Label>
-                  <Input
-                    id="confirm"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                  />
+                <div>
+                  <Label>Confirm Password</Label>
+                  <Input type={showPassword ? "text" : "password"} {...register("confirmPassword")} />
+                  {errors.confirmPassword && <p className="text-red-600 text-sm">{errors.confirmPassword.message}</p>}
                 </div>
 
-                <div className="col-span-2 mt-2">
-                  <Button type="submit" className="w-full">
-                    Create Account
+                {/* Show Password */}
+                <div className="col-span-2">
+                  <label className="flex gap-2 items-center text-sm">
+                    <input type="checkbox" checked={showPassword} onChange={(e) => setShowPassword(e.target.checked)} />
+                    Show Password
+                  </label>
+                </div>
+
+                <div className="col-span-2">
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Creating Account..." : "Create Account"}
                   </Button>
                 </div>
               </form>
@@ -173,22 +184,15 @@ export default function RegisterForm() {
 
             <CardFooter className="px-0 flex-col gap-4">
               <Separator />
-              <Button variant="outline" className="w-full">
-                Sign up with Google
-              </Button>
+              <Button variant="outline" className="w-full">Sign up with Google</Button>
             </CardFooter>
+
           </Card>
         </div>
 
-        {/* ==== RIGHT IMAGE SECTION ==== */}
+        {/* RIGHT IMAGE */}
         <div className="hidden md:block relative">
-          <Image
-            src="/images/register.avif"
-            alt="Home services illustration"
-            fill
-            className="object-cover rounded-r-xl"
-            priority
-          />
+          <Image src="/images/register.avif" alt="register" fill className="object-cover rounded-r-xl" />
         </div>
       </div>
     </section>

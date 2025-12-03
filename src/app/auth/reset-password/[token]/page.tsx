@@ -13,15 +13,14 @@ import ResetPasswordForm from "./form";
 export default async function ResetPasswordPage({
   params,
 }: {
-  params: {
-    userId: String;
-  };
+  params: { token: string };
 }) {
-  const userParamsId = await params;
+  const {token} = await params;
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-3xl md:max-w-4xl rounded-xl bg-white shadow-lg border overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        {/* LEFT: FORM */}
+        
         <div className="p-8 flex items-center justify-center">
           <Card className="w-full border-0 shadow-none">
             <CardHeader className="px-0">
@@ -32,24 +31,21 @@ export default async function ResetPasswordPage({
                 Enter your new password below to complete the reset process.
                 <br />
                 Go back to{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-primary hover:underline font-medium">
+                <Link href="/auth/login" className="text-primary hover:underline font-medium">
                   Login
                 </Link>
               </CardDescription>
             </CardHeader>
 
             <CardContent className="px-0">
-              <ResetPasswordForm userId={userParamsId} />
+              <ResetPasswordForm token={token} />
             </CardContent>
           </Card>
         </div>
 
-        {/* RIGHT: FULL-BLEED IMAGE (NO SPACING) */}
         <div className="hidden md:flex items-center justify-center bg-gray-100 relative">
           <Image
-            src="/images/loginPage.jpg"
+            src="/images/reset-password.jpg"
             alt="Reset password illustration"
             fill
             className="object-cover"

@@ -1,7 +1,6 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,61 +9,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
+import LoginForm from "./loginform";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   return (
-    <section className="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-gray-50">
-      {/* Main Container */}
+    <section className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
       <div className="flex w-full max-w-4xl overflow-hidden rounded-xl border bg-white shadow-lg">
-        {/* Left Side: Login Form */}
+        
+        {/* LEFT - FORM */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
           <Card className="border-0 shadow-none">
             <CardHeader className="px-0">
-              <CardTitle className="text-2xl font-bold">
-                Login to your account
-              </CardTitle>
+              <CardTitle className="text-2xl font-bold">Login to your account</CardTitle>
               <CardDescription>
-                Enter your email below to login to your account. <br />
+                Enter your credentials to login. <br />
                 Don't have an account?{" "}
-                <Link
-                  href="/auth/register"
-                  className="text-primary hover:underline font-medium">
+                <Link href="/auth/register" className="text-primary hover:underline">
                   Sign Up
                 </Link>
               </CardDescription>
             </CardHeader>
 
             <CardContent className="px-0">
-              <form>
-                <div className="flex flex-col gap-6">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="user123@gmail.com"
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                      <Link
-                        href="/auth/forgot-password"
-                        className="ml-auto inline-block text-sm text-muted-foreground underline-offset-4 hover:underline">
-                        Forgot your password?
-                      </Link>
-                    </div>
-                    <Input id="password" type="password" required />
-                  </div>
-
-                  <Button type="submit" className="w-full">
-                    Login
-                  </Button>
-                </div>
-              </form>
+              <LoginForm />
             </CardContent>
 
             <CardFooter className="px-0 flex-col gap-4">
@@ -78,6 +47,7 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
+
               <Button variant="outline" className="w-full">
                 Login with Google
               </Button>
@@ -85,17 +55,16 @@ export default function LoginPage() {
           </Card>
         </div>
 
-        {/* Right Side: Image (Hidden on mobile) */}
-        <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center relative">
-          {/* Ensure you have an image at public/images/login.jpg */}
+        {/* RIGHT - IMAGE */}
+        <div className="hidden md:flex w-1/2 relative bg-gray-100">
           <Image
             src="/images/loginForm.jpg"
-            alt="Home services illustration"
+            alt="Login illustration"
             fill
             className="object-cover"
-            priority
           />
         </div>
+
       </div>
     </section>
   );

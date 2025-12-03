@@ -1,6 +1,12 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { forgotPasswordSchema } from "@/lib/validator/auth-validator";
+
 import Link from "next/link";
 import Image from "next/image";
-
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,59 +20,84 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function ForgotPassword() {
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } =
+    useForm({
+      resolver: yupResolver(forgotPasswordSchema),
+      defaultValues: { email: "" }
+    });
+
+  const onSubmit = async (data: any) => {
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        toast.error(result?.message || "Something went wrong");
+        return;
+      }
+
+      toast.success(result?.message || "Reset link sent to your email!");
+    } catch (err: any) {
+      toast.error(err.message || "Network error");
+    }
+  };
+
   return (
-    <section className="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-gray-50">
-      {/* Main Container */}
+    <section className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
       <div className="flex w-full max-w-4xl overflow-hidden rounded-xl border bg-white shadow-lg">
-        {/* Left Side: Forgot Password Form */}
+
+        {/* Left Side */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
           <Card className="border-0 shadow-none">
             <CardHeader className="px-0">
-              <CardTitle className="text-2xl font-bold">
-                Forgot your password?
-              </CardTitle>
+              <CardTitle className="text-2xl font-bold">Forgot your password?</CardTitle>
               <CardDescription>
-                Enter your email address and we’ll send you a reset link. <br />
+                Enter your email address and we’ll send you a reset link.
+                <br />
                 Remember your password?{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-primary hover:underline font-medium">
+                <Link href="/auth/login" className="text-primary hover:underline font-medium">
                   Login
                 </Link>
               </CardDescription>
             </CardHeader>
 
             <CardContent className="px-0">
-              <form>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label>Email Address</Label>
                     <Input
-                      id="email"
                       type="email"
                       placeholder="user123@gmail.com"
-                      required
+                      {...register("email")}
                     />
+                    {errors.email && (
+                      <p className="text-red-600 text-sm">{errors.email.message}</p>
+                    )}
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    Send Reset Link
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Sending..." : "Send Reset Link"}
                   </Button>
                 </div>
               </form>
             </CardContent>
 
-            <CardFooter className="px-0">
-              {/* Optional: Add a subtle info message or remove this block completely */}
-            </CardFooter>
+            <CardFooter className="px-0" />
           </Card>
         </div>
 
-        {/* Right Side: Image */}
+        {/* Right Image */}
         <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center relative">
           <Image
             src="/images/forgot-password.jpg"
-            alt="Home services illustration"
+            alt="Forgot password"
             fill
             className="object-cover"
             priority
