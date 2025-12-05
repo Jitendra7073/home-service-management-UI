@@ -1,7 +1,13 @@
-import React from "react";
+import CategoryList from "@/components/customer/business-profile-list";
+import HeroSection from "@/components/customer/HeroSection";
+import HowItWorks from "@/components/customer/how-it-works";
 
-const Customer = ({ childern }: { childern: React.ReactNode }) => {
-  return <div>{childern}</div>;
-};
-
-export default Customer;
+export default async function Customer() {
+  return (
+    <>
+      <HeroSection />
+      <CategoryList isVisible={true} search={false} />
+      <HowItWorks />
+    </>
+  );
+}
