@@ -41,25 +41,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Navigation configuration for better maintainability
 const NAV_CONFIG = {
-  booking: [
-    {
-      href: "/bookings/ongoing",
-      icon: Loader2,
-      iconColor: "text-purple-500",
-      bgColor: "bg-purple-500/10",
-      title: "Ongoing Bookings",
-      description: "Track services that are currently being handled.",
-      animate: true,
-    },
-    {
-      href: "/bookings/upcoming",
-      icon: CalendarDays,
-      iconColor: "text-orange-500",
-      bgColor: "bg-orange-500/10",
-      title: "Upcoming Bookings",
-      description: "View your scheduled upcoming service appointments.",
-    },
-  ],
   support: [
     {
       href: "/support/contact",
@@ -154,16 +135,13 @@ export default function Header() {
 
               {/* Bookings */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-sm">
-                  Booking
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="flex flex-col gap-2 p-3 w-[300px]">
-                    {NAV_CONFIG.booking.map((item) => (
-                      <NavItem key={item.href} {...item} />
-                    ))}
-                  </div>
-                </NavigationMenuContent>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}>
+                  <Link href="/customer/booking" className="text-sm">
+                    Booking
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
 
               {/* Support */}
@@ -190,7 +168,7 @@ export default function Header() {
                 <NavigationMenuLink
                   asChild
                   className={navigationMenuTriggerStyle()}>
-                  <Link href="/profile" className="text-sm">
+                  <Link href="/customer/profile" className="text-sm">
                     Profile
                   </Link>
                 </NavigationMenuLink>
@@ -250,50 +228,16 @@ export default function Header() {
                     <span className="font-medium">Explore</span>
                   </Link>
 
+                  <Link
+                    href="/customer/booking"
+                    onClick={closeSheet}
+                    className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
+                    <Expand size={20} className="text-primary" />
+                    <span className="font-medium">Booking</span>
+                  </Link>
+
                   {/* Accordion for Sections */}
                   <Accordion type="single" collapsible className="w-full">
-                    {/* Booking Section */}
-                    <AccordionItem value="booking" className="border-none">
-                      <AccordionTrigger className="py-3 px-4 hover:bg-accent rounded-lg hover:no-underline">
-                        <div className="flex items-center gap-3">
-                          <CalendarDays size={20} className="text-primary" />
-                          <span className="font-medium">Booking</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-2 pb-2 pt-1">
-                        <div className="space-y-1">
-                          {NAV_CONFIG.booking.map((item) => (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              onClick={closeSheet}
-                              className="flex items-center gap-3 py-2.5 px-4 rounded-md hover:bg-accent/50 transition-colors group">
-                              <div className={`p-1.5 ${item.bgColor} rounded`}>
-                                <item.icon
-                                  size={16}
-                                  className={`${item.iconColor} ${
-                                    item.animate ? "animate-spin-slow" : ""
-                                  }`}
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium">
-                                  {item.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {item.description}
-                                </p>
-                              </div>
-                              <ChevronRight
-                                size={16}
-                                className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                              />
-                            </Link>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
                     {/* Support Section */}
                     <AccordionItem value="support" className="border-none">
                       <AccordionTrigger className="py-3 px-4 hover:bg-accent rounded-lg hover:no-underline">

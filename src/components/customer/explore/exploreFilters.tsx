@@ -107,7 +107,7 @@ const Filters: React.FC<FiltersProps> = ({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* OPTIONAL: Show selected items under dropdown */}
+            {/* Show selected items under dropdown */}
             {selectedCategories.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {categories
@@ -190,7 +190,8 @@ const Filters: React.FC<FiltersProps> = ({
       <div className="lg:hidden mb-6">
         <button
           onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-          className="w-full px-4 py-3 bg-slate-800 text-white rounded-md font-bold flex items-center justify-center gap-2transition-all shadow-md">
+          className="w-full px-4 py-3 bg-slate-800 text-white rounded-md font-bold flex items-center justify-center gap-2 transition-all shadow-md"
+        >
           <Filter className="w-5 h-5" />
           {mobileFilterOpen ? "Hide Filters" : "Show Filters"}
         </button>
@@ -200,37 +201,79 @@ const Filters: React.FC<FiltersProps> = ({
             {hasActiveFilters && (
               <button
                 onClick={onClearFilters}
-                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2">
+                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
+              >
                 <X className="w-4 h-4" />
                 Reset Filters
               </button>
             )}
 
+            {/* MOBILE CATEGORY FILTER */}
             <div>
-              <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
-                Categories
-              </h3>
-              <div className="space-y-2">
-                {categories.map((category: any) => (
-                  <label
-                    key={category}
-                    className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(category)}
-                      onChange={() => onToggleCategory(category)}
-                      className="w-4 h-4 rounded"
-                    />
-                    <span className="text-gray-700 text-sm">{category}</span>
-                  </label>
-                ))}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
+                  Categories
+                </h3>
+
+                {/* FULL category list inside dropdown for mobile */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between text-gray-700 font-medium"
+                    >
+                      Select Categories
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-64 max-h-72 overflow-y-auto">
+                    <DropdownMenuLabel>Select Categories</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    {categories.map((category: any) => (
+                      <DropdownMenuCheckboxItem
+                        key={category.id}
+                        checked={selectedCategories.includes(category.id)}
+                        onCheckedChange={() => onToggleCategory(category.id)}
+                      >
+                        {category.name}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Selected categories below dropdown */}
+                {selectedCategories.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {categories
+                      .filter((cat: any) => selectedCategories.includes(cat.id))
+                      .map((cat: any) => (
+                        <span
+                          key={cat.id}
+                          className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-md flex items-center gap-1"
+                        >
+                          {cat.name}
+                          <button
+                            onClick={() => onToggleCategory(cat.id)}
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                  </div>
+                )}
               </div>
+
             </div>
 
+            {/* MOBILE PRICE FILTER */}
             <div>
               <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
                 Price
               </h3>
+
               <input
                 type="range"
                 min="0"
@@ -241,13 +284,47 @@ const Filters: React.FC<FiltersProps> = ({
                 }
                 className="w-full h-2 bg-gray-300 rounded-lg"
               />
+
               <p className="text-gray-600 text-sm mt-2">
                 ₹{priceRange[1].toLocaleString()}
               </p>
             </div>
+
+            {/* MOBILE RATING FILTER */}
+            <div>
+              <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
+                Rating
+              </h3>
+
+              <div className="space-y-2">
+                {[5, 4, 3, 2, 1].map((star) => (
+                  <label
+                    key={star}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="mobile-rating"
+                      checked={rating === star}
+                      onChange={() => onRatingChange(star)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-700 text-sm flex items-center gap-1">
+                      {Array(star)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-500" />
+                        ))}
+                      {star}+ stars
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
+
     </>
   );
 };

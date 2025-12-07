@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Clock, Star } from "lucide-react";
+import { Calendar, Clock, Star, Zap } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Service {
   id: string;
@@ -46,36 +47,21 @@ const Results: React.FC<ResultsProps> = ({
 }) => {
   if (services.length === 0) {
     return (
-      <div className="lg:col-span-3 flex flex-col items-center justify-center py-24 px-4">
-        {/* Icon */}
-        <div className="mb-6">
-          <div className="w-20 h-20 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center shadow-sm">
-            <svg
-              className="w-10 h-10"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.362 5.214A7.5 7.5 0 018.636 18.79m9.032-3.779A7.5 7.5 0 006.03 6.03m7.087 9.9L21 21m-9-9h.01"
-              />
-            </svg>
+
+      <Card className="bg-white border-gray-200">
+        <CardContent className="py-12 text-center">
+          <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No Services Found
+          </h3>
+          <div className="flex justify-center">
+            <p className="text-sm sm:text-[16px] text-gray-500 w-auto sm:w-100 items-center">
+              We couldn't find any services that match your search. Try adjusting
+              your filters or search terms to see more results.
+            </p>
           </div>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-2xl sm:text-3xl font-black text-gray-900 mb-3">
-          No Services Found
-        </h3>
-
-        {/* Description */}
-        <p className="text-gray-600 mb-8 max-w-sm text-center leading-relaxed">
-          We couldn't find any services that match your search. Try adjusting
-          your filters or search terms to see more results.
-        </p>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 

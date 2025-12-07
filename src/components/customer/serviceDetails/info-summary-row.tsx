@@ -43,15 +43,13 @@ const SummaryRow = ({
 }) => (
   <div className="flex items-center justify-between gap-3">
     <span
-      className={`text-xs ${
-        subtle ? "text-gray-500" : "text-gray-700 font-medium"
-      }`}>
+      className={`text-xs ${subtle ? "text-gray-500" : "text-gray-700 font-medium"
+        }`}>
       {label}
     </span>
     <span
-      className={`text-sm ${
-        subtle ? "text-gray-700" : "text-gray-900 font-semibold"
-      } text-right`}>
+      className={`text-sm ${subtle ? "text-gray-700" : "text-gray-900 font-semibold"
+        } text-right`}>
       {value}
     </span>
   </div>

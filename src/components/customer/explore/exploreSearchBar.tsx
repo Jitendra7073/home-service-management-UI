@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface SearchBarProps {
   searchTerm: string;
@@ -14,14 +15,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   return (
     <div className="relative group pb-5 sm:pb-10">
-      <div className="flex items-center border bg-white rounded-md px-4 sm:px-6 py-3 sm:py-4 gap-3">
-        <Search className="w-5 h-5 text-gray-400" />
-        <input
-          type="text"
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <Input
           placeholder="Search services by name or category..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500 text-sm sm:text-base"
+          className="pl-12 h-12 border-gray-300 text-base w-full"
         />
       </div>
     </div>

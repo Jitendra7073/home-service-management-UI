@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Phone, Mail, Globe, ShieldCheck } from "lucide-react";
-import { useParams, useSearchParams } from "next/navigation";
+import { redirect, useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import PoliciesGrid from "@/components/customer/serviceDetails/policies";
 import FeaturePill from "@/components/customer/serviceDetails/featurepill";
@@ -13,6 +13,8 @@ import {
 } from "@/components/customer/serviceDetails/info-summary-row";
 import ServiceDetailSkeleton from "@/components/customer/serviceDetails/loadingSkeleton";
 import { toast } from "sonner";
+import SlotsSelector from "@/components/customer/serviceDetails/timeslots";
+
 
 interface Slot {
   id: string;
@@ -98,6 +100,7 @@ export default function ServiceDetailPage() {
 
   const provider = rawData ?? null;
 
+
   const businessProfile = provider?.businessProfile ?? null;
 
   const service: Service | null = useMemo(() => {
@@ -174,6 +177,7 @@ export default function ServiceDetailPage() {
 
       const data = await res.json();
 
+      console.log("Booking response:", data.data.newBooking.userId);
       if (!res.ok) {
         toast.error(data?.error?.msg || "Booking failed!");
         setIsBooking(false);
@@ -181,11 +185,11 @@ export default function ServiceDetailPage() {
       }
 
       toast.success("🎉 Booking confirmed successfully!");
+      window.location.href = `/customer/booking`;
 
       // Optional: redirect or refresh UI
-      // router.push("/customer/bookings");
-
       setIsBooking(false);
+
     } catch (error) {
       toast.error("Something went wrong!");
       setIsBooking(false);
@@ -273,9 +277,8 @@ export default function ServiceDetailPage() {
                     />
                     <FeaturePill
                       label="Reviews"
-                      value={`${service.reviewCount} review${
-                        service.reviewCount === 1 ? "" : "s"
-                      }`}
+                      value={`${service.reviewCount} review${service.reviewCount === 1 ? "" : "s"
+                        }`}
                       icon="💬"
                     />
                     <FeaturePill
@@ -345,79 +348,12 @@ export default function ServiceDetailPage() {
             </div>
 
             {/* Slots Selector */}
-            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h2 className="text-xl sm:text-2xl font-black text-gray-900">
-                  Select Date & Time
-                </h2>
-                <div className="text-xs sm:text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-sm">
-                  ✓ {availableSlotsCount} available for selected date
-                </div>
-              </div>
+            <SlotsSelector
+              slots={service.slots}
+              selectedSlot={selectedSlot}
+              setSelectedSlot={setSelectedSlot}
+            />
 
-              {/* Dates row */}
-              {availableDates.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto pb-3 mb-6 -mx-1 px-1">
-                  {availableDates.map((date) => (
-                    <button
-                      key={date}
-                      onClick={() => {
-                        setSelectedDate(date);
-                        setSelectedSlot(null);
-                      }}
-                      className={`px-5 py-3 rounded-md text-sm sm:text-base font-semibold whitespace-nowrap transition-all border ${
-                        selectedDate === date
-                          ? "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-400/30"
-                          : "bg-gray-50 text-gray-800 border-gray-200 hover:border-gray-400 hover:bg-gray-100"
-                      }`}>
-                      {date}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 text-sm mb-4">
-                  No slots configured yet for this service.
-                </p>
-              )}
-
-              {/* Time slots grid */}
-              {slotsForDate.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {slotsForDate.map((slot) => {
-                    return (
-                      <button
-                        key={slot.id}
-                        onClick={() => handleSlotSelect(slot)}
-                        disabled={slot.isBooked}
-                        className={`p-4 rounded-md text-sm font-semibold transition-all text-center border ${
-                          slot.isBooked
-                            ? "bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed opacity-60"
-                            : selectedSlot?.id === slot.id
-                            ? "bg-emerald-500 text-white border-emerald-600 shadow-md shadow-emerald-300/40"
-                            : "bg-white text-gray-900 border-gray-200 hover:border-emerald-400 hover:bg-emerald-50"
-                        }`}>
-                        <div className="font-black text-sm">
-                          {slot.startTime}
-                        </div>
-                        <div className="text-[11px] mt-1">
-                          {slot.isBooked ? "Booked" : "Available"}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-10">
-                  <div className="text-4xl mb-2">🕒</div>
-                  <p className="text-gray-700 font-medium">
-                    No slots available for this date
-                  </p>
-                  <p className="text-gray-500 text-sm mt-1">
-                    Try selecting another date from above.
-                  </p>
-                </div>
-              )}
-            </div>
 
             <OtherServicesGrid
               services={businessProfile.services}
@@ -492,16 +428,15 @@ export default function ServiceDetailPage() {
                 <button
                   onClick={handleBooking}
                   disabled={!selectedSlot || isBooking}
-                  className={`w-full mt-2 py-3.5 rounded-md text-sm sm:text-base font-black tracking-wide transition-all ${
-                    selectedSlot
-                      ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md hover:shadow-lg active:scale-[0.98]"
-                      : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  }`}>
+                  className={`w-full mt-2 py-3.5 rounded-md text-sm sm:text-base font-black tracking-wide transition-all ${selectedSlot
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md hover:shadow-lg active:scale-[0.98]"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    }`}>
                   {isBooking
                     ? "Booking..."
                     : selectedSlot
-                    ? "Book Now"
-                    : "Select Time Slot"}
+                      ? "Book Now"
+                      : "Select Time Slot"}
                 </button>
 
                 {/* Info strip */}
