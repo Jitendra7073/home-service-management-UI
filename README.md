@@ -34,3 +34,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+Testing Stripe Payment : "C:\Users\EnactOn Technologies\Downloads\stripe_1.33.0_windows_x86_64\stripe.exe" listen --forward-to localhost:5000/api/v1/payment/webhook

@@ -3,14 +3,15 @@ import { getAuthToken } from "@/lib/get-token";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-    const { ok, data, status } = await backend("/api/v1/profile", {
-        method: "GET",
-    });
+  const { ok, data, status } = await backend("/api/v1/profile", {
+    method: "GET",
+  });
 
-    console.log("Profile fetch response:", { ok, data, status });
-
-    if (!ok) {
-        return NextResponse.json({ error: "Failed to fetch profile data" }, { status });
-    }
-    return NextResponse.json({ user: data?.user }, { status });
+  if (!ok) {
+    return NextResponse.json(
+      { error: "Failed to fetch profile data" },
+      { status }
+    );
+  }
+  return NextResponse.json({ user: data?.user }, { status });
 }

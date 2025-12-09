@@ -1,146 +1,124 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 interface Slot {
-    id: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    isBooked: boolean;
+  id: string;
+  time: string; // "10:30 AM"
 }
 
 interface SlotsSelectorProps {
-    slots: Slot[];
-    selectedSlot: Slot | null;
-    setSelectedSlot: (slot: Slot | null) => void;
+  slots: Slot[] | null | undefined;
+  serviceId: string;
+  businessId: string;
+  onSelect: (data: {
+    serviceId: string;
+    slotId: string;
+    businessId: string;
+    date: string;
+  }) => void;
 }
 
 export default function SlotsSelector({
-    slots,
-    selectedSlot,
-    setSelectedSlot,
+  slots,
+  serviceId,
+  businessId,
+  onSelect,
 }: SlotsSelectorProps) {
-    const groupedSlots = useMemo(() => {
-        const map: Record<string, Slot[]> = {};
-        if (!slots) return map;
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
-        slots.forEach((slot) => {
-            const dateStr = new Date(slot.date).toLocaleDateString("en-IN", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-            });
+  const safeSlots: Slot[] = Array.isArray(slots) ? slots : [];
 
-            if (!map[dateStr]) map[dateStr] = [];
-            map[dateStr].push(slot);
-        });
+  const next3Days = Array.from({ length: 3 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return d.toISOString().split("T")[0];
+  });
 
-        return map;
-    }, [slots]);
+  const toMinutes = (time: string) => {
+    const [hh, mm, period] = time.split(/[: ]/);
+    let hour = Number(hh) % 12;
+    if (period === "PM") hour += 12;
+    return hour * 60 + Number(mm);
+  };
 
-    const availableDates = useMemo(() => Object.keys(groupedSlots), [groupedSlots]);
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const slotsForDate = useMemo(() => {
+    if (!selectedDate) return [];
 
-    useEffect(() => {
-        if (!selectedDate && availableDates.length > 0) {
-            setSelectedDate(availableDates[0]);
-        }
-    }, [availableDates, selectedDate]);
+    const today = new Date().toISOString().split("T")[0];
+    const isToday = selectedDate === today;
 
-    const slotsForDate: Slot[] = selectedDate ? groupedSlots[selectedDate] || [] : [];
+    return safeSlots
+      .filter((slot) => {
+        if (!isToday) return true;
+        return toMinutes(slot.time) > currentMinutes;
+      })
+      .sort((a, b) => toMinutes(a.time) - toMinutes(b.time));
+  }, [selectedDate, safeSlots]);
 
-    const availableSlotsCount = slotsForDate.filter((s) => !s.isBooked).length;
+  const handleSelect = (slot: Slot) => {
+    setSelectedSlotId(slot.id);
 
-    const handleSlotSelect = (slot: Slot) => {
-        if (!slot.isBooked) {
-            setSelectedSlot(slot);
-        }
-    };
+    onSelect({
+      serviceId,
+      slotId: slot.id,
+      businessId,
+      date: selectedDate!,
+    });
+  };
 
-    return (
-        <div className="bg-white rounded-md shadow-sm border border-gray-200 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h2 className="text-xl sm:text-2xl font-black text-gray-900">
-                    Select Date & Time
-                </h2>
-                <div>
-                    {availableSlotsCount > 0 ? (
+  return (
+    <div className="bg-white border rounded-md p-6 shadow-sm">
+      <h2 className="text-xl font-bold mb-4">Select Date & Time</h2>
 
-                        <div className="text-xs sm:text-sm font-semibold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-sm">
-                            ✓ {availableSlotsCount} Slots Available
-                        </div>
-                    ) : availableSlotsCount === 0 ? (
-                        <div className="text-xs sm:text-sm font-semibold text-yellow-700 bg-yellow-50 border border-yellow-200 px-3 py-1 rounded-sm">
-                            ● All Slots Booked
-                        </div>
-                    ) : (
-                        <div className="text-xs sm:text-sm font-semibold text-red-700 bg-red-50 border border-red-200 px-3 py-1 rounded-sm">
-                            ● No Slots Added Yet
-                        </div>
-                    )}
-                </div>
+      {/* DATE SELECTOR */}
+      <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
+        {next3Days.map((date) => (
+          <button
+            key={date}
+            onClick={() => {
+              setSelectedDate(date);
+              setSelectedSlotId(null);
+            }}
+            className={`px-4 py-2 rounded-md border text-sm font-semibold whitespace-nowrap ${
+              selectedDate === date
+                ? "bg-black text-white border-black"
+                : "bg-gray-50 text-gray-900 border-gray-200 hover:bg-gray-100"
+            }`}>
+            {new Date(date).toLocaleDateString("en-IN", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            })}
+          </button>
+        ))}
+      </div>
 
-            </div>
-
-            {/* Dates Buttons */}
-            {availableDates.length > 0 ? (
-                <div className="flex gap-3 overflow-x-auto pb-3 mb-6 -mx-1 px-1">
-                    {availableDates.map((date) => (
-                        <button
-                            key={date}
-                            onClick={() => {
-                                setSelectedDate(date);
-                                setSelectedSlot(null);
-                            }}
-                            className={`px-5 py-3 rounded-md text-sm sm:text-base font-semibold whitespace-nowrap transition-all border ${selectedDate === date
-                                ? "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-400/30"
-                                : "bg-gray-50 text-gray-800 border-gray-200 hover:border-gray-400 hover:bg-gray-100"
-                                }`}
-                        >
-                            {date}
-                        </button>
-                    ))}
-                </div>
-            ) : (
-                <p className="text-gray-500 text-sm mb-4">No slots available.</p>
-            )}
-
-            {/* Time Slots */}
-            {slotsForDate.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {slotsForDate.map((slot) => (
-                        <button
-                            key={slot.id}
-                            onClick={() => handleSlotSelect(slot)}
-                            disabled={slot.isBooked}
-                            className={`p-4 rounded-md text-sm font-semibold transition-all text-center border-2 ${slot.isBooked
-                                ? "bg-red-100 text-red-500 border-red-300 cursor-not-allowed opacity-80"
-                                : selectedSlot?.id === slot.id
-                                    ? "bg-green-100 text-green-500 border-green-300 shadow-md shadow-green-300/40"
-                                    : "bg-white text-gray-900 border-gray-200 hover:border-green-400 hover:bg-green-50"
-                                }`}
-                        >
-                            <div className="font-black text-sm">
-                                {slot.startTime} - {slot.endTime}
-                            </div>
-                            <div className="text-[14px] mt-1">
-                                {slot.isBooked ? (
-                                    <p className="text-red-500">Booked</p>
-                                ) : (
-                                    <p className="text-green-500">Available</p>
-                                )}
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-10">
-                    <div className="text-4xl mb-2">🕒</div>
-                    <p className="text-gray-700 font-medium">No slots for this date</p>
-                </div>
-            )}
+      {/* TIME SLOTS */}
+      {!selectedDate ? (
+        <p className="text-gray-500">Please select a date above.</p>
+      ) : slotsForDate.length === 0 ? (
+        <p className="text-gray-500">No slots available for this date.</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {slotsForDate.map((slot) => (
+            <button
+              key={slot.id}
+              onClick={() => handleSelect(slot)}
+              className={`p-3 rounded-md text-center border-2 text-sm font-semibold ${
+                selectedSlotId === slot.id
+                  ? "bg-green-100 border-green-300 text-green-600 shadow"
+                  : "bg-white border-gray-200 hover:border-green-400 hover:bg-green-50"
+              }`}>
+              {slot.time}
+            </button>
+          ))}
         </div>
-    );
+      )}
+    </div>
+  );
 }

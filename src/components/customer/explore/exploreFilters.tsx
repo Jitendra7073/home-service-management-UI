@@ -60,7 +60,7 @@ const Filters: React.FC<FiltersProps> = ({
     <>
       {/* Desktop Filters */}
       <div className="hidden lg:block">
-        <div className="bg-white rounded-md p-6 shadow-sm border border-gray-200 sticky top-24 hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-sm p-6 shadow-sm border border-gray-200 sticky top-24 hover:shadow-md transition-shadow">
           {/* Categories Filter */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
@@ -70,7 +70,7 @@ const Filters: React.FC<FiltersProps> = ({
               {hasActiveFilters && (
                 <button
                   onClick={onClearFilters}
-                  className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-md">
+                  className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-sm">
                   <X className="w-4 h-4" />
                 </button>
               )}
@@ -115,7 +115,7 @@ const Filters: React.FC<FiltersProps> = ({
                   .map((cat: any) => (
                     <span
                       key={cat.id}
-                      className="px-3 py-1 text-xs bg-gray-200 rounded-md text-gray-700">
+                      className="px-3 py-1 text-xs bg-gray-200 rounded-sm text-gray-700">
                       {cat.name}
                     </span>
                   ))}
@@ -190,19 +190,17 @@ const Filters: React.FC<FiltersProps> = ({
       <div className="lg:hidden mb-6">
         <button
           onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-          className="w-full px-4 py-3 bg-slate-800 text-white rounded-md font-bold flex items-center justify-center gap-2 transition-all shadow-md"
-        >
+          className="w-full px-4 py-3 bg-slate-800 text-white rounded-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md">
           <Filter className="w-5 h-5" />
           {mobileFilterOpen ? "Hide Filters" : "Show Filters"}
         </button>
 
         {mobileFilterOpen && (
-          <div className="mt-4 bg-white rounded-md p-6 space-y-6 animate-fade-in shadow-lg border border-gray-200">
+          <div className="mt-4 bg-white rounded-sm p-6 space-y-6 animate-fade-in shadow-lg border border-gray-200">
             {hasActiveFilters && (
               <button
                 onClick={onClearFilters}
-                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2"
-              >
+                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-sm hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2">
                 <X className="w-4 h-4" />
                 Reset Filters
               </button>
@@ -220,8 +218,7 @@ const Filters: React.FC<FiltersProps> = ({
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-between text-gray-700 font-medium"
-                    >
+                      className="w-full justify-between text-gray-700 font-medium">
                       Select Categories
                       <ChevronDown className="w-4 h-4" />
                     </Button>
@@ -235,8 +232,7 @@ const Filters: React.FC<FiltersProps> = ({
                       <DropdownMenuCheckboxItem
                         key={category.id}
                         checked={selectedCategories.includes(category.id)}
-                        onCheckedChange={() => onToggleCategory(category.id)}
-                      >
+                        onCheckedChange={() => onToggleCategory(category.id)}>
                         {category.name}
                       </DropdownMenuCheckboxItem>
                     ))}
@@ -251,13 +247,11 @@ const Filters: React.FC<FiltersProps> = ({
                       .map((cat: any) => (
                         <span
                           key={cat.id}
-                          className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-md flex items-center gap-1"
-                        >
+                          className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-sm flex items-center gap-1">
                           {cat.name}
                           <button
                             onClick={() => onToggleCategory(cat.id)}
-                            className="text-gray-600 hover:text-gray-900"
-                          >
+                            className="text-gray-600 hover:text-gray-900">
                             <X className="w-3 h-3" />
                           </button>
                         </span>
@@ -265,7 +259,6 @@ const Filters: React.FC<FiltersProps> = ({
                   </div>
                 )}
               </div>
-
             </div>
 
             {/* MOBILE PRICE FILTER */}
@@ -300,8 +293,7 @@ const Filters: React.FC<FiltersProps> = ({
                 {[5, 4, 3, 2, 1].map((star) => (
                   <label
                     key={star}
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
+                    className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="radio"
                       name="mobile-rating"
@@ -313,7 +305,10 @@ const Filters: React.FC<FiltersProps> = ({
                       {Array(star)
                         .fill(0)
                         .map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-500" />
+                          <Star
+                            key={i}
+                            className="w-4 h-4 fill-yellow-400 text-yellow-500"
+                          />
                         ))}
                       {star}+ stars
                     </span>
@@ -324,7 +319,6 @@ const Filters: React.FC<FiltersProps> = ({
           </div>
         )}
       </div>
-
     </>
   );
 };

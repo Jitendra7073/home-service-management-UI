@@ -13,7 +13,6 @@ interface ExploreHeaderProps {
   description: string;
 }
 
-
 const ExploreHeader: React.FC<ExploreHeaderProps> = ({
   totalServices,
   filteredCount,

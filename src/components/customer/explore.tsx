@@ -194,7 +194,13 @@ const Explore: React.FC = () => {
         totalServices={allServices.length}
         filteredCount={filteredServices.length}
         totalProviders={providers.length}
-        isVisible={false} icons={<Zap className="w-8 h-8 text-gray-300" />} heading={"All Services"} description={"Browse all available services from professional providers."} />
+        isVisible={false}
+        icons={<Zap className="w-8 h-8 text-gray-300" />}
+        heading={"All Services"}
+        description={
+          "Browse all available services from professional providers."
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
         <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />

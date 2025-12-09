@@ -10,7 +10,6 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const { providerId } = await params;
-    console.log("Fetching provider with ID:", providerId);
 
     const { ok, data, status } = await backend(
       `/api/v1/customer/providers/${providerId}`,

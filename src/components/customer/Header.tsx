@@ -6,112 +6,62 @@ import {
   Menu,
   X,
   Home,
-  Loader2,
-  CalendarDays,
-  Phone,
-  HelpCircle,
-  AlertTriangle,
-  Locate,
-  ChevronRight,
-  User,
-  Expand,
+  ShoppingCart,
+  User2,
+  Bell,
+  Calendar,
+  Search,
 } from "lucide-react";
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import NotificationSideBar from "../common/notification-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-// Navigation configuration for better maintainability
-const NAV_CONFIG = {
-  support: [
-    {
-      href: "/support/contact",
-      icon: Phone,
-      iconColor: "text-primary",
-      bgColor: "bg-primary/10",
-      title: "Contact Support",
-      description: "Get quick help via call, chat, or email.",
-    },
-    {
-      href: "/support/faqs",
-      icon: HelpCircle,
-      iconColor: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      title: "FAQs",
-      description: "Quick answers to common questions.",
-    },
-  ],
-};
-
-// Reusable NavItem Component
-interface NavItemProps {
-  href: string;
-  icon: React.ElementType;
-  iconColor: string;
-  bgColor: string;
-  title: string;
-  description: string;
-  animate?: boolean;
-  onClick?: () => void;
-}
-
-const NavItem: React.FC<NavItemProps> = ({
-  href,
-  icon: Icon,
-  iconColor,
-  bgColor,
-  title,
-  description,
-  animate,
-  onClick,
-}) => (
-  <Link
-    href={href}
-    onClick={onClick}
-    className="flex items-start gap-3 rounded-md p-3 hover:bg-accent transition-colors group">
-    <div
-      className={`p-2 ${bgColor} rounded-md group-hover:scale-110 transition-transform`}>
-      <Icon
-        size={18}
-        className={`${iconColor} ${animate ? "animate-spin-slow" : ""}`}
-      />
-    </div>
-    <div className="flex-1">
-      <p className="font-medium text-sm">{title}</p>
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        {description}
-      </p>
-    </div>
-  </Link>
-);
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
 
   const closeSheet = () => setOpen(false);
 
+  const menuItems = [
+    {
+      title: "Home",
+      href: "/customer",
+      icon: Home,
+    },
+    {
+      title: "Explore",
+      href: "/customer/explore",
+      icon: Search,
+    },
+    {
+      title: "Booking",
+      href: "/customer/booking",
+      icon: Calendar,
+    },
+    {
+      title: "Cart",
+      href: "/customer/cart",
+      icon: ShoppingCart,
+    },
+    {
+      title: "Profile",
+      href: "/customer/profile",
+      icon: User2,
+    },
+  ];
+
   return (
     <header className="w-full bg-white border-b sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 gap-4">
-        {/* LOGO */}
         <Link
           href="/customer"
           className="text-2xl font-bold tracking-wide text-primary shrink-0">
@@ -122,56 +72,22 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-2">
           <NavigationMenu>
             <NavigationMenuList className="flex items-center gap-1">
-              {/* Explore */}
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}>
-                  <Link href="/customer/explore" className="text-sm">
-                    Explore
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+              {menuItems.map((item) => (
+                <NavigationMenuItem key={item.href}>
+                  <NavigationMenuLink
+                    asChild
+                    className={navigationMenuTriggerStyle()}>
+                    <Link
+                      href={item.href}
+                      className="text-sm flex items-center gap-1">
+                      {item.title}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
 
-              {/* Bookings */}
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}>
-                  <Link href="/customer/booking" className="text-sm">
-                    Booking
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-
-              {/* Support */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-sm">
-                  Support
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="flex flex-col gap-2 p-3 w-[300px]">
-                    {NAV_CONFIG.support.map((item) => (
-                      <NavItem key={item.href} {...item} />
-                    ))}
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              {/* Notification Bell */}
               <NavigationMenuItem>
                 <NotificationSideBar />
-              </NavigationMenuItem>
-
-              {/* User Profile */}
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}>
-                  <Link href="/customer/profile" className="text-sm">
-                    Profile
-                  </Link>
-                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
@@ -179,7 +95,6 @@ export default function Header() {
 
         {/* MOBILE ACTIONS */}
         <div className="flex md:hidden items-center gap-2">
-          {/* Mobile Menu Button */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="shrink-0">
@@ -189,8 +104,7 @@ export default function Header() {
 
             {/* MOBILE MENU CONTENT */}
             <SheetContent side="left" className="w-[300px] p-0">
-              {/* Mobile Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b from-primary/5 to-transparent">
+              <div className="flex items-center justify-between px-5 py-4 border-b">
                 <Link
                   href="/customer"
                   onClick={closeSheet}
@@ -200,84 +114,24 @@ export default function Header() {
               </div>
 
               <ScrollArea className="h-[calc(100vh-73px)]">
-                {/* MOBILE NAV LINKS */}
                 <div className="px-4 py-4 space-y-1">
-                  {/* Home Link */}
-                  <Link
-                    href="/customer"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                    <Home size={20} className="text-primary" />
-                    <span className="font-medium">Home</span>
-                  </Link>
-
-                  {/* Profile Link */}
-                  <Link
-                    href="/customer/profile"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                    <User size={20} className="text-primary" />
-                    <span className="font-medium">Profile</span>
-                  </Link>
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeSheet}
+                      className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
+                      <item.icon size={20} className="text-primary" />
+                      <span className="font-medium">{item.title}</span>
+                    </Link>
+                  ))}
 
                   <Link
-                    href="/customer/explore"
-                    onClick={closeSheet}
+                    href="#"
                     className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                    <Expand size={20} className="text-primary" />
-                    <span className="font-medium">Explore</span>
+                    <Bell size={20} className="text-primary" />
+                    <span className="font-medium">Notifications</span>
                   </Link>
-
-                  <Link
-                    href="/customer/booking"
-                    onClick={closeSheet}
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                    <Expand size={20} className="text-primary" />
-                    <span className="font-medium">Booking</span>
-                  </Link>
-
-                  {/* Accordion for Sections */}
-                  <Accordion type="single" collapsible className="w-full">
-                    {/* Support Section */}
-                    <AccordionItem value="support" className="border-none">
-                      <AccordionTrigger className="py-3 px-4 hover:bg-accent rounded-lg hover:no-underline">
-                        <div className="flex items-center gap-3">
-                          <HelpCircle size={20} className="text-primary" />
-                          <span className="font-medium">Support</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-2 pb-2 pt-1">
-                        <div className="space-y-1">
-                          {NAV_CONFIG.support.map((item) => (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              onClick={closeSheet}
-                              className="flex items-center gap-3 py-2.5 px-4 rounded-md hover:bg-accent/50 transition-colors group">
-                              <div className={`p-1.5 ${item.bgColor} rounded`}>
-                                <item.icon
-                                  size={16}
-                                  className={item.iconColor}
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium">
-                                  {item.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {item.description}
-                                </p>
-                              </div>
-                              <ChevronRight
-                                size={16}
-                                className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                              />
-                            </Link>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
                 </div>
               </ScrollArea>
             </SheetContent>
