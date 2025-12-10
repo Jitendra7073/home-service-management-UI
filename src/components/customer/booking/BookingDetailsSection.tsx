@@ -13,6 +13,7 @@ import {
   IndianRupee,
 } from "lucide-react";
 import CopyField from "@/components/customer/booking/CopyField";
+import { PaymentStatusBadge } from "./StatusBadge";
 
 export default function BookingDetailsSection({
   booking,
@@ -173,38 +174,42 @@ export default function BookingDetailsSection({
         </div>
       </div>
 
-      {/* ACTION BUTTONS */}
-      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handleCancelClick(booking)}
-          disabled={booking.bookingStatus !== "PENDING"}
-          className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50">
-          <X className="w-4 h-4" />
-          Cancel Booking
-        </Button>
+      {/* Booking Details Footer */}
+      <div className="flex justify-between items-center align-middle">
+        {/* ACTION BUTTONS */}
+        <div className="flex flex-wrap gap-2  border-t border-gray-100">
+          {booking.bookingStatus === "PENDING" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleCancelClick(booking)}
+              disabled={booking.bookingStatus !== "PENDING"}
+              className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50">
+              <X className="w-4 h-4" />
+              Cancel Booking
+            </Button>
+          )}
 
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={
-            !["PAID", "CONFIRMED", "COMPLETED"].includes(booking.bookingStatus)
-          }
-          onClick={() => handleDownloadInvoice(booking)}
-          className="flex items-center gap-2 border-gray-300">
-          <Download className="w-4 h-4" />
-          Download Invoice
-        </Button>
+          {booking.bookingStatus !== "CANCELLED" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleCall(business?.phone)}
+              className="flex items-center gap-2 border-gray-300">
+              <Phone className="w-4 h-4" />
+              Call Provider
+            </Button>
+          )}
+        </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => handleCall(business?.phone)}
-          className="flex items-center gap-2 border-gray-300">
-          <Phone className="w-4 h-4" />
-          Call Provider
-        </Button>
+        <div className="px-4 py-1 rounded-sm bg-blue-50 border border-blue-200 text-[13px] text-blue-800 font-medium">
+          <p>
+            We’ve already sent the invoice to your email following your payment.
+          </p>
+        </div>
+
+        {/* Payment Status Badge */}
+        <PaymentStatusBadge status={booking.paymentStatus} />
       </div>
     </div>
   );

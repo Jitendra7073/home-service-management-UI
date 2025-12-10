@@ -43,7 +43,6 @@ export default function CustomerBookingsPage() {
   });
 
   const bookings = data?.bookings || [];
-  console.log("Customer Bookings :", bookings);
 
   // Filtering & Sorting Logic
   const filteredBookings = useMemo(() => {
@@ -51,16 +50,16 @@ export default function CustomerBookingsPage() {
 
     let filtered = bookings.filter((booking: any) => {
       const matchesSearch =
-        booking.service.name
-          .toLowerCase()
+        booking.service?.name
+          ?.toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        booking.slot.businessProfile.businessName
-          .toLowerCase()
+        booking.business?.name
+          ?.toLowerCase()
           .includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all" ||
-        booking.status.toLowerCase() === statusFilter.toLowerCase();
+        booking.bookingStatus.toLowerCase() === statusFilter.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
@@ -70,16 +69,16 @@ export default function CustomerBookingsPage() {
       switch (sortBy) {
         case "date-desc":
           return (
-            new Date(b.slot.date).getTime() - new Date(a.slot.date).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         case "date-asc":
           return (
-            new Date(a.slot.date).getTime() - new Date(b.slot.date).getTime()
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
         case "price-high":
-          return b.service.price - a.service.price;
+          return b.totalAmount - a.totalAmount;
         case "price-low":
-          return a.service.price - b.service.price;
+          return a.totalAmount - b.totalAmount;
         default:
           return 0;
       }
@@ -121,42 +120,37 @@ export default function CustomerBookingsPage() {
 
   const handleCancelConfirm = async () => {
     if (!selectedBooking) return;
-    if (selectedBooking.status.toLowerCase() !== "pending") {
-      toast.warning(
-        "You can only cancel pending bookings. This booking already confirmed."
-      );
+
+    if (selectedBooking.bookingStatus.toLowerCase() !== "pending") {
+      toast.warning("Only pending bookings can be cancelled.");
       return;
     }
 
     try {
       const res = await fetch("/api/customer/booking/cancel", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: selectedBooking.id,
         }),
       });
 
       const data = await res.json();
-      // console.log("data:", data);
-
-      console.log("Cancel response:", data);
 
       if (!res.ok) {
-        toast.error(data.error || "Cancellation failed");
+        toast.error(data.msg || data.error || "Cancellation failed");
         return;
       }
 
-      toast.success("Booking cancelled successfully");
+      toast.success("Booking cancelled successfully!");
+
       queryClient.invalidateQueries(["customer-bookings"]);
 
       setCancelDialogOpen(false);
       setSelectedBooking(null);
     } catch (err) {
-      console.error("Error cancelling booking:", err);
-      toast.error("Something went wrong while cancelling");
+      console.error("Cancel Error:", err);
+      toast.error("Something went wrong while cancelling.");
     }
   };
 

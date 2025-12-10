@@ -4,7 +4,7 @@ import {
   AccordionContent,
   Accordion,
 } from "@/components/ui/accordion";
-import StatusBadge from "@/components/customer/booking/StatusBadge";
+import { BookingStatusBadge } from "@/components/customer/booking/StatusBadge";
 import BookingDetailsSection from "@/components/customer/booking/BookingDetailsSection";
 import { Calendar, Clock, IndianRupee } from "lucide-react";
 
@@ -29,7 +29,7 @@ export default function BookingAccordionItem({
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
         value={booking.id}
-        className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow no-underline">
+        className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
           <div className="flex items-center justify-between w-full pr-4">
             {/* LEFT SECTION */}
@@ -45,11 +45,11 @@ export default function BookingAccordionItem({
                   {serviceName}
                 </h3>
 
-                <p className="text-sm text-gray-600 truncate">
-                  Provider: {businessEmail}
+                <p className="text-sm text-gray-500 font-normal truncate">
+                  Email: {businessEmail}
                 </p>
 
-                <p className="text-sm text-gray-600 truncate">
+                <p className="text-sm text-gray-500 font-normal truncate">
                   Phone: {businessPhone}
                 </p>
 
@@ -69,7 +69,8 @@ export default function BookingAccordionItem({
 
             {/* RIGHT SECTION */}
             <div className="flex flex-col items-end gap-2">
-              <StatusBadge status={booking.bookingStatus} />
+              <BookingStatusBadge status={booking.bookingStatus} />
+
               <div className="flex items-center text-lg font-bold text-gray-900">
                 <IndianRupee className="w-4 h-4" />
                 {amount.toLocaleString()}

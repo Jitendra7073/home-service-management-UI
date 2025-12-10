@@ -105,18 +105,16 @@ export default function StepsLayout() {
                 <button
                   key={step.id}
                   onClick={() => setActiveStep(index)}
-                  className={`w-full text-left p-5 rounded-2xl  transform  ${
+                  className={`w-full text-left p-5 rounded-md  transform  ${
                     index === activeStep
-                      ? `bg-gradient-to-br ${step.color} shadow-xl text-white`
+                      ? `bg-gradient-to-br ${step.color}  text-white`
                       : "bg-white border-2 border-gray-200 "
                   }`}>
                   <div className="flex items-start gap-4">
                     {/* Step Circle */}
                     <div
                       className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center transition-all font-bold text-lg ${
-                        index === activeStep
-                          ? "bg-white shadow-lg"
-                          : "bg-gray-100"
+                        index === activeStep ? "bg-white " : "bg-gray-100"
                       }`}>
                       <step.icon
                         className={`w-7 h-7 ${
@@ -167,7 +165,7 @@ export default function StepsLayout() {
 
           {/* Right Side - Active Step Details */}
           <div className="flex-1">
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 animate-fade-in h-full">
+            <div className="bg-white rounded-md overflow-hidden border-2 border-gray-200 animate-fade-in h-full">
               <div
                 className={`h-3 bg-gradient-to-r ${steps[activeStep].color}`}></div>
 
@@ -222,17 +220,15 @@ export default function StepsLayout() {
               <button
                 key={step.id}
                 onClick={() => setActiveStep(index)}
-                className={`p-5 rounded-2xl transition-all duration-300 ${
+                className={`p-5 rounded-md transition-all duration-300 ${
                   index === activeStep
-                    ? `bg-gradient-to-br ${step.color} shadow-xl text-white`
-                    : "bg-white border-2 border-gray-200 hover:shadow-lg"
+                    ? `bg-gradient-to-br ${step.color}  text-white`
+                    : "bg-white border-2 border-gray-200 hover:"
                 }`}>
                 <div className="flex flex-col items-center text-center gap-2">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                      index === activeStep
-                        ? "bg-white shadow-lg"
-                        : "bg-gray-100"
+                      index === activeStep ? "bg-white " : "bg-gray-100"
                     }`}>
                     <step.icon
                       className={`w-6 h-6 ${
@@ -258,7 +254,7 @@ export default function StepsLayout() {
           </div>
 
           {/* Details Card */}
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-gray-100 animate-fade-in">
+          <div className="bg-white rounded-md shadow-2xl overflow-hidden border-2 border-gray-100 animate-fade-in">
             <div
               className={`h-3 bg-gradient-to-r ${steps[activeStep].color}`}></div>
 
@@ -306,7 +302,7 @@ export default function StepsLayout() {
           {steps.map((step, index) => (
             <div
               key={step.id}
-              className="rounded-2xl overflow-hidden border-2 border-gray-200">
+              className="rounded-md overflow-hidden border-2 border-gray-200">
               {/* Step Header */}
               <button
                 onClick={() => {
@@ -321,9 +317,7 @@ export default function StepsLayout() {
                 <div className="flex items-center gap-4 text-left flex-1">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      index === activeStep
-                        ? "bg-white shadow-lg"
-                        : "bg-gray-100"
+                      index === activeStep ? "bg-white " : "bg-gray-100"
                     }`}>
                     <step.icon
                       className={`w-6 h-6 ${

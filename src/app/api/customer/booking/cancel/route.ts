@@ -12,19 +12,15 @@ export async function PATCH(req: Request) {
       );
     }
 
-    // 🔥 Call backend cancel API
-    const { ok, data } = await backend(
-      `/api/v1/customer/bookings/${bookingId}/cancel`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}), // no reason yet
-      }
-    );
+    const { ok, data } = await backend(`/api/v1/payment/booking/cancel`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId }),
+    });
 
     if (!ok) {
       return NextResponse.json(
-        { error: data || "Cancellation failed" },
+        { error: data?.msg || "Cancellation failed" },
         { status: 400 }
       );
     }
