@@ -1,0 +1,17 @@
+import { backend } from "@/lib/backend";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  try {
+    const { ok, data } = await backend("/api/v1/provider/business", {
+      method: "GET",
+    });
+
+    if (!ok) return NextResponse.json({ msg: "Response is not ok" });
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ msg: "Something went wrong" });
+  }
+}
