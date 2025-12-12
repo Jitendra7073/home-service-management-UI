@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/customer/Header";
 import Footer from "@/components/customer/Footer";
-import TanstackProvider from "./tanstackProvider";
+import TanstackProvider from "../../tanstackProvider";
 
 export const metadata: Metadata = {
   title: "HSM | Customer",

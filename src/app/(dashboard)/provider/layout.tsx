@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/components/customer/Header";
-import TanstackProvider from "./tanstackProvider";
+import TanstackProvider from "../../tanstackProvider";
 
 export const metadata: Metadata = {
   title: "HSM | Customer",
@@ -16,9 +15,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <TanstackProvider>
-          <main className="min-h-screen flex flex-col justify-between">
-            {children}
-          </main>
+            <main className="w-full">
+              {children}
+            </main>
         </TanstackProvider>
       </body>
     </html>

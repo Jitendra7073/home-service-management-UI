@@ -199,8 +199,17 @@ export default function CustomerBookingsPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
           {/* Search Bar */}
-          <div className="mb-6">
-            <div className="flex sm:hidden mb-4">
+          <div className="flex justify-between mb-6 gap-2">
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Input
+                placeholder="Search booking by name or provider..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 h-12 border-gray-300 text-base w-full"
+              />
+            </div>
+            <div className="flex lg:hidden">
               <FiltersPanel
                 mobileFiltersOpen={mobileFiltersOpen}
                 setMobileFiltersOpen={setMobileFiltersOpen}
@@ -213,31 +222,23 @@ export default function CustomerBookingsPage() {
                 filteredBookings={filteredBookings}
               />
             </div>
-
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                placeholder="Search booking by name or provider..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 border-gray-300 text-base w-full"
-              />
-            </div>
           </div>
 
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6">
             {/* Sidebar */}
-            <FiltersPanel
-              mobileFiltersOpen={mobileFiltersOpen}
-              setMobileFiltersOpen={setMobileFiltersOpen}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              resetFilters={resetFilters}
-              data={bookings}
-              filteredBookings={filteredBookings}
-            />
+            <div className="hidden lg:block">
+              <FiltersPanel
+                mobileFiltersOpen={mobileFiltersOpen}
+                setMobileFiltersOpen={setMobileFiltersOpen}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                resetFilters={resetFilters}
+                data={bookings}
+                filteredBookings={filteredBookings}
+              />
+            </div>
 
             {/* BOOKING LIST */}
             <div className="flex-1">

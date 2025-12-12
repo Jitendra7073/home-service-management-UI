@@ -20,7 +20,7 @@ const CategoryList = ({ isVisible, search }: any) => {
   const { data, isError, isLoading, isPending } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await fetch("/api/customer/businessCategories");
+      const res = await fetch("/api/common/businessCategories");
       if (!res.ok) throw new Error("Failed to fetch categories");
       return res.json();
     },

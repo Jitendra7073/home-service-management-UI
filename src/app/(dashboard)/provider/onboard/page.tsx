@@ -1,5 +1,4 @@
 import OnboardSteps from "./onboard-steps";
-// import { getProviderOnboardingStatus } from "@/lib/provider";
 
 const OnBoard = async () => {
   return (

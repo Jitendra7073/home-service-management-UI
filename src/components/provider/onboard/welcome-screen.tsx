@@ -12,18 +12,18 @@ export default function WelcomeScreen() {
 
   useEffect(() => {
     fireConfetti();
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          router.push("/provider/dashboard");
-        }
-        return prev - 1;
-      });
-      fireConfetti();
-    }, 2000);
+    // const timer = setInterval(() => {
+    //   setCountdown((prev) => {
+    //     if (prev <= 1) {
+    //       clearInterval(timer);
+    //       router.push("/provider/dashboard");
+    //     }
+    //     return prev - 1;
+    //   });
+    //   fireConfetti();
+    // }, 2000);
 
-    return () => clearInterval(timer);
+    // return () => clearInterval(timer);
   }, []);
 
   return (

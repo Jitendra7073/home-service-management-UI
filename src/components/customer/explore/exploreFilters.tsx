@@ -11,6 +11,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
@@ -187,81 +195,90 @@ const Filters: React.FC<FiltersProps> = ({
       </div>
 
       {/* Mobile Filters */}
-      <div className="lg:hidden mb-6">
-        <button
-          onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-          className="w-full px-4 py-3 bg-slate-800 text-white rounded-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md">
-          <Filter className="w-5 h-5" />
-          {mobileFilterOpen ? "Hide Filters" : "Show Filters"}
-        </button>
+      <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="outline"
+            className="lg:hidden flex items-center gap-2 border-gray-300 h-auto">
+            <Filter className="w-4 h-4" />
+            Filters
+          </Button>
+        </SheetTrigger>
 
-        {mobileFilterOpen && (
-          <div className="mt-4 bg-white rounded-sm p-6 space-y-6 animate-fade-in shadow-lg border border-gray-200">
+        <SheetContent
+          side="left"
+          className="w-[300px] sm:w-[350px] p-6 overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-gray-600" />
+              Filters
+            </SheetTitle>
+            <SheetDescription>Refine your service search</SheetDescription>
+          </SheetHeader>
+
+          <div className="mt-6 space-y-6 pb-10">
+            {/* RESET FILTERS */}
             {hasActiveFilters && (
               <button
                 onClick={onClearFilters}
                 className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-sm hover:bg-gray-200 transition-colors text-sm font-semibold flex items-center justify-center gap-2">
-                <X className="w-4 h-4" />
-                Reset Filters
+                <X className="w-4 h-4" /> Reset Filters
               </button>
             )}
 
-            {/* MOBILE CATEGORY FILTER */}
+            {/* CATEGORY FILTER */}
             <div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
-                  Categories
-                </h3>
+              <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
+                Categories
+              </h3>
 
-                {/* FULL category list inside dropdown for mobile */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between text-gray-700 font-medium">
-                      Select Categories
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between text-gray-700 font-medium">
+                    Select Categories
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
 
-                  <DropdownMenuContent className="w-64 max-h-72 overflow-y-auto">
-                    <DropdownMenuLabel>Select Categories</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                <DropdownMenuContent className="w-64 max-h-72 overflow-y-auto">
+                  <DropdownMenuLabel>Select Categories</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
 
-                    {categories.map((category: any) => (
-                      <DropdownMenuCheckboxItem
-                        key={category.id}
-                        checked={selectedCategories.includes(category.id)}
-                        onCheckedChange={() => onToggleCategory(category.id)}>
-                        {category.name}
-                      </DropdownMenuCheckboxItem>
+                  {categories.map((category: any) => (
+                    <DropdownMenuCheckboxItem
+                      key={category.id}
+                      checked={selectedCategories.includes(category.id)}
+                      onCheckedChange={() => onToggleCategory(category.id)}>
+                      {category.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Selected categories */}
+              {selectedCategories.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {categories
+                    .filter((cat: any) => selectedCategories.includes(cat.id))
+                    .map((cat: any) => (
+                      <span
+                        key={cat.id}
+                        className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-sm flex items-center gap-1">
+                        {cat.name}
+                        <button
+                          onClick={() => onToggleCategory(cat.id)}
+                          className="text-gray-600 hover:text-gray-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
                     ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Selected categories below dropdown */}
-                {selectedCategories.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {categories
-                      .filter((cat: any) => selectedCategories.includes(cat.id))
-                      .map((cat: any) => (
-                        <span
-                          key={cat.id}
-                          className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-sm flex items-center gap-1">
-                          {cat.name}
-                          <button
-                            onClick={() => onToggleCategory(cat.id)}
-                            className="text-gray-600 hover:text-gray-900">
-                            <X className="w-3 h-3" />
-                          </button>
-                        </span>
-                      ))}
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* MOBILE PRICE FILTER */}
+            {/* PRICE FILTER */}
             <div>
               <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
                 Price
@@ -283,7 +300,7 @@ const Filters: React.FC<FiltersProps> = ({
               </p>
             </div>
 
-            {/* MOBILE RATING FILTER */}
+            {/* RATING FILTER */}
             <div>
               <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
                 Rating
@@ -317,8 +334,8 @@ const Filters: React.FC<FiltersProps> = ({
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 };

@@ -30,11 +30,7 @@ const AddressSchema = z.object({
 
 type AddressFormValues = z.infer<typeof AddressSchema>;
 
-const AddressForm = ({
-  onNext,
-}: {
-  onNext: (values: AddressFormValues) => void;
-}) => {
+const AddressForm = ({ onNext }: { onNext: () => void }) => {
   const [loading, setLoading] = useState(false);
 
   const form = useForm<AddressFormValues>({
@@ -50,31 +46,30 @@ const AddressForm = ({
   });
 
   async function onSubmit(values: AddressFormValues) {
-    console.log("form value :", values);
     try {
       setLoading(true);
 
-      const res = await fetch("/api/provider/address", {
+      const res = await fetch("/api/common/address", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
       const data = await res.json();
-      console.log("Address Form data:", data);
 
       if (!res.ok) {
         toast.error(data.msg || "Unable to create address");
-        setLoading(false);
         return;
       }
 
       toast.success(data.msg || "Address created successfully");
-      setLoading(false);
-      onNext(values);
+
+      // Call onNext which will handle navigation
+      onNext();
     } catch (error) {
-      console.log("Address error:", error);
+      console.error("Address error:", error);
       toast.error("Something went wrong!");
+    } finally {
       setLoading(false);
     }
   }

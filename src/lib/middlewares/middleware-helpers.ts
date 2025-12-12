@@ -1,43 +1,19 @@
-// Route configuration for better scalability
-const ROUTE_CONFIG = {
-  public: ["/auth/login", "/auth/register", "/auth/forgot-password"],
-  roleRedirects: {
-    customer: "/customer",
-    provider: "/provider",
-  },
-  protectedPrefixes: ["/customer", "/provider"],
-} as const;
-
-type UserRole = keyof typeof ROUTE_CONFIG.roleRedirects;
-
-// Helper: Check if route is public
-function isPublicRoute(pathname: string): boolean {
-  return ROUTE_CONFIG.public.includes(pathname);
+export function isPublicRoute(path: string) {
+  return path.startsWith("/auth") || path === "/";
 }
 
-// Helper: Check if route requires authentication
-function isProtectedRoute(pathname: string): boolean {
-  return ROUTE_CONFIG.protectedPrefixes.some((prefix) =>
-    pathname.startsWith(prefix)
-  );
+export function isProtectedRoute(path: string) {
+  return path.startsWith("/provider") || path.startsWith("/customer");
 }
 
-// Helper: Get redirect URL based on user role
-function getRoleBasedRedirect(role: string): string | null {
-  return ROUTE_CONFIG.roleRedirects[role as UserRole] || null;
+export function hasRouteAccess(path: string, role: string) {
+  if (path.startsWith("/provider") && role !== "provider") return false;
+  if (path.startsWith("/customer") && role !== "customer") return false;
+  return true;
 }
 
-// Helper: Check if user has access to the route
-function hasRouteAccess(pathname: string, userRole: string): boolean {
-  const allowedPath = getRoleBasedRedirect(userRole);
-  return allowedPath ? pathname.startsWith(allowedPath) : false;
+export function getRoleBasedRedirect(role: string) {
+  if (role === "provider") return "/provider/dashboard";
+  if (role === "customer") return "/customer/home";
+  return "/auth/login";
 }
-
-export {
-  isPublicRoute,
-  isProtectedRoute,
-  getRoleBasedRedirect,
-  hasRouteAccess,
-};
-export type { UserRole };
-export default ROUTE_CONFIG;

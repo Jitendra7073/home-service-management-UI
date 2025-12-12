@@ -1,64 +1,38 @@
+// provider-checks.ts
 import { NextRequest } from "next/server";
 
-// Address check
+async function fetchJSON(req: NextRequest, endpoint: string) {
+  try {
+    const baseUrl = req.nextUrl.origin;
+
+    const res = await fetch(`${baseUrl}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: req.headers.get("cookie") || "",
+      },
+      credentials: "include",
+    });
+
+    const data = await res.json();
+    return data || null;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return null;
+  }
+}
+
 export async function getProviderAddress(req: NextRequest) {
-  try {
-    const baseUrl = req.nextUrl.origin;
-
-    const res = await fetch(`${baseUrl}/api/provider/address`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: req.headers.get("cookie") || "",
-      },
-      credentials: "include",
-    });
-
-    return await res.json();
-  } catch (error) {
-    console.error("Address fetch error:", error);
-    return null;
-  }
+  const res = await fetchJSON(req, "/api/common/address");
+  return res?.address ?? null;
 }
 
-// Business check
 export async function getProviderBusiness(req: NextRequest) {
-  try {
-    const baseUrl = req.nextUrl.origin;
-
-    const res = await fetch(`${baseUrl}/api/provider/business`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: req.headers.get("cookie") || "",
-      },
-      credentials: "include",
-    });
-
-    return await res.json();
-  } catch (error) {
-    console.error("Business fetch error:", error);
-    return null;
-  }
+  const res = await fetchJSON(req, "/api/provider/business");
+  return res?.business ?? null;
 }
 
-// Slots check
 export async function getProviderSlots(req: NextRequest) {
-  try {
-    const baseUrl = req.nextUrl.origin;
-
-    const res = await fetch(`${baseUrl}/api/provider/slots`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: req.headers.get("cookie") || "",
-      },
-      credentials: "include",
-    });
-
-    return await res.json();
-  } catch (error) {
-    console.error("Slots fetch error:", error);
-    return null;
-  }
+  const res = await fetchJSON(req, "/api/provider/slots");
+  return Array.isArray(res?.slots) ? res.slots : null;
 }

@@ -9,7 +9,6 @@ import BusinessProfileForm from "@/components/provider/onboard/business-form";
 import SlotForm from "@/components/provider/onboard/slot-form";
 import WelcomeScreen from "@/components/provider/onboard/welcome-screen";
 
-// Map step names to step IDs
 const STEP_MAP: Record<string, number> = {
   address: 1,
   business: 2,
@@ -29,7 +28,8 @@ export default function OnboardSteps() {
   const router = useRouter();
 
   const [step, setStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState(new Set<number>());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const steps = [
     { id: 1, label: "Address", icon: MapPin },
@@ -38,40 +38,98 @@ export default function OnboardSteps() {
     { id: 4, label: "Complete", icon: Check },
   ];
 
-  // -------- AUTO-SET INITIAL STEP + AUTO-COMPLETE PREVIOUS STEPS ----------
+  // Fetch profile status and validate current step
   useEffect(() => {
-    const stepParam = searchParams.get("step");
+    const validateStep = async () => {
+      try {
+        setLoading(true);
+        const stepParam = searchParams.get("step");
 
-    if (stepParam && STEP_MAP[stepParam]) {
-      const stepId = STEP_MAP[stepParam];
+        // Fetch current profile completion status
+        const [addressRes, businessRes, slotRes] = await Promise.all([
+          fetch("/api/common/address").then((r) => r.json()),
+          fetch("/api/provider/business").then((r) => r.json()),
+          fetch("/api/provider/slots").then((r) => r.json()),
+        ]);
 
-      // Set active step
-      setStep(stepId);
+        const hasAddress = addressRes && addressRes.address ? true : false;
+        const hasBusiness = businessRes && businessRes.business ? true : false;
+        const hasSlots =
+          slotRes && Array.isArray(slotRes.slots) && slotRes.slots.length > 0
+            ? true
+            : false;
 
-      // 🔥 Auto-complete all steps before this one
-      const completed = new Set<number>();
-      for (let i = 1; i < stepId; i++) {
-        completed.add(i);
+        let nextIncompleteStep = 1;
+        if (hasAddress) nextIncompleteStep = 2;
+        if (hasAddress && hasBusiness) nextIncompleteStep = 3;
+        if (hasAddress && hasBusiness && hasSlots) nextIncompleteStep = 4;
+
+        const requestedStepId = stepParam ? STEP_MAP[stepParam] : null;
+
+        if (requestedStepId && requestedStepId < nextIncompleteStep) {
+          router.push(
+            `/provider/onboard?role=provider&step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+          );
+          return;
+        }
+
+        // If valid step parameter, use it
+        if (requestedStepId && requestedStepId <= nextIncompleteStep) {
+          setStep(requestedStepId);
+        } else {
+          // Otherwise go to next incomplete step
+          setStep(nextIncompleteStep);
+          if (!stepParam) {
+            router.push(
+              `/provider/onboard?role=provider&step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+            );
+          }
+        }
+
+        setError(null);
+      } catch (err) {
+        setError("Failed to load onboarding status");
+      } finally {
+        setLoading(false);
       }
-      setCompletedSteps(completed);
-    }
-  }, [searchParams]);
-  // ------------------------------------------------------------------------
+    };
+
+    validateStep();
+  }, [searchParams, router]);
 
   const handleNext = () => {
-    // Mark current step as completed
-    setCompletedSteps((prev) => new Set([...prev, step]));
-
-    // Go to next step
     const nextStepId = step + 1;
     const nextStepName = REVERSE_STEP_MAP[nextStepId];
 
     router.push(`/provider/onboard?role=provider&step=${nextStepName}`);
-    setStep(nextStepId);
   };
 
-  const isCompleted = (id: number) => completedSteps.has(id);
+  const isCompleted = (id: number) => {
+    return id < step;
+  };
+
   const isActive = (id: number) => id === step;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading your progress...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex justify-center px-4 sm:px-6 md:px-8 py-8">
@@ -88,7 +146,6 @@ export default function OnboardSteps() {
 
                 return (
                   <div key={s.id} className="flex items-center">
-                    {/* Step Item */}
                     <div className="flex flex-col items-center">
                       <div
                         className={`
@@ -124,7 +181,6 @@ export default function OnboardSteps() {
                       </span>
                     </div>
 
-                    {/* Step Connector */}
                     {index < steps.length - 1 && (
                       <div
                         className={`

@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 // ------------------------------
 // Zod Schema
@@ -170,10 +171,46 @@ export default function BusinessProfileForm({
   };
 
   async function onSubmit(values: BusinessFormValues) {
-    console.log("Business Profile Form Values:", values);
-    setLoading(true);
-    onNext(values);
-    setLoading(false);
+    try {
+      setLoading(true);
+
+      const payload: any = { ...values };
+
+      if (!payload.websiteURL || payload.websiteURL.trim() === "") {
+        delete payload.websiteURL;
+      }
+
+      if (
+        Array.isArray(payload.socialLinks) &&
+        payload.socialLinks.length === 0
+      ) {
+        delete payload.socialLinks;
+      }
+
+      console.log("Final Payload:", payload);
+
+      const res = await fetch("/api/provider/business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.msg || "Unable to create business");
+        return;
+      }
+
+      toast.success(data.msg || "Business created successfully");
+
+      onNext(payload);
+    } catch (error) {
+      console.error("Business error:", error);
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const headerImage = "/images/p/business-profile.avif";

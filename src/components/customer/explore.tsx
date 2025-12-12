@@ -203,21 +203,42 @@ const Explore: React.FC = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
-        <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="flex justify-between mb-6 gap-2">
+          <div className="relative w-full">
+            <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          </div>
+          <div className="flex lg:hidden">
+            <Filters
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onToggleCategory={toggleCategory}
+              priceRange={priceRange}
+              onPriceChange={setPriceRange}
+              rating={rating}
+              onRatingChange={setRating}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
+              mobileFilterOpen={mobileFilterOpen}
+              setMobileFilterOpen={setMobileFilterOpen}
+            />
+          </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          <Filters
-            categories={categories}
-            selectedCategories={selectedCategories}
-            onToggleCategory={toggleCategory}
-            priceRange={priceRange}
-            onPriceChange={setPriceRange}
-            rating={rating}
-            onRatingChange={setRating}
-            hasActiveFilters={hasActiveFilters}
-            onClearFilters={clearFilters}
-            mobileFilterOpen={mobileFilterOpen}
-            setMobileFilterOpen={setMobileFilterOpen}
-          />
+          <div className="hidden lg:block">
+            <Filters
+              categories={categories}
+              selectedCategories={selectedCategories}
+              onToggleCategory={toggleCategory}
+              priceRange={priceRange}
+              onPriceChange={setPriceRange}
+              rating={rating}
+              onRatingChange={setRating}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={clearFilters}
+              mobileFilterOpen={mobileFilterOpen}
+              setMobileFilterOpen={setMobileFilterOpen}
+            />
+          </div>
           <div className="lg:col-span-3">
             <Results
               services={paginatedServices}

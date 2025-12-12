@@ -33,7 +33,7 @@ const Address: React.FC<Addressprops> = ({
   const { data, isLoading, isError, isPending } = useQuery({
     queryKey: ["address"],
     queryFn: async () => {
-      const res = await fetch("/api/customer/address");
+      const res = await fetch("/api/common/address");
       if (res.status === 404) return null;
       return await res.json();
     },
@@ -43,7 +43,7 @@ const Address: React.FC<Addressprops> = ({
 
   const deleteAddress = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/customer/address`, {
+      const res = await fetch(`/api/common/address`, {
         method: "DELETE",
       });
       const result = await res.json();

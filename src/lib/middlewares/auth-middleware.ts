@@ -3,25 +3,60 @@ import { getAuthToken, getUserByToken } from "../get-token";
 import {
   isPublicRoute,
   isProtectedRoute,
-  getRoleBasedRedirect,
   hasRouteAccess,
-} from "../middlewares/middleware-helpers";
-import { providerOnboardingMiddleware } from "../middlewares/provider-onboard-checks";
+  getRoleBasedRedirect,
+} from "./middleware-helpers";
+
+import { providerOnboardingMiddleware } from "./provider-onboard-checks";
 
 const authMiddleware = async (req: any) => {
   const { pathname } = req.nextUrl;
 
   try {
-    const token = await getAuthToken();
+    const token = await getAuthToken(req);
 
-    // Redirect unauthenticated users from home page to login
+    // -----------------------------------------
+    // Handle root "/" route
+    // -----------------------------------------
     if (pathname === "/") {
       if (!token) {
         return NextResponse.redirect(new URL("/auth/login", req.url));
       }
+
+      const { user, error } = await getUserByToken(token);
+
+      if (error || !user) {
+        const loginUrl = new URL("/auth/login", req.url);
+        const res = NextResponse.redirect(loginUrl);
+        res.cookies.delete("token");
+        return res;
+      }
+
+      // Customer root redirect
+      if (user.role === "customer") {
+        return NextResponse.redirect(new URL("/customer/home", req.url));
+      }
+
+      // Provider root redirect with onboarding check
+      if (user.role === "provider") {
+        const onboardRedirect = await providerOnboardingMiddleware(
+          req,
+          user.role,
+          user.id,
+          token
+        );
+
+        if (onboardRedirect) return onboardRedirect;
+
+        return NextResponse.redirect(new URL("/provider/dashboard", req.url));
+      }
+
+      return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
-    // No token - handle public/protected routes
+    // -----------------------------------------
+    // No token found
+    // -----------------------------------------
     if (!token) {
       if (isPublicRoute(pathname)) {
         return NextResponse.next();
@@ -36,66 +71,61 @@ const authMiddleware = async (req: any) => {
       return NextResponse.next();
     }
 
-    // Token exists - validate user
-    const { user } = await getUserByToken(token);
+    // -----------------------------------------
+    // Validate token
+    // -----------------------------------------
+    const { user, error } = await getUserByToken(token);
 
-    // Invalid token or user not found
-    if (!user) {
+    if (error || !user) {
       const loginUrl = new URL("/auth/login", req.url);
-      const response = NextResponse.redirect(loginUrl);
-      response.cookies.delete("token");
-      return response;
+      const res = NextResponse.redirect(loginUrl);
+      res.cookies.delete("token");
+      return res;
     }
 
-    console.log("User role:", user.role);
-
-    // Authenticated users accessing public routes - redirect to dashboard
+    // Public route but authenticated
     if (isPublicRoute(pathname)) {
-      const roleRedirect = getRoleBasedRedirect(user.role);
-      if (roleRedirect) {
-        return NextResponse.redirect(new URL(roleRedirect, req.url));
-      }
+      return NextResponse.redirect(
+        new URL(getRoleBasedRedirect(user.role), req.url)
+      );
     }
 
-    // Check if user has access to protected routes
+    // -----------------------------------------
+    // Role access check
+    // -----------------------------------------
     if (isProtectedRoute(pathname) && !hasRouteAccess(pathname, user.role)) {
-      const roleRedirect = getRoleBasedRedirect(user.role);
-      if (roleRedirect) {
-        return NextResponse.redirect(new URL(roleRedirect, req.url));
-      }
-      return NextResponse.redirect(new URL("/403", req.url));
+      return NextResponse.redirect(
+        new URL(getRoleBasedRedirect(user.role), req.url)
+      );
     }
 
-    // Provider onboarding check - run before allowing access to provider routes
+    // -----------------------------------------
+    // Provider onboarding check
+    // -----------------------------------------
     if (user.role === "provider") {
-      const onboardingResponse = await providerOnboardingMiddleware(
+      const onboardRedirect = await providerOnboardingMiddleware(
         req,
         user.role,
         user.id,
         token
       );
 
-      // If onboarding middleware returns a redirect, use it
-      if (onboardingResponse.status !== 200) {
-        return onboardingResponse;
-      }
+      if (onboardRedirect) return onboardRedirect;
     }
 
-    // User authenticated and authorized - allow access
     const response = NextResponse.next();
     response.headers.set("x-user-id", user.id);
     response.headers.set("x-user-role", user.role);
 
     return response;
-  } catch (error) {
-    console.error("Middleware error:", error);
+  } catch (err) {
+    console.error("Middleware error:", err);
 
-    // On error, allow public routes but protect others
-    if (isPublicRoute(pathname)) {
-      return NextResponse.next();
-    }
+    const loginUrl = new URL("/auth/login", req.url);
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete("token");
 
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    return response;
   }
 };
 

@@ -122,7 +122,7 @@ export default function ServiceDetailPage() {
           {/* LEFT SIDE CONTENT */}
           <div className="lg:col-span-2 space-y-6">
             {/* SERVICE HEADER CARD */}
-            <div className="bg-white rounded-sm shadow-xs border">
+            <div className="bg-white rounded-md overflow-hidden shadow-xs border">
               <div className="bg-gray-800 px-6 py-6 text-white">
                 <div className="space-y-4">
                   <p className="text-xs uppercase tracking-widest text-gray-400">
