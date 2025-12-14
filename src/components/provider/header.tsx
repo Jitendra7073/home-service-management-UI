@@ -1,9 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, PlusCircleIcon } from "lucide-react";
 
-export default function BookingHeader({ title, description }: { title?: string, description?: string }) {
+interface BookingHeaderProps {
+    title?: string;
+    description?: string;
+    isVisibleAddServiceButton?: boolean;
+    onAddServiceClick?: () => void;
+}
+
+export default function BookingHeader({
+    title,
+    description,
+    isVisibleAddServiceButton = false,
+    onAddServiceClick,
+}: BookingHeaderProps) {
     return (
         <div
             className="
@@ -26,12 +38,22 @@ export default function BookingHeader({ title, description }: { title?: string, 
 
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm">
-                        <Download className="w-4 h-4 mr-2" />
+                        <Download className="w-4 h-4 mr-1" />
                         Export
                     </Button>
+
+                    {isVisibleAddServiceButton && (
+                        <Button
+                            size="sm"
+                            className="bg-blue-600 text-white hover:bg-blue-500"
+                            onClick={onAddServiceClick}
+                        >
+                            <PlusCircleIcon className="w-4 h-4 mr-1" />
+                            Add New Service
+                        </Button>
+                    )}
                 </div>
             </div>
-
         </div>
     );
 }
