@@ -1,7 +1,5 @@
-import React from "react";
+import DashboardComponents from "./dashboard";
 
-const Dashboard = ({ childern }: { childern: React.ReactNode }) => {
-  return <div>{childern}</div>;
-};
-
-export default Dashboard;
+export default function Dashboard() {
+  return <DashboardComponents />
+}

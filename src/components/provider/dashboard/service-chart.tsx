@@ -1,6 +1,5 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 import {
@@ -8,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -17,25 +15,65 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Spinner } from "@/components/ui/spinner";
+import Image from "next/image";
 
-export const description = "Top performing services chart";
-
-const chartData = [
-  { service: "Haircut", visitors: 420, fill: "var(--chart-1)" },
-  { service: "Facial", visitors: 310, fill: "var(--chart-2)" },
-  { service: "Massage", visitors: 290, fill: "var(--chart-3)" },
-  { service: "Pedicure", visitors: 180, fill: "var(--chart-4)" },
-  { service: "Hair Color", visitors: 140, fill: "var(--chart-5)" },
-];
+interface ServiceChartProps {
+  data: {
+    service: string;
+    totalBookings: number;
+  }[];
+  isLoading: boolean;
+}
 
 const chartConfig = {
-  visitors: {
+  totalBookings: {
     label: "Bookings",
   },
 } satisfies ChartConfig;
 
-export function ServiceChart() {
-  const totalBookings = chartData.reduce((sum, s) => sum + s.visitors, 0);
+const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
+  if (isLoading) {
+    return (
+      <Card className="w-full shadow-sm border rounded-md">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">Popular Services</CardTitle>
+          <CardDescription>Top 5 most booked services</CardDescription>
+        </CardHeader>
+        <CardContent className="w-full h-64 flex items-center justify-center">
+          <div className="flex flex-col justify-center items-center space-y-2 text-gray-500"><Spinner className="h-8 w-8" /><span className="text-sm">Loading Chart Data...</span></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+
+  if (!data || data.length === 0) {
+    return (
+      <Card className="w-full shadow-sm border rounded-md">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold">
+            Popular Services
+          </CardTitle>
+          <CardDescription>No booking data available</CardDescription>
+          <CardContent className="w-full h-64 flex items-center justify-center">
+            <Image
+              src="/images/p/no-graph-data.png"
+              alt="No Data"
+              width={200}
+              height={200}
+              className="opacity-50"
+            />
+          </CardContent>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  const chartData = data.map((item, index) => ({
+    ...item,
+    fill: `var(--chart-${(index % 5) + 1})`,
+  }));
 
   return (
     <Card className="w-full shadow-sm border rounded-md">
@@ -43,7 +81,9 @@ export function ServiceChart() {
         <CardTitle className="text-lg font-semibold">
           Popular Services
         </CardTitle>
-        <CardDescription>Most booked services this month</CardDescription>
+        <CardDescription>
+          Top 5 most booked services
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -52,38 +92,34 @@ export function ServiceChart() {
             accessibilityLayer
             data={chartData}
             layout="vertical"
-            margin={{ left: 10, right: 20 }}
+            margin={{ left: 12, right: 24 }}
           >
-            {/* Service Names */}
             <YAxis
               dataKey="service"
               type="category"
               tickLine={false}
               axisLine={false}
-              tickMargin={12}
+              tickMargin={10}
               tick={{ fontSize: 13 }}
             />
 
-            {/* Count */}
-            <XAxis dataKey="visitors" type="number" hide />
+            <XAxis dataKey="totalBookings" type="number" hide />
 
-            {/* Tooltip */}
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}
             />
 
-            {/* Bar */}
             <Bar
-              dataKey="visitors"
+              dataKey="totalBookings"
               layout="vertical"
               radius={[6, 6, 6, 6]}
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
-
-     
     </Card>
   );
-}
+};
+
+export default ServiceChart;

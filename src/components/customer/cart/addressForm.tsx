@@ -39,7 +39,7 @@ export default function AddAddressForm() {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/customer/address", {
+      const res = await fetch("/api/common/address", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

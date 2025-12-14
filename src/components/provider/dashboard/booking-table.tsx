@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,15 +10,12 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -35,57 +31,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import Link from "next/link";
 
-export const bookings: Booking[] = [
-  {
-    id: "BKG001",
-    customer: "John Doe",
-    service: "Haircut",
-    dateTime: "2025-02-10 10:30 AM",
-    amount: 350,
-    payment: "paid",
-    status: "completed",
-  },
-  {
-    id: "BKG002",
-    customer: "Priya Sharma",
-    service: "Facial",
-    dateTime: "2025-02-10 11:00 AM",
-    amount: 999,
-    payment: "pending",
-    status: "pending",
-  },
-  {
-    id: "BKG003",
-    customer: "Amit Patel",
-    service: "Massage Therapy",
-    dateTime: "2025-02-09 04:00 PM",
-    amount: 1500,
-    payment: "paid",
-    status: "confirmed",
-  },
-  {
-    id: "BKG004",
-    customer: "Sara Wilson",
-    service: "Pedicure",
-    dateTime: "2025-02-08 02:30 PM",
-    amount: 499,
-    payment: "failed",
-    status: "cancelled",
-  },
-  {
-    id: "BKG005",
-    customer: "Rahul Singh",
-    service: "Hair Color",
-    dateTime: "2025-02-07 03:00 PM",
-    amount: 1900,
-    payment: "paid",
-    status: "completed",
-  },
-];
+/* ================= Types ================= */
 
-export type Booking = {
+type Booking = {
   id: string;
   customer: string;
   service: string;
@@ -95,8 +48,66 @@ export type Booking = {
   status: "pending" | "confirmed" | "completed" | "cancelled";
 };
 
-const StatusDropdown = ({ value, onChange }: any) => {
-  const statuses = ["pending", "confirmed", "completed", "cancelled"];
+/* ================= Status Dropdown ================= */
+
+function StatusDropdown({
+  bookingId,
+  currentStatus,
+  paymentStatus,
+  queryClient,
+}: {
+  bookingId: string;
+  currentStatus: Booking["status"];
+  paymentStatus: Booking["payment"];
+  queryClient: ReturnType<typeof useQueryClient>;
+}) {
+  const statuses: Booking["status"][] = [
+    "pending",
+    "confirmed",
+    "completed",
+    "cancelled",
+  ];
+
+  // Business rules for disabling options
+  const isDisabled = (status: Booking["status"]) => {
+    if (currentStatus === "completed") return true;
+    if (paymentStatus === "paid" && status === "pending") return true;
+    if (status === currentStatus) return true;
+    return false;
+  };
+
+  // Update booking status
+  const updateStatus = async (status: Booking["status"]) => {
+    if (isDisabled(status)) return;
+
+    try {
+      const res = await fetch(
+        `/api/provider/bookings`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId, status }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data?.error || "Status update failed");
+        return;
+      }
+
+      toast.success("Booking status updated");
+
+      // Refetch booking list without reloading the page
+      queryClient.invalidateQueries({
+        queryKey: ["provider-bookings"],
+      });
+    } catch (error) {
+      console.error("Status update error:", error);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -104,43 +115,35 @@ const StatusDropdown = ({ value, onChange }: any) => {
         <Button
           variant="ghost"
           size="sm"
-          className="capitalize outline-none font-normal ">
-          {value} <ChevronDown className="w-4 h-4 ml-1" />
+          disabled={currentStatus === "completed"}
+          className="capitalize"
+        >
+          {currentStatus}
+          <ChevronDown className="w-4 h-4 ml-1" />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent>
         {statuses.map((status) => (
           <DropdownMenuItem
             key={status}
+            disabled={isDisabled(status)}
             className="capitalize"
-            onClick={() => onChange(status)}>
+            onClick={() => updateStatus(status)}
+          >
             {status}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}
 
-export const columns: ColumnDef<Booking>[] = [
-  {
-    accessorKey: "customer",
-    header: "Customer",
-    cell: ({ row }) => (
-      <div>
-        <Link
-          href={"/provider/dashboard"}
-          className="hover:text-blue-700 font-medium hover:underline">
-          {row.getValue("customer")}
-        </Link>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "service",
-    header: "Service",
-    cell: ({ row }) => <div>{row.getValue("service")}</div>,
-  },
+/* ================= Columns ================= */
+
+const columns: ColumnDef<Booking>[] = [
+  { accessorKey: "customer", header: "Customer" },
+  { accessorKey: "service", header: "Service" },
   {
     accessorKey: "dateTime",
     header: ({ column }) => (
@@ -148,53 +151,43 @@ export const columns: ColumnDef<Booking>[] = [
         Date & Time <ArrowUpDown className="w-4 h-4 ml-2" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("dateTime")}</div>,
   },
   {
     accessorKey: "amount",
     header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = row.getValue("amount") as number;
-      return (
-        <div className="text-right font-medium">
-          ₹{Number(amount).toLocaleString("en-IN")}
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="text-right font-medium">
+        ₹{Number(row.getValue("amount")).toLocaleString("en-IN")}
+      </div>
+    ),
   },
   {
     accessorKey: "payment",
     header: "Payment",
     cell: ({ row }) => {
-      const val = row.getValue("payment") as string;
-      const colors: any = {
+      const value = row.getValue("payment") as string;
+      const colors: Record<string, string> = {
         paid: "text-green-600",
         pending: "text-yellow-600",
         failed: "text-red-600",
       };
-
-      return <span className={`capitalize ${colors[val]}`}>{val}</span>;
+      return <span className={`capitalize ${colors[value]}`}>{value}</span>;
     },
   },
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row, table }) => {
-      const current = row.getValue("status");
-      return (
-        <StatusDropdown
-          value={current}
-          onChange={(newStatus: string) => {
-            row.original.status = newStatus;
-            table.options.meta?.updateData(row.index, "status", newStatus);
-          }}
-        />
-      );
-    },
+    cell: ({ row, table }) => (
+      <StatusDropdown
+        bookingId={row.original.id}
+        currentStatus={row.original.status}
+        paymentStatus={row.original.payment}
+        queryClient={table.options.meta?.queryClient}
+      />
+    ),
   },
   {
     id: "actions",
-    enableHiding: false,
     cell: ({ row }) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -204,68 +197,87 @@ export const columns: ColumnDef<Booking>[] = [
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(row.original.id)}>
-            Copy Booking ID
+          <DropdownMenuItem>
+            <Link href={`/provider/bookings/${row.original.id}`} className="w-full block">
+              View Details
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>View Customer</DropdownMenuItem>
-          <DropdownMenuItem>View Booking Details</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => navigator.clipboard.writeText(row.original.id)}
+          >
+            Copy Booking ID
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),
   },
 ];
 
-export function BookingTable() {
+/* ================= Component ================= */
+
+export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  const table = useReactTable({
-    data: bookings,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    meta: {
-      updateData: (rowIndex: number, columnId: string, value: any) => {
-        bookings[rowIndex][columnId] = value;
-      },
+  const queryClient = useQueryClient();
+
+  // Fetch bookings
+  const { data, isLoading } = useQuery({
+    queryKey: ["provider-bookings"],
+    queryFn: async () => {
+      const res = await fetch("/api/provider/bookings", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch bookings");
+      return res.json();
     },
+  });
+
+  // Transform API response for table
+  const bookingData: Booking[] = React.useMemo(() => {
+    if (!data) return [];
+    return data.map((b: any) => ({
+      id: b.id,
+      customer: b.user?.name ?? "Unknown",
+      service: b.service?.name ?? "Unknown",
+      dateTime: new Date(b.createdAt).toLocaleString("en-IN"),
+      amount: b.totalAmount,
+      payment: b.paymentStatus.toLowerCase(),
+      status: b.bookingStatus.toLowerCase(),
+    }));
+  }, [data]);
+
+  const table = useReactTable({
+    data: bookingData,
+    columns,
+    meta: { queryClient },
+    state: {
+      sorting,
+      globalFilter,
+      pagination: { pageIndex: 0, pageSize: NumberOfRows },
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      globalFilter,
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <div className="w-full space-y-4">
-      {/* FILTER BAR */}
-      <div className="flex flex-wrap justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="font-semibold">Booking List</h2>
         <Input
           placeholder="Search bookings..."
-          value={globalFilter ?? ""}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          value={globalFilter}
+          onChange={(e) => {
+            setGlobalFilter(e.target.value);
+            table.setPageIndex(0);
+          }}
           className="max-w-sm"
         />
       </div>
 
-      {/* TABLE */}
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader>
@@ -273,12 +285,10 @@ export function BookingTable() {
               <TableRow key={group.id}>
                 {group.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -286,7 +296,13 @@ export function BookingTable() {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="text-center py-6">
+                  Loading bookings...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
@@ -301,9 +317,7 @@ export function BookingTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-10">
+                <TableCell colSpan={columns.length} className="text-center py-10">
                   No bookings found.
                 </TableCell>
               </TableRow>
@@ -312,22 +326,29 @@ export function BookingTable() {
         </Table>
       </div>
 
-      {/* PAGINATION */}
-      <div className="flex justify-end gap-2 py-4">
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={!table.getCanPreviousPage()}
-          onClick={() => table.previousPage()}>
-          Previous
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={!table.getCanNextPage()}
-          onClick={() => table.nextPage()}>
-          Next
-        </Button>
+      <div className="flex justify-between items-center py-4">
+        <p className="text-sm text-muted-foreground">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -50,7 +50,7 @@ const CustomerProfilePage = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      const res = await fetch("/api/customer/profile", { cache: "no-store" });
+      const res = await fetch("/api/common/profile", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch profile");
       return (await res.json()) as any;
     },
@@ -80,7 +80,7 @@ const CustomerProfilePage = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/customer/profile", {
+      const res = await fetch("/api/common/profile", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: user.id }),

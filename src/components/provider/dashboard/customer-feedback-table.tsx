@@ -22,10 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-/* ====================== */
-/*  FEEDBACK TYPES + DATA */
-/* ====================== */
-
 export type Feedback = {
   id: string;
   name: string;
@@ -44,10 +40,6 @@ const feedbackData: Feedback[] = [
 /* WEEKLY FILTER */
 const isWithin7Days = (date: string) =>
   Date.now() - new Date(date).getTime() < 7 * 24 * 60 * 60 * 1000;
-
-/* ====================== */
-/*      COLUMNS           */
-/* ====================== */
 
 export const feedbackColumns: ColumnDef<Feedback>[] = [
   {
@@ -82,15 +74,9 @@ export const feedbackColumns: ColumnDef<Feedback>[] = [
       }),
   },
 ];
-
-/* ====================== */
-/*    FEEDBACK TABLE      */
-/* ====================== */
-
 export default function FeedbackTable() {
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  // FIX 1: memoized data – prevents lag
   const weeklyFeedback = React.useMemo(
     () => feedbackData.filter((f) => isWithin7Days(f.date)),
     []

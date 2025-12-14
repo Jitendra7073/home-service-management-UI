@@ -39,7 +39,7 @@ const Address: React.FC<Addressprops> = ({
     },
   });
 
-  const address = data;
+  const address = data?.address;
 
   const deleteAddress = useMutation({
     mutationFn: async () => {
@@ -103,10 +103,9 @@ const Address: React.FC<Addressprops> = ({
           <div onClick={() => setSelectedAddress(address.id)}>
             <div
               className={`flex items-center justify-between gap-4 p-4 rounded-md border shadow-sm hover:shadow-md cursor-pointer
-                ${
-                  selectedAddress === address.id
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-200 bg-white"
+                ${selectedAddress === address.id
+                  ? "border-green-500 bg-green-50"
+                  : "border-gray-200 bg-white"
                 }`}>
               <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-3">
@@ -115,7 +114,7 @@ const Address: React.FC<Addressprops> = ({
                 </div>
 
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  {address.street}, {address.city}, {address.state},{" "}
+                  {address.street}, {address.city}, {address.state},
                   {address.postalCode}, {address.country}
                 </p>
 

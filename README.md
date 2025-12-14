@@ -36,3 +36,5 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 Testing Stripe Payment : "C:\Users\EnactOn Technologies\Downloads\stripe_1.33.0_windows_x86_64\stripe.exe" listen --forward-to localhost:5000/api/v1/payment/webhook
+
+"C:\Users\jeets\Downloads\stripe_1.33.0_windows_x86_64\stripe.exe" listen --forward-to localhost:5000/api/v1/payment/webhook
