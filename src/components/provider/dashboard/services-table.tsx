@@ -196,7 +196,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
 
               <DropdownMenuItem>
                 <Link
-                  href={`/provider/services/${item.id}`}
+                  href={`/provider/dashboard/services/${item.id}`}
                 >
                   View Service
                 </Link>

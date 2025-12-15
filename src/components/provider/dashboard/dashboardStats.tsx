@@ -13,12 +13,13 @@ const QuickCounts = (
     error: any
   }
 ) => {
+  console.log("data", data)
 
   const dashboardStats = [
     {
       title: `Monthly Analytics - ${data?.monthlyAnalysis[0]?.month ?? ''}`,
-      value: `₹ ${data?.monthlyAnalysis[0].earnings ?? 0}`,
-      growth: `${data?.monthlyAnalysis[0].bookings ?? 0} bookings`,
+      value: `₹ ${data?.monthlyAnalysis.length > 0 ? data?.monthlyAnalysis[0].earnings : 0}`,
+      growth: `${data?.monthlyAnalysis.length > 0 ? data?.monthlyAnalysis[0].bookings : 0} bookings`,
       icon: BarChart,
       linkText: "View analytics",
     },

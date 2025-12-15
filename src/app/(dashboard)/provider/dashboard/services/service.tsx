@@ -1,7 +1,7 @@
 "use client"
 import ServicesTable from "@/components/provider/dashboard/services-table";
 import BookingHeader from "@/components/provider/header";
-import AddServiceModal from "@/components/provider/services/add-service-form";
+import AddServiceModal from "@/components/provider/services/create/AddServiceModal";
 import ServiceStatsCards from "@/components/provider/services/quick-card";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
