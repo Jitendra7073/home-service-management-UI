@@ -9,7 +9,7 @@ import Results, {
   ExtendedService,
 } from "@/components/customer/explore/exploreResults";
 import Pagination from "@/components/customer/explore/explorePagination";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Zap } from "lucide-react";
 
@@ -64,6 +64,8 @@ interface Provider {
 }
 
 const Explore: React.FC = () => {
+  const queryClient = useQueryClient();
+
   const { data, isLoading, isError, isPending, error } = useQuery({
     queryKey: ["providers"],
     queryFn: async (): Promise<Provider[]> => {
@@ -99,6 +101,8 @@ const Explore: React.FC = () => {
         cats.add(service.category.name);
       });
     });
+    queryClient.invalidateQueries(["providers"]);
+
     return Array.from(cats);
   }, [providers]);
 
@@ -116,15 +120,18 @@ const Explore: React.FC = () => {
 
     providers.forEach((provider) => {
       provider.businessProfile?.services.forEach((service) => {
-        services.push({
-          ...service,
-          businessId: provider.businessProfile!.id,
-          providerId: provider.id,
-          providerName: provider.name,
-          rating: provider.rating,
-        });
+        if (!service.isActive) return;
+        else
+          services.push({
+            ...service,
+            businessId: provider.businessProfile!.id,
+            providerId: provider.id,
+            providerName: provider.name,
+            rating: provider.rating,
+          });
       });
     });
+    queryClient.invalidateQueries(["providers"]);
 
     return services;
   }, [providers]);

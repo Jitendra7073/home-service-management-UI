@@ -187,8 +187,6 @@ export default function BusinessProfileForm({
         delete payload.socialLinks;
       }
 
-      console.log("Final Payload:", payload);
-
       const res = await fetch("/api/provider/business", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

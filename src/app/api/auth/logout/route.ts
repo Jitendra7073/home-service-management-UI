@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST() {
-  const res = NextResponse.json({ message: "Logged out" });
+  const res = NextResponse.json({success:true, message: "Logged out" });
 
   // Remove cookie
   res.cookies.set("token", "", { path: "/", expires: new Date(0) });

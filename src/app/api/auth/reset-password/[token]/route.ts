@@ -6,7 +6,6 @@ export async function POST(
   { params }: { params: { token: string } }
 ) {
   const {token} = await params;
-  console.log("Reset password API token:", token);
 
   const body = await req.json();
 

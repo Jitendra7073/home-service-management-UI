@@ -14,7 +14,6 @@ interface CardProps {
   value: string;
   growth: string;
   icon?: any;
-  linkText: string;
   isLoading?: boolean;
 }
 
@@ -23,7 +22,6 @@ const QuickCountCard: React.FC<CardProps> = ({
   value,
   growth,
   icon: Icon,
-  linkText,
   isLoading = true,
 }) => {
 
@@ -79,20 +77,12 @@ const QuickCountCard: React.FC<CardProps> = ({
         <div className="text-3xl font-bold tracking-tight text-gray-900">
           {value}
         </div>
-
-        <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
-          {growth}
-        </p>
       </CardContent>
 
       <CardFooter className="flex justify-between items-center ">
-        <button
-          className="
-            text-sm font-medium text-gray-700 hover:text-blue-700 hover:underline cursor-pointer 
-            flex items-center gap-1 transition-all hover:gap-3 
-          ">
-          {linkText} <ArrowRight className="w-4 h-4" />
-        </button>
+        <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
+          {growth}
+        </p>
       </CardFooter>
     </Card>
   );

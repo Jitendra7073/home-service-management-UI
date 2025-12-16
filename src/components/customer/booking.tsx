@@ -156,7 +156,6 @@ export default function CustomerBookingsPage() {
 
   // Invoice download
   const handleDownloadInvoice = (booking: any) => {
-    console.log("Download invoice:", booking.id);
   };
 
   // Calling provider

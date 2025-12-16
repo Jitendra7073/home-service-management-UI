@@ -48,7 +48,6 @@ export default function AddAddressForm() {
       });
 
       const response = await res.json();
-      console.log("API Response:", response);
 
       if (!res.ok) {
         toast.error(response?.msg || "Failed to save address");

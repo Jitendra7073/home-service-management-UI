@@ -76,7 +76,6 @@ export default function RegisterForm() {
       });
 
       const result = await res.json();
-      console.log("Registration result:", result);
 
       if (res.ok) {
         toast.success(

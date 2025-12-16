@@ -10,7 +10,6 @@ interface PaymentProps {
 }
 
 const Payment: React.FC<PaymentProps> = ({ cartData, selectedAddress }) => {
-  console.log("Cartdata:", cartData);
   const [loading, setLoading] = useState(false);
 
   const handleStripeCheckout = async () => {

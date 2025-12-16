@@ -142,8 +142,12 @@ export default function ServiceDetailPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
                       label="Duration"
-                      value={`${service.durationInMinutes} min`}
+                      value={`${(service.durationInMinutes/60).toFixed(2).split(".")[0]} ${
+                        service.durationInMinutes < 60 ? "Min" : "Hrs"
+                      } ${(service.durationInMinutes/60).toFixed(2).split(".")[1] === "0" ? "" : (service.durationInMinutes/60).toFixed(2).split(".")[1] + " Min" } 
+                      `}
                     />
+                   
                     <FeaturePill
                       label="Rating"
                       value={
@@ -238,7 +242,10 @@ export default function ServiceDetailPage() {
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
                     label="Duration"
-                    value={`${service.durationInMinutes / 60} hr`}
+                    value={`${(service.durationInMinutes/60).toFixed(2).split(".")[0]} ${
+                        service.durationInMinutes < 60 ? "Min" : "Hrs"
+                      } ${(service.durationInMinutes/60).toFixed(2).split(".")[1] === "0" ? "" : (service.durationInMinutes/60).toFixed(2).split(".")[1] + " Min" } 
+                      `}
                   />
                   <SummaryRow label="Provider" value={provider.name} />
                   <SummaryRow label="Business" value={business.businessName} />

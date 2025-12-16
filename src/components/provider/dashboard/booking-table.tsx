@@ -11,7 +11,14 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Loader,
+  MoreHorizontal,
+  RefreshCcw,
+  RefreshCw,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -81,14 +88,11 @@ function StatusDropdown({
     if (isDisabled(status)) return;
 
     try {
-      const res = await fetch(
-        `/api/provider/bookings`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ bookingId, status }),
-        }
-      );
+      const res = await fetch(`/api/provider/bookings`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId, status }),
+      });
 
       const data = await res.json();
 
@@ -116,8 +120,7 @@ function StatusDropdown({
           variant="ghost"
           size="sm"
           disabled={currentStatus === "completed"}
-          className="capitalize"
-        >
+          className="capitalize">
           {currentStatus}
           <ChevronDown className="w-4 h-4 ml-1" />
         </Button>
@@ -129,8 +132,7 @@ function StatusDropdown({
             key={status}
             disabled={isDisabled(status)}
             className="capitalize"
-            onClick={() => updateStatus(status)}
-          >
+            onClick={() => updateStatus(status)}>
             {status}
           </DropdownMenuItem>
         ))}
@@ -198,14 +200,15 @@ const columns: ColumnDef<Booking>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem>
-            <Link href={`/provider/bookings/${row.original.id}`} className="w-full block">
+            <Link
+              href={`/provider/dashboard/bookings/${row.original.id}`}
+              className="w-full block">
               View Details
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(row.original.id)}
-          >
+            onClick={() => navigator.clipboard.writeText(row.original.id)}>
             Copy Booking ID
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -223,13 +226,15 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   const queryClient = useQueryClient();
 
   // Fetch bookings
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["provider-bookings"],
     queryFn: async () => {
       const res = await fetch("/api/provider/bookings", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to fetch bookings");
       return res.json();
     },
+    staleTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   // Transform API response for table
@@ -267,15 +272,27 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="font-semibold">Booking List</h2>
-        <Input
-          placeholder="Search bookings..."
-          value={globalFilter}
-          onChange={(e) => {
-            setGlobalFilter(e.target.value);
-            table.setPageIndex(0);
-          }}
-          className="max-w-sm"
-        />
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search bookings..."
+            value={globalFilter}
+            onChange={(e) => {
+              setGlobalFilter(e.target.value);
+              table.setPageIndex(0);
+            }}
+            className="max-w-sm"
+          />
+          {!isLoading && <Button
+            className="bg-transparent text-black hover:bg-gray-100"
+            onClick={() => refetch()}
+            disabled={isFetching}>
+            <RefreshCw
+              className={`h-4 w-4 transition-transform ${
+                isFetching ? "animate-spin" : ""
+              }`}
+            />
+          </Button>}
+        </div>
       </div>
 
       <div className="rounded-md border overflow-hidden">
@@ -298,7 +315,9 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-6">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-6">
                   Loading bookings...
                 </TableCell>
               </TableRow>
@@ -317,7 +336,9 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-10">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-10">
                   No bookings found.
                 </TableCell>
               </TableRow>
@@ -336,16 +357,14 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
             size="sm"
             variant="outline"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
-          >
+            onClick={() => table.previousPage()}>
             Previous
           </Button>
           <Button
             size="sm"
             variant="outline"
             disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}
-          >
+            onClick={() => table.nextPage()}>
             Next
           </Button>
         </div>

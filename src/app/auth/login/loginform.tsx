@@ -41,7 +41,6 @@ export default function LoginForm() {
       });
 
       const json = await res.json();
-      console.log("Login Response:", json);
 
       if (!res.ok) {
         toast.error(json?.message || "Login failed");

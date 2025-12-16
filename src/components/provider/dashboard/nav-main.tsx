@@ -21,7 +21,7 @@ export function NavMain({
     icon?: any;
   }[];
 }) {
-  const pathname = usePathname(); // Current route
+  const pathname = usePathname(); 
 
   return (
     <SidebarGroup>

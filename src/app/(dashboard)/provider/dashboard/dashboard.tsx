@@ -20,7 +20,6 @@ const DashboardComponents = () => {
         },
         staleTime: 5 * 60 * 1000,
     })
-    console.log("data :",data)
 
     return <div className="flex w-full justify-center">
         <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-6">

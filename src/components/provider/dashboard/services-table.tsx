@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, RefreshCw } from "lucide-react";
 
 import {
   Table,
@@ -36,8 +36,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
 
-/* ================= TYPES ================= */
-
 export type Service = {
   id: string;
   name: string;
@@ -47,15 +45,15 @@ export type Service = {
   status: "active" | "inactive";
 };
 
-/* ================= COMPONENT ================= */
-
-export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
+export default function ServicesTable({
+  NumberOfRows = 5,
+}: {
+  NumberOfRows?: number;
+}) {
   const [globalFilter, setGlobalFilter] = React.useState("");
   const queryClient = useQueryClient();
 
-  /* ================= FETCH SERVICES ================= */
-
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["services"],
     queryFn: async () => {
       const res = await fetch("/api/provider/service", {
@@ -64,9 +62,9 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       if (!res.ok) throw new Error("Failed to fetch services");
       return res.json();
     },
+    staleTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
-
-  /* ================= ENABLE / DISABLE SERVICE ================= */
 
   const toggleServiceStatus = async (
     serviceId: string,
@@ -91,7 +89,6 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
 
       toast.success("Service status updated");
 
-      // Refresh services list without page reload
       queryClient.invalidateQueries({
         queryKey: ["services"],
       });
@@ -100,8 +97,6 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       toast.error("Something went wrong");
     }
   };
-
-  /* ================= TRANSFORM API DATA ================= */
 
   const serviceData: Service[] = React.useMemo(() => {
     if (!data) return [];
@@ -123,7 +118,6 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       }));
   }, [data]);
 
-  /* ================= TABLE COLUMNS ================= */
 
   const columns: ColumnDef<Service>[] = [
     {
@@ -135,10 +129,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       header: ({ column }) => (
         <Button
           variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-        >
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Price <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -149,10 +140,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       header: ({ column }) => (
         <Button
           variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-        >
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           Bookings <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -160,8 +148,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
     {
       accessorKey: "rating",
       header: "Rating",
-      cell: ({ row }) =>
-        Number(row.getValue("rating")).toFixed(1),
+      cell: ({ row }) => Number(row.getValue("rating")).toFixed(1),
     },
     {
       accessorKey: "status",
@@ -171,8 +158,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
         return (
           <Badge
             variant={status === "active" ? "default" : "destructive"}
-            className="capitalize"
-          >
+            className="capitalize">
             {status}
           </Badge>
         );
@@ -195,30 +181,18 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
               <DropdownMenuItem>
-                <Link
-                  href={`/provider/dashboard/services/${item.id}`}
-                >
+                <Link href={`/provider/dashboard/services/${item.id}`}>
                   View Service
                 </Link>
-
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() =>
-                  toggleServiceStatus(item.id, item.status)
-                }
-              >
-                {item.status === "active"
-                  ? "Disable"
-                  : "Enable"}{" "}
-                Service
+                onClick={() => toggleServiceStatus(item.id, item.status)}>
+                {item.status === "active" ? "Disable" : "Enable"} Service
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(item.id)
-                }
-              >
+                onClick={() => navigator.clipboard.writeText(item.id)}>
                 Copy Service ID
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -227,8 +201,6 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       },
     },
   ];
-
-  /* ================= TABLE INSTANCE ================= */
 
   const table = useReactTable({
     data: serviceData,
@@ -247,14 +219,13 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  /* ================= RENDER ================= */
-
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="font-semibold">All Services</h2>
 
-        <Input
+       <div className="flex gap-2">
+         <Input
           placeholder="Search services..."
           value={globalFilter}
           onChange={(e) => {
@@ -263,6 +234,19 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
           }}
           className="max-w-sm"
         />
+        {!isLoading && (
+          <Button
+            className="bg-transparent text-black hover:bg-gray-100"
+            onClick={() => refetch()}
+            disabled={isFetching}>
+            <RefreshCw
+              className={`h-4 w-4 transition-transform ${
+                isFetching ? "animate-spin" : ""
+              }`}
+            />
+          </Button>
+        )}
+       </div>
       </div>
 
       <div className="rounded-md border overflow-hidden">
@@ -287,8 +271,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="text-center py-6"
-                >
+                  className="text-center py-6">
                   Loading services...
                 </TableCell>
               </TableRow>
@@ -309,8 +292,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="text-center py-6"
-                >
+                  className="text-center py-6">
                   No services found.
                 </TableCell>
               </TableRow>
@@ -330,8 +312,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
             size="sm"
             variant="outline"
             disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
-          >
+            onClick={() => table.previousPage()}>
             Previous
           </Button>
 
@@ -339,8 +320,7 @@ export default function ServicesTable({ NumberOfRows = 5 }: { NumberOfRows?: num
             size="sm"
             variant="outline"
             disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}
-          >
+            onClick={() => table.nextPage()}>
             Next
           </Button>
         </div>

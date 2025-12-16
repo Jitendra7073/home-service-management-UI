@@ -35,7 +35,6 @@ export async function POST(req: Request, { params }: RouteParams) {
   try {
     const { serviceId } = await params;
     const body = await req.json();
-    console.log("POST body :", body);
 
     const { ok, data } = await backend(
       `/api/v1/provider/team-member/${serviceId}`,

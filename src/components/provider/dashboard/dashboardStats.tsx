@@ -13,7 +13,6 @@ const QuickCounts = (
     error: any
   }
 ) => {
-  console.log("data", data)
 
   const dashboardStats = [
     {
@@ -21,7 +20,6 @@ const QuickCounts = (
       value: `₹ ${data?.monthlyAnalysis.length > 0 ? data?.monthlyAnalysis[0].earnings : 0}`,
       growth: `${data?.monthlyAnalysis.length > 0 ? data?.monthlyAnalysis[0].bookings : 0} bookings`,
       icon: BarChart,
-      linkText: "View analytics",
     },
 
     {
@@ -29,20 +27,17 @@ const QuickCounts = (
       value: `${data?.totalCustomers}`,
       growth: "Unique customers",
       icon: Users,
-      linkText: "View customers",
     },
     {
       title: "Total Bookings",
       value: `${data?.bookings?.totalBookings}`,
       growth: "All time bookings",
       icon: ShoppingBag,
-      linkText: "View bookings",
     }, {
       title: "Total Earnings",
       value: `₹ ${data?.totalEarnings}`,
       growth: "Overall Earnings",
       icon: Wallet,
-      linkText: "View details",
     }
 
   ];
@@ -57,7 +52,6 @@ const QuickCounts = (
               value={item.value}
               growth={item.growth}
               icon={item.icon}
-              linkText={item.linkText}
               isLoading={isLoading || isPending}
             />
           </div>

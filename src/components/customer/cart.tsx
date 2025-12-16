@@ -13,7 +13,6 @@ const cart = () => {
     },
   });
   const services = data?.cart?.service || [];
-  console.log(services);
 
   if (isLoading || isPending) {
     return <div>Loading...</div>;
