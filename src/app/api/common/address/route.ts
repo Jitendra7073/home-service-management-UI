@@ -48,9 +48,11 @@ export async function POST(req: Request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(req:Request) {
+  const addressId = await req.json();
+  console.log("addressId:",addressId);
   try {
-    const { ok, data } = await backend(`/api/v1/address/`, {
+    const { ok, data } = await backend(`/api/v1/address/${addressId}`, {
       method: "DELETE",
     });
     if (!ok) {

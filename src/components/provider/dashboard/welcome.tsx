@@ -1,4 +1,5 @@
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -19,42 +20,33 @@ const Welcome = () => {
         toast.error("Failed to fetch profile data");
         return null;
       }
-      const data = await response.json();
-      return data?.user;
+
+      const result = await response.json();
+      return result?.user;
     },
-  })
+  });
+
   return (
-    <div
-      className="
-        w-full rounded-xl 
-        bg-gray-100
-        border-2 border-gray-200 
-        p-6 sm:p-8 
-        flex flex-col gap-4
-      "
-    >
-      {/* TOP TEXT SECTION */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-          <div className="flex items-center gap-2">
-            <span className="text-gray-900">Welcome back,</span>
-
+    <section className="w-full rounded-2xl border bg-gray-50 px-6 py-6 sm:px-8 sm:py-8">
+      <div className="space-y-2">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900">
+          Welcome back,
+          <span className="ml-2 inline-flex items-center">
             {isLoading || isPending ? (
-              <div className="h-7 w-30 bg-gray-200 rounded-sm animate-pulse" />
+              <span className="inline-block h-6 w-32 rounded-md bg-gray-200 animate-pulse" />
             ) : (
-              <span className="text-blue-900 font-bold">{data?.name}</span>
+              <span className="text-blue-700 font-bold">
+                {data?.name}
+              </span>
             )}
-          </div>
-
-
+          </span>
         </h1>
 
-        <p className="text-sm sm:text-base text-gray-500 mt-2">
+        <p className="text-sm sm:text-base text-gray-600 max-w-xl">
           Here’s a quick overview of how your business is performing today.
         </p>
       </div>
-
-    </div>
+    </section>
   );
 };
 

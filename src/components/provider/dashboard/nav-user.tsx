@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
 import { Bell, CreditCard, LogOut, User, EllipsisVertical } from "lucide-react";
+import Link from "next/link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -35,16 +36,16 @@ export function NavUser() {
   });
   const user = data?.user ?? [];
 
-  const LogoutHandler = async () =>{
+  const LogoutHandler = async () => {
     const res = await fetch("/api/auth/logout", {
       method: "POST",
     });
     const data = await res.json();
-    if(data.success){
+    if (data.success) {
       window.location.reload();
     }
     return data;
-  }
+  };
 
   return (
     <SidebarMenu>
@@ -106,17 +107,19 @@ export function NavUser() {
                 <User />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
+              <Link href="/provider/dashboard/pricing">
+                <DropdownMenuItem>
+                  <CreditCard />
+                  Pricing
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <Bell />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={()=>LogoutHandler()}>
+            <DropdownMenuItem onClick={() => LogoutHandler()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

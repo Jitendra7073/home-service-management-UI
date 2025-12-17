@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
 
 import {
   Form,
@@ -16,11 +17,25 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { toast } from "sonner";
 import { addressSchema } from "./formValidation";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function AddAddressForm() {
+export default function AddAddressForm({
+  onSuccess,
+}: {
+  onSuccess?: () => void;
+}) {
   const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -32,6 +47,7 @@ export default function AddAddressForm() {
       state: "",
       postalCode: "",
       country: "",
+      type: "HOME",
     },
   });
 
@@ -41,24 +57,23 @@ export default function AddAddressForm() {
 
       const res = await fetch("/api/common/address", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-      const response = await res.json();
+      const data = await res.json();
 
       if (!res.ok) {
-        toast.error(response?.msg || "Failed to save address");
+        toast.error(data?.msg || "Failed to save address");
         return;
       }
 
-      toast.success("Address added successfully!");
-      queryClient.invalidateQueries(["address"]);
+      toast.success("Address added successfully");
+      queryClient.invalidateQueries({ queryKey: ["address"] });
 
       form.reset();
-    } catch (error) {
+      onSuccess?.();
+    } catch {
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -66,29 +81,24 @@ export default function AddAddressForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-sm border">
+    <div className="py-3">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Street */}
-            <div className="md:col-span-2">
-              <FormField
-                control={form.control}
-                name="street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enacton Solution Pvt. Ltd."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="street"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Street</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enacton Solution Pvt. Ltd." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* City */}
             <FormField
@@ -151,10 +161,37 @@ export default function AddAddressForm() {
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-6 rounded-md bg-gray-800 text-white hover:bg-gray-900 transition-colors">
+          {/* ✅ FIXED SELECT */}
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address Type</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select address type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Type</SelectLabel>
+                      <SelectItem value="HOME">Home</SelectItem>
+                      <SelectItem value="OFFICE">Office</SelectItem>
+                      <SelectItem value="OTHER">Other</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Adding..." : "Add Address"}
           </Button>
         </form>

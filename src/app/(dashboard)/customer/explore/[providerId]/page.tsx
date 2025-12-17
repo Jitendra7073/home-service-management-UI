@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Phone, Mail, Globe, MapPin } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Phone, Mail, Globe, MapPin, X } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
@@ -16,6 +16,14 @@ import {
 import ServiceDetailSkeleton from "@/components/customer/serviceDetails/loadingSkeleton";
 import AddToCartButton from "@/components/customer/add-to-cart-button";
 import SlotsSelector from "@/components/customer/serviceDetails/timeslots";
+import Image from "next/image";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 interface Slot {
   id: string;
@@ -35,6 +43,8 @@ interface Service {
   price: number;
   currency: string;
   isActive: boolean;
+  coverImage: string;
+  images: string[];
   averageRating: number;
   reviewCount: number;
   category: Category;
@@ -71,6 +81,7 @@ interface Provider {
 export default function ServiceDetailPage() {
   const { providerId } = useParams<{ providerId: string }>();
   const searchParams = useSearchParams();
+  const [activeImage, setActiveImage] = useState<string | null>(null);
   const serviceId = searchParams.get("serviceId");
 
   const [slotDetails, setSlotDetails] = useState<{
@@ -100,6 +111,9 @@ export default function ServiceDetailPage() {
   }, [business, serviceId]);
 
   const primaryAddress = provider?.addresses?.[0] || null;
+  const images = service?.images ?? [];
+
+  const useCarousel = images.length > 4;
 
   if (isLoading || !providerId) return <ServiceDetailSkeleton />;
 
@@ -117,15 +131,23 @@ export default function ServiceDetailPage() {
   }
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
+        <Image
+          src={service.coverImage ? service.coverImage : "home-service-banner.jpeg"}
+          width={500}
+          className="w-full h-100 object-cover rounded-md"
+          height={500}
+          alt={service.name || "Service Name"}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT SIDE CONTENT */}
           <div className="lg:col-span-2 space-y-6">
             {/* SERVICE HEADER CARD */}
-            <div className="bg-white rounded-md overflow-hidden shadow-xs border">
-              <div className="bg-gray-800 px-6 py-6 text-white">
+            <div className="relative bg-white rounded-md overflow-hidden shadow-xs border">
+              <div className="w-full bg-gray-800 backdrop-blur-xs px-6 py-6 text-white">
                 <div className="space-y-4">
-                  <p className="text-xs uppercase tracking-widest text-gray-400">
+                  <p className="text-sm uppercase tracking-widest text-gray-100">
                     {service.category.name}
                   </p>
 
@@ -134,7 +156,7 @@ export default function ServiceDetailPage() {
                   </h1>
 
                   {service.category.description && (
-                    <p className="text-gray-300 text-sm max-w-xl">
+                    <p className="text-sm text-white">
                       {service.category.description}
                     </p>
                   )}
@@ -142,12 +164,22 @@ export default function ServiceDetailPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
                       label="Duration"
-                      value={`${(service.durationInMinutes/60).toFixed(2).split(".")[0]} ${
-                        service.durationInMinutes < 60 ? "Min" : "Hrs"
-                      } ${(service.durationInMinutes/60).toFixed(2).split(".")[1] === "0" ? "" : (service.durationInMinutes/60).toFixed(2).split(".")[1] + " Min" } 
+                      value={`${
+                        (service.durationInMinutes / 60)
+                          .toFixed(2)
+                          .split(".")[0]
+                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
+                        (service.durationInMinutes / 60)
+                          .toFixed(2)
+                          .split(".")[1] === "0"
+                          ? ""
+                          : (service.durationInMinutes / 60)
+                              .toFixed(2)
+                              .split(".")[1] + " Min"
+                      } 
                       `}
                     />
-                   
+
                     <FeaturePill
                       label="Rating"
                       value={
@@ -221,13 +253,91 @@ export default function ServiceDetailPage() {
               }}
             />
 
-            {/* Other services */}
+            {/* OTHER SERVICES */}
             <OtherServicesGrid
               services={business.services}
               currentServiceId={service.id}
             />
 
+            {/* POLICIES GRID */}
             <PoliciesGrid />
+
+            {/* OUR GALLERY */}
+            <div>
+              <div className="bg-white rounded-sm border p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+                  Our Gallery
+                </h2>
+
+                {!useCarousel && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {images.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActiveImage(image)}
+                        className="relative aspect-square overflow-hidden rounded-md">
+                        <Image
+                          src={image}
+                          alt="Service Image"
+                          fill
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {useCarousel && (
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      slidesToScroll: 1,
+                    }}
+                    className="relative">
+                    <CarouselContent className="-ml-3">
+                      {images.map((image, index) => (
+                        <CarouselItem
+                          key={index}
+                          className="
+                    pl-3
+                    basis-1/2
+                    sm:basis-1/3
+                    lg:basis-1/4
+                  ">
+                          <button
+                            onClick={() => setActiveImage(image)}
+                            className="relative aspect-square overflow-hidden rounded-md w-full">
+                            <Image
+                              src={image}
+                              alt="Service Image"
+                              fill
+                              className="object-cover transition-transform duration-300 hover:scale-105"
+                            />
+                          </button>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
+                )}
+              </div>
+
+              <Dialog
+                open={!!activeImage}
+                onOpenChange={() => setActiveImage(null)}>
+                <DialogContent className=" p-1  max-w-[95vw] sm:max-w-3xl border-none">
+                  {activeImage && (
+                    <Image
+                      src={activeImage}
+                      alt="Preview"
+                      width={1200}
+                      height={1200}
+                      className="w-full h-auto max-h-[75vh] sm:max-h-[85vh] object-contain rounded-md"
+                      priority
+                    />
+                  )}
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           {/* RIGHT SIDE — BOOKING SUMMARY */}
@@ -242,9 +352,17 @@ export default function ServiceDetailPage() {
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
                     label="Duration"
-                    value={`${(service.durationInMinutes/60).toFixed(2).split(".")[0]} ${
-                        service.durationInMinutes < 60 ? "Min" : "Hrs"
-                      } ${(service.durationInMinutes/60).toFixed(2).split(".")[1] === "0" ? "" : (service.durationInMinutes/60).toFixed(2).split(".")[1] + " Min" } 
+                    value={`${
+                      (service.durationInMinutes / 60).toFixed(2).split(".")[0]
+                    } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
+                      (service.durationInMinutes / 60)
+                        .toFixed(2)
+                        .split(".")[1] === "0"
+                        ? ""
+                        : (service.durationInMinutes / 60)
+                            .toFixed(2)
+                            .split(".")[1] + " Min"
+                    } 
                       `}
                   />
                   <SummaryRow label="Provider" value={provider.name} />

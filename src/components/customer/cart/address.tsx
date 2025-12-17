@@ -10,162 +10,174 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, MapPin, Trash2 } from "lucide-react";
+import { MapPin, Trash2, Plus } from "lucide-react";
 import React, { useState } from "react";
 import AddAddressForm from "./addressForm";
+import { Badge } from "@/components/ui/badge";
 
-interface Addressprops {
-  selectedAddress: any;
-  setSelectedAddress: any;
+interface AddressProps {
+  selectedAddress: string | null;
+  setSelectedAddress: (id: string | null) => void;
 }
 
-const Address: React.FC<Addressprops> = ({
+const Address: React.FC<AddressProps> = ({
   selectedAddress,
   setSelectedAddress,
 }) => {
   const queryClient = useQueryClient();
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
-  const { data, isLoading, isError, isPending } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["address"],
     queryFn: async () => {
       const res = await fetch("/api/common/address");
-      if (res.status === 404) return null;
-      return await res.json();
+      return res.json();
     },
+    retry: false,
   });
 
-  const address = data?.address;
+  const addresses = data?.address ?? [];
 
   const deleteAddress = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (addressId: string) => {
       const res = await fetch(`/api/common/address`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addressId),
       });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.msg);
-      return result;
+      if (!res.ok) throw new Error("Delete failed");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["address"]);
+      queryClient.invalidateQueries({ queryKey: ["address"] });
       setSelectedAddress(null);
-      setShowDeleteModal(false);
+      setDeleteId(null);
     },
   });
 
-  if (isLoading || isPending) {
-    return (
-      <div>
-        <h2 className="text-md font-semibold text-gray-800 mb-4">
-          Select Service Address
-        </h2>
+  const formatAddress = (addr: any) =>
+    [addr.street, addr.city, addr.state, addr.postalCode, addr.country]
+      .filter(Boolean)
+      .join(", ");
 
-        <div className="flex justify-between items-center mb-4 p-4 border rounded-lg bg-white shadow-sm">
-          <div className="flex flex-col gap-3 flex-1">
-            <div className="h-5 w-40 bg-gray-200 animate-pulse rounded-md" />
-            <div className="h-4 w-28 bg-gray-200 animate-pulse rounded-md" />
-          </div>
-
-          <div className="h-10 w-10 bg-gray-200 animate-pulse rounded-md" />
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <div className="h-24 bg-gray-100 animate-pulse rounded-md" />;
   }
 
   if (isError) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-5 text-center space-y-2">
-        <p className="text-red-700 font-semibold text-lg">
-          Couldn't load your address 😔
-        </p>
-        <p className="text-red-600 text-sm">
-          Something went wrong while fetching your saved address. Please refresh
-          and try again.
-        </p>
-      </div>
+      <p className="text-red-600 text-sm">
+        Failed to load addresses. Please refresh.
+      </p>
     );
   }
 
   return (
-    <div>
-      <h2 className="text-md font-semibold text-gray-800 mb-4">
-        Select Service Address
-      </h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-md font-semibold text-gray-800">
+          Select Service Address{" "}
+          <span className="text-muted-foreground">({addresses.length}/5)</span>
+        </h2>
 
-      <div className="space-y-3">
-        {!address ? (
-          <AddAddressForm />
-        ) : (
-          <div onClick={() => setSelectedAddress(address.id)}>
-            <div
-              className={`flex items-center justify-between gap-4 p-4 rounded-md border shadow-sm hover:shadow-md cursor-pointer
-                ${selectedAddress === address.id
-                  ? "border-green-500 bg-green-50"
-                  : "border-gray-200 bg-white"
-                }`}>
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-5 h-5 text-gray-700" />
-                  <span className="font-semibold text-gray-800">Address</span>
-                </div>
-
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {address.street}, {address.city}, {address.state},
-                  {address.postalCode}, {address.country}
-                </p>
-
-                {address.landmark !== "N/A" && (
-                  <p className="text-gray-600 text-sm italic">
-                    Landmark: {address.landmark}
-                  </p>
-                )}
-              </div>
-
-              {/* DELETE BUTTON WITH MODAL */}
-              <AlertDialog
-                open={showDeleteModal}
-                onOpenChange={setShowDeleteModal}>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    className="text-red-500 bg-transparent hover:bg-red-200 transition"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDeleteModal(true);
-                    }}>
-                    <Trash2 className="w-5 h-5" />
-                  </Button>
-                </AlertDialogTrigger>
-
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="font-bold">
-                      Delete Address?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. Your saved address will be
-                      permanently removed.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                    <AlertDialogAction
-                      className="bg-red-600 hover:bg-red-700 text-white"
-                      onClick={() => deleteAddress.mutate()}>
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </div>
+        {addresses.length !== 5 && (
+          <Button size="sm" onClick={() => setShowAddDialog(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Add Address
+          </Button>
         )}
       </div>
+
+      {addresses.length === 0 && (
+        <p className="text-sm text-gray-500">
+          No address found. Please add one.
+        </p>
+      )}
+
+      <div
+        className={`space-y-3 ${
+          addresses.length > 3 && "h-[300px] overflow-y-auto"
+        }`}>
+        {addresses.map((addr: any) => (
+          <div
+            key={addr.id}
+            onClick={() => setSelectedAddress(addr.id)}
+            className={`flex justify-between items-start p-4 rounded-md border cursor-pointer
+              ${
+                selectedAddress === addr.id
+                  ? "border-green-500 bg-green-50"
+                  : "border-gray-200 bg-white"
+              }`}>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-gray-600" />
+                <span className="font-medium text-gray-800">
+                  <Badge variant="outline">{addr.type}</Badge>
+                </span>
+              </div>
+
+              <p className="text-sm text-gray-700">{formatAddress(addr)}</p>
+
+              {addr.landmark && addr.landmark !== "N/A" && (
+                <p className="text-xs text-gray-500 italic">
+                  Landmark: {addr.landmark}
+                </p>
+              )}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteId(addr.id);
+              }}>
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Address?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => deleteId && deleteAddress.mutate(deleteId)}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Address</DialogTitle>
+          </DialogHeader>
+          <AddAddressForm onSuccess={() => setShowAddDialog(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

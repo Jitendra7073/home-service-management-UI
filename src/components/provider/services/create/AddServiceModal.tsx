@@ -24,6 +24,8 @@ import { ImageUploader } from "./ImageUpload";
 import { uploadToCloudinary, deleteFromCloudinary } from "./cloudinary";
 import { ServiceFormData, UploadedImage } from "./types";
 import { Loader2 } from "lucide-react";
+import { useAtom } from "jotai";
+import { ServiceModelState } from "@/global-states/state";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
@@ -38,20 +40,21 @@ const INITIAL_FORM: ServiceFormData = {
   isActive: true,
 };
 
-interface AddServiceModalProps {
-  open: boolean;
-  onClose: () => void;
-}
 
-export default function AddServiceModal({
-  open,
-  onClose,
-}: AddServiceModalProps) {
+
+export default function AddServiceModal() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<ServiceFormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [coverImage, setCoverImage] = useState<UploadedImage[]>([]);
   const [galleryImages, setGalleryImages] = useState<UploadedImage[]>([]);
+  const [open, setOpen] = useAtom(ServiceModelState)
+  
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
 
   /* VALIDATION */
   const validateForm = () => {

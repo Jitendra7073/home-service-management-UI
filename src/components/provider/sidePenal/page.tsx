@@ -8,6 +8,8 @@ import {
   ListChecks,
   BarChart,
   PanelsTopLeft,
+  HandCoins,
+  Building2,
 } from "lucide-react";
 
 import { NavMain } from "@/components/provider/dashboard/nav-main";
@@ -37,6 +39,11 @@ const data = {
       icon: LayoutDashboard,
     },
     {
+      title: "Manage Business",
+      url: "/provider/dashboard/business",
+      icon: Building2,
+    },
+    {
       title: "Bookings",
       url: "/provider/dashboard/bookings",
       icon: ListChecks,
@@ -45,6 +52,11 @@ const data = {
       title: "Services",
       url: "/provider/dashboard/services",
       icon: BarChart,
+    },
+    {
+      title: "Pricing",
+      url: "/provider/dashboard/pricing",
+      icon: HandCoins,
     },
   ],
 };
