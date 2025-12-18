@@ -61,7 +61,7 @@ export default function BookingAccordionItem({
 
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
-                    {formatDate(booking.createdAt)}
+                    {formatDate(booking.date)}
                   </span>
                 </div>
               </div>

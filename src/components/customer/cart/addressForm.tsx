@@ -161,7 +161,7 @@ export default function AddAddressForm({
             />
           </div>
 
-          {/* ✅ FIXED SELECT */}
+          {/* SELECT */}
           <FormField
             control={form.control}
             name="type"

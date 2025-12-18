@@ -15,9 +15,7 @@ const authMiddleware = async (req: any) => {
   try {
     const token = await getAuthToken(req);
 
-    // -----------------------------------------
     // Handle root "/" route
-    // -----------------------------------------
     if (pathname === "/") {
       if (!token) {
         return NextResponse.redirect(new URL("/auth/login", req.url));
@@ -54,9 +52,7 @@ const authMiddleware = async (req: any) => {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
-    // -----------------------------------------
     // No token found
-    // -----------------------------------------
     if (!token) {
       if (isPublicRoute(pathname)) {
         return NextResponse.next();
@@ -71,9 +67,7 @@ const authMiddleware = async (req: any) => {
       return NextResponse.next();
     }
 
-    // -----------------------------------------
     // Validate token
-    // -----------------------------------------
     const { user, error } = await getUserByToken(token);
 
     if (error || !user) {
@@ -90,18 +84,14 @@ const authMiddleware = async (req: any) => {
       );
     }
 
-    // -----------------------------------------
     // Role access check
-    // -----------------------------------------
     if (isProtectedRoute(pathname) && !hasRouteAccess(pathname, user.role)) {
       return NextResponse.redirect(
         new URL(getRoleBasedRedirect(user.role), req.url)
       );
     }
 
-    // -----------------------------------------
     // Provider onboarding check
-    // -----------------------------------------
     if (user.role === "provider") {
       const onboardRedirect = await providerOnboardingMiddleware(
         req,

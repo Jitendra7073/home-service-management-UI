@@ -167,7 +167,15 @@ const Results: React.FC<ResultsProps> = ({
             </span>
             <div className="flex items-center gap-1 text-xs text-gray-800">
               <Clock className="w-4 h-4" />
-              <span>{service.durationInMinutes} min</span>
+              <span>
+                {(service.durationInMinutes / 60).toFixed(2).split(".")[0]}{" "}
+                {service.durationInMinutes < 60 ? "Min" : "Hrs"}{" "}
+                {(service.durationInMinutes / 60).toFixed(2).split(".")[1] ==
+                "00"
+                  ? ""
+                  : (service.durationInMinutes / 60).toFixed(2).split(".")[1] +
+                    " Min"}
+              </span>
             </div>
           </div>
         </div>

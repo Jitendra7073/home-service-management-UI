@@ -34,9 +34,10 @@ export const providerOnboardingMiddleware = async (
     getProviderBusiness(req),
     getProviderSlots(req),
   ]);
+  console.log({ address, business, slots })
 
   const profile = {
-    hasAddress: !!address,
+    hasAddress: address.length == 0 ? false : true,
     hasBusiness: !!business,
     hasSlots: Array.isArray(slots) && slots.length > 0,
   };

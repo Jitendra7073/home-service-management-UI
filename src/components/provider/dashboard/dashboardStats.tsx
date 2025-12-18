@@ -21,6 +21,7 @@ const QuickCounts = ({
   const monthlyAnalysis = Array.isArray(data?.monthlyAnalysis)
     ? data.monthlyAnalysis
     : [];
+    console.log(data)
 
   const currentMonthAnalysis =
     monthlyAnalysis.length > 0 ? monthlyAnalysis[0] : null;
@@ -86,7 +87,7 @@ const QuickCounts = ({
         ))}
       </div>
 
-      {!isLoading && !isPending && monthlyAnalysis.length === 0 && (
+      {!isLoading && !isPending && data?.serviceBookingStats.length === 0 && (
         <p
           className="flex  justify-start item-center gap-2 text-sm bg-blue-50 text-blue-500 border border-blue-300 rounded py-1 px-3 w-fit">
           <CircleAlert className="w-4 h-4 mt-[0.5px]"/>No services created yet. Create your first service to start tracking

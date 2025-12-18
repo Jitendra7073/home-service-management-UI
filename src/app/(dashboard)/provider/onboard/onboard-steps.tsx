@@ -52,7 +52,7 @@ export default function OnboardSteps() {
           fetch("/api/provider/slots").then((r) => r.json()),
         ]);
 
-        const hasAddress = addressRes && addressRes.address ? true : false;
+        const hasAddress = addressRes && addressRes.address.length > 0 ? true : false;
         const hasBusiness = businessRes && businessRes.business ? true : false;
         const hasSlots =
           slotRes && Array.isArray(slotRes.slots) && slotRes.slots.length > 0
@@ -68,7 +68,7 @@ export default function OnboardSteps() {
 
         if (requestedStepId && requestedStepId < nextIncompleteStep) {
           router.push(
-            `/provider/onboard?role=provider&step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+            `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
           );
           return;
         }
@@ -81,7 +81,7 @@ export default function OnboardSteps() {
           setStep(nextIncompleteStep);
           if (!stepParam) {
             router.push(
-              `/provider/onboard?role=provider&step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+              `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
             );
           }
         }
@@ -101,7 +101,7 @@ export default function OnboardSteps() {
     const nextStepId = step + 1;
     const nextStepName = REVERSE_STEP_MAP[nextStepId];
 
-    router.push(`/provider/onboard?role=provider&step=${nextStepName}`);
+    router.push(`/provider/onboard?step=${nextStepName}`);
   };
 
   const isCompleted = (id: number) => {

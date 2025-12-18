@@ -14,16 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <TanstackProvider>
-          <main className="min-h-screen flex flex-col justify-between">
-            <Header />
-            {children}
-            <Footer />
-          </main>
-        </TanstackProvider>
-      </body>
-    </html>
+    <TanstackProvider>
+      <main className="min-h-screen flex flex-col justify-between">
+        <Header />
+        {children}
+        <Footer />
+      </main>
+    </TanstackProvider>
   );
 }

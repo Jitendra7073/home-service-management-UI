@@ -21,12 +21,13 @@ const ServiceAwarenessModal = () => {
       return res.json();
     },
   });
+  console.log("service data:",data)
 
   const serviceCount =
     typeof data?.count === "number"
       ? data.count
-      : Array.isArray(data?.service)
-      ? data?.service.length
+      : Array.isArray(data)
+      ? data?.length
       : 0;
 
   if (isLoading || isDismissed || serviceCount > 0) {

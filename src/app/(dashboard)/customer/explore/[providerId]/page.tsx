@@ -132,13 +132,15 @@ export default function ServiceDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
-        <Image
-          src={service.coverImage ? service.coverImage : "home-service-banner.jpeg"}
-          width={500}
-          className="w-full h-100 object-cover rounded-md"
-          height={500}
-          alt={service.name || "Service Name"}
-        />
+        <div className="relative w-full overflow-hidden rounded-md aspect-[16/8] md:aspect-[19/7] shadow-sm">
+          <Image
+            src={service.coverImage || "/home-service-banner.jpeg"}
+            alt={service.name || "Service Name"}
+            fill
+            priority
+            className="object-cover"
+          />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT SIDE CONTENT */}
@@ -171,7 +173,7 @@ export default function ServiceDetailPage() {
                       } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
                         (service.durationInMinutes / 60)
                           .toFixed(2)
-                          .split(".")[1] === "0"
+                          .split(".")[1] == "00"
                           ? ""
                           : (service.durationInMinutes / 60)
                               .toFixed(2)
@@ -263,81 +265,83 @@ export default function ServiceDetailPage() {
             <PoliciesGrid />
 
             {/* OUR GALLERY */}
-            <div>
-              <div className="bg-white rounded-sm border p-4 sm:p-6">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-                  Our Gallery
-                </h2>
+            {images.length > 0 && 
+              <div>
+                <div className="bg-white rounded-sm border p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+                    Our Gallery
+                  </h2>
 
-                {!useCarousel && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {images.map((image, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setActiveImage(image)}
-                        className="relative aspect-square overflow-hidden rounded-md">
-                        <Image
-                          src={image}
-                          alt="Service Image"
-                          fill
-                          className="object-cover transition-transform duration-300 hover:scale-105"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {useCarousel && (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      slidesToScroll: 1,
-                    }}
-                    className="relative">
-                    <CarouselContent className="-ml-3">
+                  {!useCarousel && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                       {images.map((image, index) => (
-                        <CarouselItem
+                        <button
                           key={index}
-                          className="
+                          onClick={() => setActiveImage(image)}
+                          className="relative aspect-square overflow-hidden rounded-md">
+                          <Image
+                            src={image}
+                            alt="Service Image"
+                            fill
+                            className="object-cover transition-transform duration-300 hover:scale-105"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {useCarousel && (
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        slidesToScroll: 1,
+                      }}
+                      className="relative">
+                      <CarouselContent className="-ml-3">
+                        {images.map((image, index) => (
+                          <CarouselItem
+                            key={index}
+                            className="
                     pl-3
                     basis-1/2
                     sm:basis-1/3
                     lg:basis-1/4
                   ">
-                          <button
-                            onClick={() => setActiveImage(image)}
-                            className="relative aspect-square overflow-hidden rounded-md w-full">
-                            <Image
-                              src={image}
-                              alt="Service Image"
-                              fill
-                              className="object-cover transition-transform duration-300 hover:scale-105"
-                            />
-                          </button>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </Carousel>
-                )}
-              </div>
-
-              <Dialog
-                open={!!activeImage}
-                onOpenChange={() => setActiveImage(null)}>
-                <DialogContent className=" p-1  max-w-[95vw] sm:max-w-3xl border-none">
-                  {activeImage && (
-                    <Image
-                      src={activeImage}
-                      alt="Preview"
-                      width={1200}
-                      height={1200}
-                      className="w-full h-auto max-h-[75vh] sm:max-h-[85vh] object-contain rounded-md"
-                      priority
-                    />
+                            <button
+                              onClick={() => setActiveImage(image)}
+                              className="relative aspect-square overflow-hidden rounded-md w-full">
+                              <Image
+                                src={image}
+                                alt="Service Image"
+                                fill
+                                className="object-cover transition-transform duration-300 hover:scale-105"
+                              />
+                            </button>
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
                   )}
-                </DialogContent>
-              </Dialog>
-            </div>
+                </div>
+
+                <Dialog
+                  open={!!activeImage}
+                  onOpenChange={() => setActiveImage(null)}>
+                  <DialogContent className=" p-1  max-w-[95vw] sm:max-w-3xl border-none">
+                    {activeImage && (
+                      <Image
+                        src={activeImage}
+                        alt="Preview"
+                        width={1200}
+                        height={1200}
+                        className="w-full h-auto max-h-[75vh] sm:max-h-[85vh] object-contain rounded-md"
+                        priority
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
+              </div>
+            }
           </div>
 
           {/* RIGHT SIDE — BOOKING SUMMARY */}
@@ -357,7 +361,7 @@ export default function ServiceDetailPage() {
                     } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
                       (service.durationInMinutes / 60)
                         .toFixed(2)
-                        .split(".")[1] === "0"
+                        .split(".")[1] == "00"
                         ? ""
                         : (service.durationInMinutes / 60)
                             .toFixed(2)

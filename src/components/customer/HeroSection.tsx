@@ -97,23 +97,25 @@ const HeroSection = () => {
           </div>
           {/* right Image */}
           <div className="relative animate-fade-in-right">
-            <div className="relative w-full h-[350px] sm:h-[500px] lg:h-[550px] rounded-2xl overflow-hidden  group">
+            <div className="flex flex-col gap-5 overflow-hidden group">
               <Image
                 src="/images/home-renovation.jpg"
-                alt="Hero Image"
-                fill
-                className="object-cover"
+                alt="Home Renovation"
+                width={1200}
+                height={600}
+                className="rounded-md"
+                priority
               />
 
-              <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md rounded-md p-5 shadow-2xl z-20 border border-white/50 animate-slide-up">
+              <div className="bg-gray-100/95  rounded-md p-5  z-20 border border-gray-200/50 animate-slide-up">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div>
                       <p className="font-black text-gray-900 text-lg">
-                        Available Now
+                        Application Rating
                       </p>
                       <p className="text-sm text-gray-600 font-medium">
-                        500+ professionals ready
+                        500+ professionals available
                       </p>
                     </div>
                   </div>

@@ -12,14 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <TanstackProvider>
-            <main className="w-full">
-              {children}
-            </main>
-        </TanstackProvider>
-      </body>
-    </html>
+    <TanstackProvider>
+      <main className="w-full">{children}</main>
+    </TanstackProvider>
   );
 }

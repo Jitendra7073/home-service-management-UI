@@ -25,7 +25,7 @@ const Payment: React.FC<PaymentProps> = ({ cartData, selectedAddress }) => {
       return;
     }
 
-    // FRONTEND business validation
+    // business validation
     const businessIds = cartItems.map((item: any) => item.business.id);
     const uniqueBusinessIds = [...new Set(businessIds)];
 

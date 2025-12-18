@@ -13,6 +13,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,6 +34,7 @@ const AddressSchema = z.object({
   state: z.string().min(2, "State is required"),
   postalCode: z.string().min(4, "Postal code is required"),
   country: z.string().min(2, "Country is required"),
+  type: z.string().default("HOME"),
   landmark: z.string().optional(),
 });
 
@@ -41,6 +51,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
       state: "",
       postalCode: "",
       country: "",
+      type: "HOME",
       landmark: "",
     },
   });
@@ -171,12 +182,39 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               )}
             />
 
+              {/* Address type */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select address type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Type</SelectLabel>
+                        <SelectItem value="HOME">Home</SelectItem>
+                        <SelectItem value="OFFICE">Office</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Landmark */}
             <FormField
               control={form.control}
               name="landmark"
               render={({ field }) => (
-                <FormItem className="sm:col-span-2">
+                <FormItem>
                   <FormLabel>Landmark (optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="Near ABC Mall" {...field} />
