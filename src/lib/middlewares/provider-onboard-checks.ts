@@ -34,7 +34,6 @@ export const providerOnboardingMiddleware = async (
     getProviderBusiness(req),
     getProviderSlots(req),
   ]);
-  console.log({ address, business, slots })
 
   const profile = {
     hasAddress: address.length == 0 ? false : true,

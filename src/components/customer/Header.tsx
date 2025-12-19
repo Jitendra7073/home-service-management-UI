@@ -5,12 +5,8 @@ import Link from "next/link";
 import {
   Menu,
   X,
-  Home,
   ShoppingCart,
   User2,
-  Bell,
-  Calendar,
-  Search,
 } from "lucide-react";
 
 import {
@@ -23,116 +19,108 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import NotificationSideBar from "../common/notification-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import NotificationSideBar from "../common/notification-sidebar";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
 
-  const closeSheet = () => setOpen(false);
+  const { data: cart } = useQuery({
+    queryKey: ["cart-items"],
+    queryFn: async () => {
+      const res = await fetch("/api/customer/cart", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch cart");
+      return res.json();
+    },
+    staleTime: 5 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
-  const menuItems = [
-    {
-      title: "Home",
-      href: "/customer",
-      icon: Home,
-    },
-    {
-      title: "Explore",
-      href: "/customer/explore",
-      icon: Search,
-    },
-    {
-      title: "Booking",
-      href: "/customer/booking",
-      icon: Calendar,
-    },
-    {
-      title: "Cart",
-      href: "/customer/cart",
-      icon: ShoppingCart,
-    },
-    {
-      title: "Profile",
-      href: "/customer/profile",
-      icon: User2,
-    },
-  ];
+  const cartCount = cart?.totalItems ?? 0;
 
   return (
-    <header className="w-full bg-white border-b sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 gap-4">
-        <Link
-          href="/customer"
-          className="text-2xl font-bold tracking-wide text-primary shrink-0">
+    <header className="sticky top-0 z-50 w-full bg-white border-b shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+
+        {/* LOGO */}
+        <Link href="/customer" className="text-2xl font-bold text-primary">
           HSM
         </Link>
 
-        {/* DESKTOP NAVIGATION */}
+        {/* DESKTOP NAV */}
         <nav className="hidden md:flex items-center gap-2">
           <NavigationMenu>
-            <NavigationMenuList className="flex items-center gap-1">
-              {menuItems.map((item) => (
-                <NavigationMenuItem key={item.href}>
-                  <NavigationMenuLink
-                    asChild
-                    className={navigationMenuTriggerStyle()}>
-                    <Link
-                      href={item.href}
-                      className="text-sm flex items-center gap-1">
-                      {item.title}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
+            <NavigationMenuList>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/customer/explore">Explore</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/customer/booking">Booking</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              {/* CART */}
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/customer/cart" className="relative">
+                    <ShoppingCart />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                  <Link href="/customer/profile">
+                    <User2 />
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
 
               <NavigationMenuItem>
                 <NotificationSideBar />
               </NavigationMenuItem>
+
             </NavigationMenuList>
           </NavigationMenu>
         </nav>
 
-        {/* MOBILE ACTIONS */}
+        {/* MOBILE HEADER ICONS */}
         <div className="flex md:hidden items-center gap-2">
+
+          <Link href="/customer/cart" className="relative p-2">
+            <ShoppingCart />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 rounded-full">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
+          <NotificationSideBar />
+
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="shrink-0">
-                {open ? <X size={24} /> : <Menu size={24} />}
+              <Button variant="ghost" size="icon">
+                {open ? <X /> : <Menu />}
               </Button>
             </SheetTrigger>
 
-            {/* MOBILE MENU CONTENT */}
-            <SheetContent side="left" className="w-[300px] p-0">
-              <div className="flex items-center justify-between px-5 py-4 border-b">
-                <Link
-                  href="/customer"
-                  onClick={closeSheet}
-                  className="text-xl font-bold text-primary">
-                  HSM
-                </Link>
-              </div>
-
-              <ScrollArea className="h-[calc(100vh-73px)]">
-                <div className="px-4 py-4 space-y-1">
-                  {menuItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={closeSheet}
-                      className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                      <item.icon size={20} className="text-primary" />
-                      <span className="font-medium">{item.title}</span>
-                    </Link>
-                  ))}
-
-                  <Link
-                    href="#"
-                    className="flex items-center gap-3 py-3 px-4 rounded-lg hover:bg-accent transition-colors">
-                    <Bell size={20} className="text-primary" />
-                    <span className="font-medium">Notifications</span>
-                  </Link>
-                </div>
+            <SheetContent side="left" className="w-[280px] p-0">
+              <ScrollArea className="h-full p-4 space-y-3">
+                <Link href="/customer/explore">Explore</Link>
+                <Link href="/customer/booking">Booking</Link>
+                <Link href="/customer/profile">Profile</Link>
               </ScrollArea>
             </SheetContent>
           </Sheet>

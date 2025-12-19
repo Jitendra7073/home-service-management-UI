@@ -21,7 +21,6 @@ const QuickCounts = ({
   const monthlyAnalysis = Array.isArray(data?.monthlyAnalysis)
     ? data.monthlyAnalysis
     : [];
-    console.log(data)
 
   const currentMonthAnalysis =
     monthlyAnalysis.length > 0 ? monthlyAnalysis[0] : null;

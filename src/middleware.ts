@@ -8,7 +8,6 @@ export async function middleware(req: NextRequest) {
   } catch (error) {
     console.error("Middleware fatal error:", error);
 
-    // On any unexpected error, redirect user to login and clear token
     const loginUrl = new URL("/auth/login", req.url);
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete("token");

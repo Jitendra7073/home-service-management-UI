@@ -16,6 +16,7 @@ export default function BookingAccordionItem({
   formatTime,
   formatDateTime,
   handleCancelClick,
+  handleFeedBackClick,
   handleDownloadInvoice,
   handleCall,
 }: any) {
@@ -87,6 +88,7 @@ export default function BookingAccordionItem({
             copiedField={copiedField}
             formatDateTime={formatDateTime}
             handleCancelClick={handleCancelClick}
+            handleFeedBackClick={handleFeedBackClick}
             handleDownloadInvoice={handleDownloadInvoice}
             handleCall={handleCall}
           />

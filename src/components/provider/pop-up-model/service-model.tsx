@@ -21,7 +21,6 @@ const ServiceAwarenessModal = () => {
       return res.json();
     },
   });
-  console.log("service data:",data)
 
   const serviceCount =
     typeof data?.count === "number"

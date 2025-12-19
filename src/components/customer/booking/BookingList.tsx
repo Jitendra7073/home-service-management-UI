@@ -13,6 +13,7 @@ export default function BookingList({
   formatTime,
   formatDateTime,
   handleCancelClick,
+  handleFeedBackClick,
   handleDownloadInvoice,
   handleCall,
 }: any) {
@@ -56,6 +57,7 @@ export default function BookingList({
           formatTime={formatTime}
           formatDateTime={formatDateTime}
           handleCancelClick={handleCancelClick}
+          handleFeedBackClick={handleFeedBackClick}
           handleDownloadInvoice={handleDownloadInvoice}
           handleCall={handleCall}
         />

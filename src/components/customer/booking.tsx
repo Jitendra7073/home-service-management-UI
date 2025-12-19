@@ -12,6 +12,7 @@ import FiltersPanel from "@/components/customer/booking/FiltersPanel";
 import BookingList from "@/components/customer/booking/BookingList";
 import CancelBookingDialog from "@/components/customer/booking/CancelBookingDialog";
 import { toast } from "sonner";
+import FeedbackDialog from "./feedback/feedbackForm";
 
 export default function CustomerBookingsPage() {
   const queryClient = useQueryClient();
@@ -28,6 +29,11 @@ export default function CustomerBookingsPage() {
   // Cancel dialog
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+
+  // feedback dialog
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [selectedBookingForFeedback, setSelectedBookingForFeedback] =
+    useState<any>(null);
 
   // Fetch bookings
   const { data, isLoading, isError } = useQuery({
@@ -117,6 +123,10 @@ export default function CustomerBookingsPage() {
     setSelectedBooking(booking);
     setCancelDialogOpen(true);
   };
+  const handleFeedBackClick = (booking: any) => {
+    setSelectedBookingForFeedback(booking);
+    setFeedbackOpen(true);
+  };
 
   const handleCancelConfirm = async () => {
     if (!selectedBooking) return;
@@ -155,8 +165,7 @@ export default function CustomerBookingsPage() {
   };
 
   // Invoice download
-  const handleDownloadInvoice = (booking: any) => {
-  };
+  const handleDownloadInvoice = (booking: any) => {};
 
   // Calling provider
   const handleCall = (phone: string) => {
@@ -251,6 +260,7 @@ export default function CustomerBookingsPage() {
                 formatTime={formatTime}
                 formatDateTime={formatDateTime}
                 handleCancelClick={handleCancelClick}
+                handleFeedBackClick={handleFeedBackClick}
                 handleDownloadInvoice={handleDownloadInvoice}
                 handleCall={handleCall}
               />
@@ -266,6 +276,18 @@ export default function CustomerBookingsPage() {
         selectedBooking={selectedBooking}
         handleCancelConfirm={handleCancelConfirm}
       />
+
+      {/* handle Feedback Dialog */}
+      {selectedBookingForFeedback !== null && (
+        <FeedbackDialog
+          open={feedbackOpen}
+          close={() => {
+            setFeedbackOpen(false);
+            setSelectedBookingForFeedback(null);
+          }}
+          serviceId={selectedBookingForFeedback}
+        />
+      )}
     </>
   );
 }

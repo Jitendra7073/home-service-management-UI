@@ -13,6 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <TanstackProvider>
+     
       <main className="w-full">{children}</main>
     </TanstackProvider>
   );

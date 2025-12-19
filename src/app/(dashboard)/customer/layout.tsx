@@ -15,6 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <TanstackProvider>
+      
       <main className="min-h-screen flex flex-col justify-between">
         <Header />
         {children}

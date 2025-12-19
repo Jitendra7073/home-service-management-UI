@@ -10,6 +10,7 @@ const GetFcmToken = () => {
     const getToken = async () => {
       try {
         const token = await RequestFCMToken();
+        console.log("token :",token)
         if (token) setFcmToken(token);
       } catch (error) {
         console.error("Error getting token:", error);
@@ -22,7 +23,7 @@ const GetFcmToken = () => {
     if (!fcmtoken || stored) return;
 
     const storeToken = async () => {
-      const res = await fetch("/api/notification/store-fcm-token", {
+      const res = await fetch("/api/notification/store-fcm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: fcmtoken }),

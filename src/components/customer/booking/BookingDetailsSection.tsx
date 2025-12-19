@@ -4,13 +4,10 @@ import { Button } from "@/components/ui/button";
 import {
   Phone,
   Mail,
-  User,
   X,
-  Download,
   MapPin,
-  Clock,
-  Calendar,
   IndianRupee,
+  Smile,
 } from "lucide-react";
 import CopyField from "@/components/customer/booking/CopyField";
 import { PaymentStatusBadge } from "./StatusBadge";
@@ -21,7 +18,7 @@ export default function BookingDetailsSection({
   copiedField,
   formatDateTime,
   handleCancelClick,
-  handleDownloadInvoice,
+  handleFeedBackClick,
   handleCall,
 }: any) {
   const address = booking.address;
@@ -175,7 +172,7 @@ export default function BookingDetailsSection({
       </div>
 
       {/* Booking Details Footer */}
-      <div className="flex justify-between items-center align-middle">
+      <div className="flex justify-between items-center align-middle py-2">
         {/* ACTION BUTTONS */}
         <div className="flex flex-wrap gap-2  border-t border-gray-100">
           {booking.bookingStatus === "PENDING" && (
@@ -200,16 +197,26 @@ export default function BookingDetailsSection({
               Call Provider
             </Button>
           )}
-        </div>
-
-        <div className="px-4 py-1 rounded-sm bg-blue-50 border border-blue-200 text-[13px] text-blue-800 font-medium">
-          <p>
-            We’ve already sent the invoice to your email following your payment.
-          </p>
+          {booking.bookingStatus === "COMPLETED" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleFeedBackClick(booking?.serviceId)}
+              className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50">
+              <Smile className="w-4 h-4" />
+              Give Feedback
+            </Button>
+          )}
         </div>
 
         {/* Payment Status Badge */}
         <PaymentStatusBadge status={booking.paymentStatus} />
+      </div>
+
+      <div className="px-4 py-1 rounded-sm bg-blue-50 border border-blue-200 text-[13px] text-blue-800 font-medium text-center">
+        <p>
+          We’ve already sent the invoice to your email following your payment.
+        </p>
       </div>
     </div>
   );

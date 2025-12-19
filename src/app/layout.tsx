@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
+import GetFcmToken from "./fcm-token";
+import FirebaseForegroundListener from "@/components/common/firebase-foreground";
 
 export const metadata: Metadata = {
   title: "Home Service management app",
@@ -15,9 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="">
-          <Toaster position="top-right" richColors />
-        </div>
+        <GetFcmToken />
+        <FirebaseForegroundListener />
+        <Toaster position="top-right" richColors />
         {children}
       </body>
     </html>
