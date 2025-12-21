@@ -1,105 +1,57 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+
+/* 
+   IMPORTS
+    */
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import {
+  Pencil,
+  Trash2,
+  Mail,
+  Phone,
+  Globe,
+  Clock,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Pencil, Trash2, Mail, Phone, Globe, Clock, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useQuery } from '@tanstack/react-query';
+import { DialogDescription } from "@radix-ui/react-dialog";
 
-const initialBusinessData = {
-  businessName: "Jitendra Cleaning Services",
-  businessEmail: "abcd@gmail.com",
-  phoneNumber: "+91-9228339444",
-  websiteUrl: "https://www.google.com",
-  businessCategory: "Home Service",
-  socialLinks: [
-    { id: 1, platform: "Facebook", url: "https://facebook.com/business", icon: Facebook },
-    { id: 2, platform: "Instagram", url: "https://instagram.com/business", icon: Instagram },
-    { id: 3, platform: "Twitter", url: "https://twitter.com/business", icon: Twitter }
-  ]
-};
+const BUSINESS_QUERY_KEY = ["provider-business"];
 
-const initialSlots = [
-  { id: 1, startTime: "09:00 AM", endTime: "10:00 AM" },
-  { id: 2, startTime: "10:00 AM", endTime: "11:00 AM" },
-  { id: 3, startTime: "11:00 AM", endTime: "12:00 PM" },
-  { id: 4, startTime: "02:00 PM", endTime: "03:00 PM" },
-  { id: 5, startTime: "03:00 PM", endTime: "04:00 PM" }
-];
-
-const categories = [
-  { id: "1", name: "Home Service" },
-  { id: "2", name: "Health & Wellness" },
-  { id: "3", name: "Education" },
-  { id: "4", name: "Beauty & Salon" }
-];
-
-function LabelAndValue({ label, value, icon: Icon }:any) {
+function LabelAndValue({ label, value, icon: Icon }: any) {
   return (
-    <div className="flex flex-col p-4 gap-2 bg-gray-50 rounded-lg border border-gray-200">
-      <div className="flex items-center gap-2">
-        {Icon && <Icon className="w-4 h-4 text-gray-600" />}
-        <Label className="text-sm font-medium text-gray-600">{label}</Label>
+    <div className="p-4 border rounded-lg bg-gray-50 space-y-1">
+      <div className="flex items-center gap-2 text-gray-600">
+        {Icon && <Icon className="w-4 h-4" />}
+        <Label>{label}</Label>
       </div>
-      <p className="text-gray-900 break-words">{value}</p>
+      <p className="text-gray-900">{value || "-"}</p>
     </div>
   );
 }
 
-function SocialLinkCard({ platform, url, icon: Icon }:any) {
+function SlotCard({ slot, onDelete }: any) {
   return (
-    <a 
-      href={url} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
-    >
-      <Icon className="w-5 h-5 text-gray-700" />
-      <div>
-        <p className="font-medium text-gray-900">{platform}</p>
-        <p className="text-sm text-gray-500 truncate max-w-[200px]">{url}</p>
-      </div>
-    </a>
-  );
-}
-
-function SlotCard({ slot, onEdit, onDelete }:any) {
-  return (
-    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <div className="flex items-center gap-3">
-        <Clock className="w-5 h-5 text-gray-600" />
-        <p className="font-medium text-gray-900">
-          {slot.startTime} - {slot.endTime}
-        </p>
+    <div className="flex justify-between items-center p-4 border rounded-lg bg-gray-50">
+      <div className="flex items-center gap-2">
+        <Clock className="w-4 h-4" />
+        <span>{slot.time}</span>
       </div>
       <div className="flex gap-2">
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => onEdit(slot)}
-        >
-          <Pencil className="w-4 h-4" />
-        </Button>
-        <Button 
-          size="sm" 
-          variant="outline"
-          onClick={() => onDelete(slot)}
-        >
+        <Button size="sm" variant="outline" onClick={() => onDelete(slot)}>
           <Trash2 className="w-4 h-4 text-red-600" />
         </Button>
       </div>
@@ -107,194 +59,77 @@ function SlotCard({ slot, onEdit, onDelete }:any) {
   );
 }
 
-function EditBusinessDialog({ open, onOpenChange, businessData, onSave }:any) {
-  const [formData, setFormData] = useState(businessData);
-  const [socialFields, setSocialFields] = useState(
-    businessData.socialLinks.map((s:any) => ({ platform: s.platform, url: s.url }))
-  );
+// EDIT BUSINESS
+function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
+  const [form, setForm] = useState(business);
 
-  const handleSubmit = (e:any) => {
-    e.preventDefault();
-    onSave({ ...formData, socialLinks: socialFields });
-  };
+  useEffect(() => {
+    setForm(business);
+  }, [business]);
+
+  if (!business) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Edit Business Profile</DialogTitle>
-          <DialogDescription>
-            Update your business information
-          </DialogDescription>
+          <DialogTitle>Edit Business</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
-          <div>
-            <Label>Business Name *</Label>
-            <Input
-              value={formData.businessName}
-              onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-              placeholder="Jitendra Cleaning Services"
-            />
-          </div>
+          <Input
+            value={form.businessName}
+            onChange={(e) =>
+              setForm({ ...form, businessName: e.target.value })
+            }
+            placeholder="Business Name"
+          />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Category *</Label>
-              <Select 
-                value={formData.businessCategory}
-                onValueChange={(value) => setFormData({ ...formData, businessCategory: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.name}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <Input
+            value={form.contactEmail}
+            onChange={(e) =>
+              setForm({ ...form, contactEmail: e.target.value })
+            }
+            placeholder="Email"
+          />
 
-            <div>
-              <Label>Contact Email *</Label>
-              <Input
-                type="email"
-                value={formData.businessEmail}
-                onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
-                placeholder="example@gmail.com"
-              />
-            </div>
-          </div>
+          <Input
+            value={form.phoneNumber}
+            onChange={(e) =>
+              setForm({ ...form, phoneNumber: e.target.value })
+            }
+            placeholder="Phone"
+          />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Phone Number *</Label>
-              <Input
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                placeholder="+91 9876543210"
-              />
-            </div>
-
-            <div>
-              <Label>Website</Label>
-              <Input
-                value={formData.websiteUrl}
-                onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                placeholder="https://yourbusiness.com"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label>Social Profiles</Label>
-            <div className="mt-2 space-y-2">
-              {socialFields.map((field:any, index:any) => (
-                <div key={index} className="grid grid-cols-2 gap-2">
-                  <Input
-                    placeholder="Platform (e.g., Instagram)"
-                    value={field.platform}
-                    onChange={(e) => {
-                      const newFields = [...socialFields];
-                      newFields[index].platform = e.target.value;
-                      setSocialFields(newFields);
-                    }}
-                  />
-                  <Input
-                    placeholder="https://profile.com"
-                    value={field.url}
-                    onChange={(e) => {
-                      const newFields = [...socialFields];
-                      newFields[index].url = e.target.value;
-                      setSocialFields(newFields);
-                    }}
-                  />
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setSocialFields([...socialFields, { platform: '', url: '' }])}
-                className="w-full"
-              >
-                + Add Social Link
-              </Button>
-            </div>
-          </div>
+          <Input
+            value={form.websiteURL || ""}
+            onChange={(e) =>
+              setForm({ ...form, websiteURL: e.target.value })
+            }
+            placeholder="Website"
+          />
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Save Changes</Button>
+          <Button onClick={() => onSave(form)}>Save</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
-function EditSlotDialog({ open, onOpenChange, slot, onSave }:any) {
-  const [startTime, setStartTime] = useState(slot?.startTime || '');
-  const [endTime, setEndTime] = useState(slot?.endTime || '');
-
-  const handleSubmit = () => {
-    onSave({ ...slot, startTime, endTime });
-  };
-
+// DELETE CONFIRMATION
+function DeleteDialog({ open, onOpenChange, title, description, onConfirm }: any) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Time Slot</DialogTitle>
-          <DialogDescription>
-            Update the time slot details
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          <div>
-            <Label>Start Time *</Label>
-            <Input
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              placeholder="09:00 AM"
-            />
-          </div>
-
-          <div>
-            <Label>End Time *</Label>
-            <Input
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              placeholder="10:00 AM"
-            />
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit}>Save Changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function DeleteDialog({ open, onOpenChange, title, description, onConfirm }:any) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
@@ -308,177 +143,134 @@ function DeleteDialog({ open, onOpenChange, title, description, onConfirm }:any)
   );
 }
 
-const BusinessInfo = () => {
-  const {data} = useQuery({
-    queryKey: ['businessInfo'],
+export default function BusinessInfo() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  /* ---------------- FETCH ---------------- */
+  const { data, isLoading } = useQuery({
+    queryKey: BUSINESS_QUERY_KEY,
     queryFn: async () => {
-      const res = await fetch('/api/provider/business',{
-        method:"GET",
-        headers:{
-          "Content-Type":"application/json"
-        }
-      })
-      return await res.json()
-    }
-  })
-  const [businessData, setBusinessData] = useState(initialBusinessData);
-  const [slots, setSlots] = useState(initialSlots);
-  
+      const res = await fetch("/api/provider/business");
+      if (!res.ok) throw new Error();
+      return res.json();
+    },
+  });
+
+  /* ---------------- MUTATIONS ---------------- */
+
+  const editBusiness = useMutation({
+    mutationFn: async (payload: any) => {
+      await fetch("/api/provider/business", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(BUSINESS_QUERY_KEY);
+      toast.success("Business updated");
+      setEditBusinessOpen(false);
+    },
+  });
+
+  const deleteSlot = useMutation({
+    mutationFn: async (id: string) => {
+      await fetch(`/api/provider/slots`, { method: "DELETE", body: JSON.stringify({ id }) });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(BUSINESS_QUERY_KEY);
+      toast.success("Slot deleted");
+      setDeleteSlotOpen(false);
+      setSelectedSlot(null);
+    },
+  });
+
+  const deleteBusiness = useMutation({
+    mutationFn: async () => {
+      const sure = confirm("Are you sure want to delete you business this action must not undone and delete you account premanently!\nDo you want to DELETE your account ?")
+      if (!sure) return;
+      await fetch("/api/provider/business", { method: "DELETE" });
+      toast.success("Business deleted");
+    },
+    onSuccess: () => {
+      router.push("/provider/dashboard");
+    },
+  });
+
   const [editBusinessOpen, setEditBusinessOpen] = useState(false);
-  const [editSlotOpen, setEditSlotOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [slotToDelete, setSlotToDelete] = useState(null);
+  const [deleteSlotOpen, setDeleteSlotOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
 
-  const handleSaveBusiness = (data:any) => {
-    const updatedSocialLinks = data.socialLinks
-      .filter((s:any) => s.platform && s.url)
-      .map((s:any, index:any) => ({
-        id: businessData.socialLinks[index]?.id || Date.now() + index,
-        platform: s.platform,
-        url: s.url,
-        icon: getIconForPlatform(s.platform)
-      }));
+  if (isLoading) return <p className="p-10">Loading...</p>;
+  if (!data?.business) return <p className="p-10">No business found</p>;
 
-    setBusinessData({ ...data, socialLinks: updatedSocialLinks });
-    setEditBusinessOpen(false);
-  };
-
-  const handleEditSlot = (slot:any) => {
-    setSelectedSlot(slot);
-    setEditSlotOpen(true);
-  };
-
-  const handleSaveSlot = (updatedSlot:any) => {
-    setSlots(slots.map(s => s.id === updatedSlot.id ? updatedSlot : s));
-    setEditSlotOpen(false);
-    setSelectedSlot(null);
-  };
-
-  const handleDeleteSlot = (slot:any) => {
-    setSlotToDelete(slot);
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDeleteSlot = () => {
-    setSlots(slots.filter(s => s.id !== slotToDelete.id));
-    setDeleteDialogOpen(false);
-    setSlotToDelete(null);
-  };
-
-  const getIconForPlatform = (platform:any) => {
-    const platformLower = platform.toLowerCase();
-    if (platformLower.includes('facebook')) return Facebook;
-    if (platformLower.includes('instagram')) return Instagram;
-    if (platformLower.includes('twitter')) return Twitter;
-    if (platformLower.includes('linkedin')) return Linkedin;
-    return Globe;
-  };
+  const { business, category, slots = [] } = data;
 
   return (
-    <div className="flex w-full justify-center bg-gray-50 min-h-screen py-8">
-      <div className="w-full max-w-[1400px] px-4 md:px-6 space-y-10">
-        <section className="py-8">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900">Manage Business Profile</h1>
-            <p className="text-gray-600">Here you can manage your business profile and time slots.</p>
-          </div>
-        </section>
+    <div className="max-w-6xl mx-auto space-y-10">
+      <h1 className="text-3xl font-bold">Manage Business Profile</h1>
 
-        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Business Profile</h2>
-            <Button onClick={() => setEditBusinessOpen(true)}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Edit Business
-            </Button>
-          </div>
+      <section className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
+        <div className="flex justify-between">
+          <h2 className="text-xl font-semibold">Business Details</h2>
+          <Button onClick={() => setEditBusinessOpen(true)}>
+            <Pencil className="w-4 h-4 mr-2" /> Edit
+          </Button>
+        </div>
 
-          <div className="space-y-4">
-            <LabelAndValue 
-              label="Business Name" 
-              value={businessData.businessName}
-            />
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <LabelAndValue 
-                icon={Mail}
-                label="Business Email" 
-                value={businessData.businessEmail} 
-              />
-              <LabelAndValue 
-                icon={Phone}
-                label="Mobile Number" 
-                value={businessData.phoneNumber} 
-              />
-              <LabelAndValue 
-                icon={Globe}
-                label="Website URL" 
-                value={businessData.websiteUrl} 
-              />
-              <LabelAndValue 
-                label="Business Category" 
-                value={businessData.businessCategory} 
-              />
-            </div>
-          </div>
-        </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <LabelAndValue label="Name" value={business.businessName} />
+          <LabelAndValue icon={Mail} label="Email" value={business.contactEmail} />
+          <LabelAndValue icon={Phone} label="Phone" value={business.phoneNumber} />
+          <LabelAndValue icon={Globe} label="Website" value={business.websiteURL} />
+          <LabelAndValue label="Category" value={category?.name} />
+        </div>
+      </section>
 
-        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Business Social Platforms</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {businessData.socialLinks.map((link) => (
-              <SocialLinkCard 
-                key={link.id}
-                platform={link.platform}
-                url={link.url}
-                icon={link.icon}
-              />
-            ))}
-          </div>
-        </section>
+      <section className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
+        <h2 className="text-xl font-semibold">Time Slots</h2>
 
-        <section className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Business Time Slots</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {slots.map((slot) => (
+        <div className="grid grid-colo-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {Array.isArray(slots) &&
+            slots.map((slot: any) => (
               <SlotCard
                 key={slot.id}
                 slot={slot}
-                onEdit={handleEditSlot}
-                onDelete={handleDeleteSlot}
+                onDelete={(s: any) => {
+                  setSelectedSlot(s);
+                  setDeleteSlotOpen(true);
+                }}
               />
             ))}
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <EditBusinessDialog
-          open={editBusinessOpen}
-          onOpenChange={setEditBusinessOpen}
-          businessData={businessData}
-          onSave={handleSaveBusiness}
-        />
+      <EditBusinessDialog
+        open={editBusinessOpen}
+        onOpenChange={setEditBusinessOpen}
+        business={business}
+        onSave={(data: any) => editBusiness.mutate(data)}
+      />
 
-        {selectedSlot && (
-          <EditSlotDialog
-            open={editSlotOpen}
-            onOpenChange={setEditSlotOpen}
-            slot={selectedSlot}
-            onSave={handleSaveSlot}
-          />
-        )}
+      <DeleteDialog
+        open={deleteSlotOpen}
+        onOpenChange={setDeleteSlotOpen}
+        title="Delete Slot?"
+        description="Are you sure to delete this slot because this action can't be undone!"
+        onConfirm={() => {
+          if (!selectedSlot) return;
+          deleteSlot.mutate(selectedSlot.id);
+        }}
+      />
 
-        <DeleteDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          title="Delete Time Slot"
-          description={`Are you sure you want to delete the slot "${slotToDelete?.startTime} - ${slotToDelete?.endTime}"? This action cannot be undone.`}
-          onConfirm={confirmDeleteSlot}
-        />
-      </div>
+      <Button
+        variant="destructive"
+        className="mb-6"
+        onClick={() => deleteBusiness.mutate()}
+      >
+        Delete Business
+      </Button>
     </div>
   );
-};
-
-export default BusinessInfo;
+}

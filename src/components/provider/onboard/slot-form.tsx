@@ -16,6 +16,7 @@ import {
   FormControl,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import ConfettiBurst from "./ConfettiBurst";
 
 const Required = () => <span className="text-red-500">*</span>;
 
@@ -164,6 +165,9 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
         return;
       }
       toast.success(data.msg || "Slots created successfully");
+      const fireConfetti = ConfettiBurst();
+      fireConfetti();
+
 
       onNext(data);
       setLoading(false);
@@ -295,10 +299,9 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                         <label
                           key={opt.value}
                           className={`relative flex items-center gap-4 py-2 px-4 rounded-md border-2 cursor-pointer transition-all w-fit
-                            ${
-                              field.value === opt.value
-                                ? "border-green-600 bg-green-100 shadow-md"
-                                : "border-gray-200 bg-white hover:border-green-300"
+                            ${field.value === opt.value
+                              ? "border-green-600 bg-green-100 shadow-md"
+                              : "border-gray-200 bg-white hover:border-green-300"
                             }
                           `}>
                           <input

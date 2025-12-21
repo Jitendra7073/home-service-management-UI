@@ -1,5 +1,8 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken } from "firebase/messaging";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { toast } from "sonner";
+
+/* ---------------- FIREBASE CONFIG ---------------- */
 
 const firebaseConfig = {
   apiKey: "AIzaSyB1mPv85PzhOMXsp-JoAgrUF426XcR8r34",
@@ -13,21 +16,50 @@ const firebaseConfig = {
 
 const vapidKey = "BNQF_YZYWxHxRNNgOEZy32Fsfvr6eLheZ5MmZF8bqk1rEmAfRvFDWxar7Tc6WOZqmvjfev2fKc0RniswR7-HJxk"
 
-const app = initializeApp(firebaseConfig)
+/* ---------------- INIT APP (SAFE) ---------------- */
 
-const messaging = getMessaging(app)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-export const RequestFCMToken = async () =>{
-  return Notification.requestPermission()
-  .then((premission) =>{
-    if(premission === "granted"){
-      return getToken(messaging,{ vapidKey })
-    }else{
-      throw new Error("Notification not granted!")
+/* ---------------- GET MESSAGING (SSR SAFE) ---------------- */
+
+export const getFirebaseMessaging = async () => {
+  if (typeof window === "undefined") return null;
+
+  const supported = await isSupported();
+  if (!supported) {
+    console.warn("FCM is not supported in this browser");
+    return null;
+  }
+
+  return getMessaging(app);
+};
+
+/* ---------------- REQUEST TOKEN ---------------- */
+
+export const RequestFCMToken = async () => {
+  try {
+    if (typeof window === "undefined") return null;
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      toast.warning("Notification permission not granted");
+      return null;
     }
-  })
-  .catch((error)=>{
-    console.error("Error getting FCM Token:",error)
-    throw error;
-  })
-}
+
+    const messaging = await getFirebaseMessaging();
+    if (!messaging) return null;
+
+    const token = await getToken(messaging, { vapidKey });
+
+    if (!token) {
+      toast.error("Failed to generate FCM token");
+      return null;
+    }
+
+    return token;
+  } catch (error) {
+    console.error("Error getting FCM Token:", error);
+    return null;
+  }
+};

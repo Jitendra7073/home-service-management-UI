@@ -1,40 +1,52 @@
 "use client";
+
 import { RequestFCMToken } from "@/utils/firebaseUtils";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const GetFcmToken = () => {
-  const [fcmtoken, setFcmToken] = useState<string | null>(null);
-  const [stored, setStored] = useState(false);
+  const isStoredRef = useRef(false);
 
   useEffect(() => {
-    const getToken = async () => {
+    let isMounted = true;
+
+    const initFCM = async () => {
       try {
+        // Request token safely
         const token = await RequestFCMToken();
-        console.log("token :",token)
-        if (token) setFcmToken(token);
-      } catch (error) {
-        console.error("Error getting token:", error);
+
+        // Permission denied / unsupported / SSR
+        if (!token || !isMounted) return;
+
+        // Prevent duplicate store (StrictMode / re-renders)
+        if (isStoredRef.current) return;
+        isStoredRef.current = true;
+
+        // Store token in backend
+        const res = await fetch("/api/notification/store-fcm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+
+        if (!res.ok) {
+          console.warn("FCM token store failed");
+          isStoredRef.current = false; // allow retry later
+          return;
+        }
+
+        // Optional: read response if needed
+        await res.json();
+      } catch {
+        // 🔕 Silent fail (expected in many browsers)
       }
     };
-    getToken();
-  }, []);
 
-  useEffect(() => {
-    if (!fcmtoken || stored) return;
+    initFCM();
 
-    const storeToken = async () => {
-      const res = await fetch("/api/notification/store-fcm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: fcmtoken }),
-      });
-
-      await res.json();
-      setStored(true);
+    return () => {
+      isMounted = false;
     };
-
-    storeToken();
-  }, [fcmtoken, stored]);
+  }, []);
 
   return null;
 };

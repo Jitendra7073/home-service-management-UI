@@ -7,7 +7,6 @@ import { Check, Building2, MapPin, Clock } from "lucide-react";
 import AddressForm from "@/components/provider/onboard/address-form";
 import BusinessProfileForm from "@/components/provider/onboard/business-form";
 import SlotForm from "@/components/provider/onboard/slot-form";
-import WelcomeScreen from "@/components/provider/onboard/welcome-screen";
 
 const STEP_MAP: Record<string, number> = {
   address: 1,
@@ -20,7 +19,6 @@ const REVERSE_STEP_MAP: Record<number, string> = {
   1: "address",
   2: "business",
   3: "slots",
-  4: "complete",
 };
 
 export default function OnboardSteps() {
@@ -151,10 +149,9 @@ export default function OnboardSteps() {
                         className={`
                           w-11 h-11 rounded-full flex items-center justify-center
                           mb-2 transition-all duration-300
-                          ${
-                            active
-                              ? "bg-blue-600 text-white shadow-lg scale-110"
-                              : completed
+                          ${active
+                            ? "bg-blue-600 text-white shadow-lg scale-110"
+                            : completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-200 text-gray-400"
                           }
@@ -169,10 +166,9 @@ export default function OnboardSteps() {
                       <span
                         className={`
                           text-xs sm:text-sm font-medium text-center whitespace-nowrap
-                          ${
-                            active
-                              ? "text-blue-600"
-                              : completed
+                          ${active
+                            ? "text-blue-600"
+                            : completed
                               ? "text-green-600"
                               : "text-gray-500"
                           }
@@ -220,7 +216,6 @@ export default function OnboardSteps() {
           {step === 1 && <AddressForm onNext={handleNext} />}
           {step === 2 && <BusinessProfileForm onNext={handleNext} />}
           {step === 3 && <SlotForm onNext={handleNext} />}
-          {step === 4 && <WelcomeScreen />}
         </div>
       </div>
     </div>

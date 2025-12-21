@@ -1,7 +1,6 @@
 import { backend } from "@/lib/backend";
 import { NextResponse } from "next/server";
 
-// Define the params interface for async access in Next.js 15
 interface RouteParams {
   params: Promise<{ serviceId: string }>;
 }
@@ -35,16 +34,16 @@ export async function GET(req: Request, { params }: RouteParams) {
   }
 }
 
-// ================= PATCH (Update) =================
+// ================= PATCH =================
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
     const { serviceId } = await params;
     const body = await req.json();
 
     const { ok, data } = await backend(
-      `/api/v1/provider/service/${serviceId}`, 
+      `/api/v1/provider/service/${serviceId}`,
       {
-        method: "PATCH", 
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }

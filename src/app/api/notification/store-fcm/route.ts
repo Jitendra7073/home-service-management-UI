@@ -8,10 +8,10 @@ export async function POST(req: Request) {
       method: "POST",
       body: JSON.stringify({ token }),
     });
-    if(!ok){
-        return NextResponse.json({
-            msg:"Failed to storing the fcm token!"
-        })
+    if (!ok) {
+      return NextResponse.json({
+        msg: "Failed to storing the fcm token!"
+      })
     }
     return NextResponse.json(data)
   } catch (error) {

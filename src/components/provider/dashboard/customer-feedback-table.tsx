@@ -11,8 +11,19 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Star, ArrowUpDown } from "lucide-react";
+import { Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import {
   Table,
   TableBody,
@@ -22,98 +33,260 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+/* ================= TYPES ================= */
+
 export type Feedback = {
   id: string;
-  name: string;
+  username: string;
   rating: number;
   comment: string;
-  date: string;
+  createdAt: string;
+  approved: boolean;
 };
 
-const feedbackData: Feedback[] = [
-  { id: "1", name: "John Doe", rating: 5, comment: "Amazing service!", date: "2025-12-08" },
-  { id: "2", name: "Priya Sharma", rating: 4, comment: "Very nice experience", date: "2025-12-07" },
-  { id: "3", name: "Amit Patel", rating: 5, comment: "Perfect quality!", date: "2025-12-05" },
-  { id: "4", name: "Sara Wilson", rating: 3, comment: "Okay service", date: "2025-12-03" },
-];
+/* ================= HELPERS ================= */
 
-/* WEEKLY FILTER */
 const isWithin7Days = (date: string) =>
   Date.now() - new Date(date).getTime() < 7 * 24 * 60 * 60 * 1000;
 
-export const feedbackColumns: ColumnDef<Feedback>[] = [
-  {
-    accessorKey: "name",
-    header: "Customer",
-  },
-  {
-    accessorKey: "rating",
-    header: "Rating",
-    cell: ({ row }) => (
-      <span className="flex items-center gap-1 font-medium">
-        {row.getValue("rating")}
-        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-      </span>
-    ),
-  },
-  {
-    accessorKey: "comment",
-    header: "Feedback",
-    cell: ({ row }) => (
-      <p className="line-clamp-2 text-sm text-gray-700">{row.getValue("comment")}</p>
-    ),
-  },
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) =>
-      new Date(row.getValue("date")).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }),
-  },
-];
-export default function FeedbackTable() {
-  const [globalFilter, setGlobalFilter] = React.useState("");
+const truncate = (text: string, len = 20) =>
+  text.length > len ? text.slice(0, len) + "…" : text;
 
-  const weeklyFeedback = React.useMemo(
-    () => feedbackData.filter((f) => isWithin7Days(f.date)),
-    []
+/* ================= COMPONENT ================= */
+
+export default function FeedbackTable() {
+  const queryClient = useQueryClient();
+
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [statusFilter, setStatusFilter] = React.useState<
+    "all" | "approved" | "pending"
+  >("all");
+
+  /* ---------- FETCH ---------- */
+  const { data } = useQuery({
+    queryKey: ["customer-feedback"],
+    queryFn: async () => {
+      const res = await fetch("/api/provider/feedback");
+      return res.json();
+    },
+  });
+
+  /* ---------- FILTER WEEKLY ---------- */
+  const weeklyFeedback: Feedback[] = React.useMemo(
+    () =>
+      data?.feedbacks?.filter((f: Feedback) =>
+        isWithin7Days(f.createdAt)
+      ) || [],
+    [data?.feedbacks]
   );
 
+  /* ---------- STATUS COUNTS ---------- */
+  const approvedCount = weeklyFeedback.filter(f => f.approved).length;
+  const pendingCount = weeklyFeedback.filter(f => !f.approved).length;
+
+  /* ---------- STATUS FILTER ---------- */
+  const filteredByStatus = React.useMemo(() => {
+    if (statusFilter === "approved")
+      return weeklyFeedback.filter(f => f.approved);
+    if (statusFilter === "pending")
+      return weeklyFeedback.filter(f => !f.approved);
+    return weeklyFeedback;
+  }, [weeklyFeedback, statusFilter]);
+
+  /* ---------- SORT (PENDING FIRST) ---------- */
+  const sortedFeedback = React.useMemo(() => {
+    return [...filteredByStatus].sort(
+      (a, b) => Number(a.approved) - Number(b.approved)
+    );
+  }, [filteredByStatus]);
+
+  /* ---------- APPROVE MUTATION ---------- */
+  const approveMutation = useMutation({
+    mutationFn: async (feedbackId: string) => {
+      const res = await fetch("/api/provider/feedback", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedbackId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Approval failed");
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Feedback approved successfully");
+      queryClient.invalidateQueries({ queryKey: ["customer-feedback"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  /* ================= COLUMNS ================= */
+
+  const columns: ColumnDef<Feedback>[] = [
+    { accessorKey: "username", header: "Customer" },
+
+    {
+      accessorKey: "rating",
+      header: "Rating",
+      cell: ({ row }) => (
+        <span className="flex items-center gap-1">
+          {row.getValue("rating")}
+          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+        </span>
+      ),
+    },
+
+    {
+      accessorKey: "approved",
+      header: "Status",
+      cell: ({ row }) =>
+        row.original.approved ? (
+          <Badge className="bg-green-100 text-green-700">Approved</Badge>
+        ) : (
+          <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+        ),
+    },
+
+    {
+      accessorKey: "comment",
+      header: "Feedback",
+      cell: ({ row }) => {
+        const feedback = row.original;
+        const isApproved = feedback.approved;
+
+        return (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <p className="cursor-pointer text-sm">
+                {truncate(feedback.comment)}
+              </p>
+            </HoverCardTrigger>
+
+            <HoverCardContent className="w-72 space-y-3">
+              <p className="text-sm">{feedback.comment}</p>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="w-full inline-block">
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        disabled={isApproved}
+                        onClick={() =>
+                          !isApproved &&
+                          approveMutation.mutate(feedback.id)
+                        }
+                      >
+                        {isApproved ? "Approved" : "Approve & Publish"}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+
+                  {isApproved && (
+                    <TooltipContent>Already approved</TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+            </HoverCardContent>
+          </HoverCard>
+        );
+      },
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }) =>
+        new Date(row.getValue("createdAt")).toLocaleDateString("en-IN"),
+    },
+  ];
+
+  /* ================= TABLE ================= */
+
   const table = useReactTable({
-    data: weeklyFeedback,
-    columns: feedbackColumns,
+    data: sortedFeedback,
+    columns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageSize: 5 },
+    },
   });
 
+  /* ================= RENDER ================= */
+
   return (
-    <div className="space-y-4 w-full">
-      <div className="flex flex-wrap justify-between items-center">
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex justify-between items-center flex-wrap gap-3">
         <h2 className="font-semibold">Latest Customer Feedback</h2>
 
+        <div className="flex gap-2 items-center">
+          <Badge className="bg-yellow-100 text-yellow-700">
+            Pending: {pendingCount}
+          </Badge>
+          <Badge className="bg-green-100 text-green-700">
+            Approved: {approvedCount}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex gap-3 flex-wrap">
         <Input
           placeholder="Search feedback..."
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
+
+        <Select
+          value={statusFilter}
+          onValueChange={(v) =>
+            setStatusFilter(v as "all" | "approved" | "pending")
+          }
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Filter status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div className="rounded-md border overflow-hidden">
+      {/* Table */}
+      <div className="border rounded-md">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
-                {group.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+            {table.getHeaderGroups().map(g => (
+              <TableRow key={g.id}>
+                {g.headers.map(h => (
+                  <TableHead key={h.id}>
+                    {flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -121,9 +294,9 @@ export default function FeedbackTable() {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
+            {table.getRowModel().rows.map(row => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
+                {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -132,6 +305,26 @@ export default function FeedbackTable() {
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
       </div>
     </div>
   );

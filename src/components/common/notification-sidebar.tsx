@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,49 +10,80 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-interface NotificationItem {
-  id: number;
-  title: string;
-  message: string;
-  time: string;
-  type: "success" | "warning" | "info";
-}
+const NOTIFICATION_QUERY_KEY = ["notifications"];
 
 const NotificationSideBar = () => {
   const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Fake Notification Data (UI only)
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: 1,
-      title: "Booking Confirmed",
-      message: "Your AC Repair booking has been confirmed.",
-      time: "2 min ago",
-      type: "success",
+  /* ---------------- FETCH NOTIFICATIONS ---------------- */
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: NOTIFICATION_QUERY_KEY,
+    queryFn: async () => {
+      const res = await fetch("/api/notification/customer-side");
+      if (!res.ok) throw new Error("Failed to fetch notifications");
+      return res.json();
     },
-    {
-      id: 2,
-      title: "Provider On The Way",
-      message: "John will arrive at your location in 15 minutes.",
-      time: "10 min ago",
-      type: "info",
-    },
-    {
-      id: 3,
-      title: "Booking Delayed",
-      message: "Your Plumbing service is delayed due to traffic.",
-      time: "30 min ago",
-      type: "warning",
-    },
-  ]);
+  });
 
-  // Remove Notification
-  const removeNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  const notifications = data?.notifications ?? [];
 
-  // Get icon by type
+  const unreadNotifications = notifications.filter(
+    (n: any) => n.read === false
+  );
+
+  /* ---------------- MARK AS READ ---------------- */
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/notifications/${id}/read`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error("Failed to update notification");
+    },
+
+    // Optimistic UI update
+    onMutate: async (id) => {
+      await queryClient.cancelQueries(NOTIFICATION_QUERY_KEY);
+
+      const previous =
+        queryClient.getQueryData(
+          NOTIFICATION_QUERY_KEY
+        );
+
+      queryClient.setQueryData(
+        NOTIFICATION_QUERY_KEY,
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            notifications: old.notifications.map((n) =>
+              n.id === id ? { ...n, read: true } : n
+            ),
+          };
+        }
+      );
+
+      return { previous };
+    },
+
+    onError: (_, __, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(
+          NOTIFICATION_QUERY_KEY,
+          context.previous
+        );
+      }
+      toast.error("Failed to update notification");
+    },
+  });
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "success":
@@ -66,66 +95,83 @@ const NotificationSideBar = () => {
     }
   };
 
+
   return (
-    <div>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Bell size={26} className="text-primary" />
-          </Button>
-        </SheetTrigger>
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell size={26} className="text-primary" />
 
-        <SheetContent side="right" className="w-[330px] p-0">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-4 border-b">
-            <h2 className="text-xl font-semibold">Notifications</h2>
-          </div>
+          {unreadNotifications.length > 0 && (
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
+              {unreadNotifications.length}
+            </span>
+          )}
+        </Button>
+      </SheetTrigger>
 
-          {/* Notification List */}
-          <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
-            {notifications.length === 0 ? (
-              <p className="text-center py-6 text-muted-foreground">
-                No notifications
-              </p>
-            ) : (
-              <ul className="divide-y">
-                {notifications.map((notify) => (
-                  <li
-                    key={notify.id}
-                    className="flex justify-between items-start p-4 hover:bg-accent transition-colors">
-                    {/* ICON + TEXT */}
-                    <div className="flex gap-3 items-start">
-                      {/* Icon */}
-                      <div className="p-2 rounded-md bg-muted">
-                        {getTypeIcon(notify.type)}
-                      </div>
+      <SheetContent side="right" className="w-[330px] p-0">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-4 border-b">
+          <h2 className="text-xl font-semibold">Notifications</h2>
+        </div>
 
-                      {/* Notification Details */}
-                      <div>
-                        <p className="font-medium text-sm">{notify.title}</p>
-                        <p className="text-xs text-muted-foreground leading-tight">
-                          {notify.message}
-                        </p>
-                        <span className="text-[11px] text-muted-foreground block mt-1">
-                          {notify.time}
-                        </span>
-                      </div>
+        {/* Body */}
+        <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
+          {isLoading ? (
+            <p className="text-center py-6 text-muted-foreground">
+              Loading notifications...
+            </p>
+          ) : isError ? (
+            <p className="text-center py-6 text-red-500">
+              Failed to load notifications
+            </p>
+          ) : unreadNotifications.length === 0 ? (
+            <p className="text-center py-6 text-muted-foreground">
+              No new notifications
+            </p>
+          ) : (
+            <ul className="divide-y">
+              {unreadNotifications.map((notify) => (
+                <li
+                  key={notify.id}
+                  className="flex justify-between items-start p-4 hover:bg-accent transition"
+                >
+                  {/* ICON + TEXT */}
+                  <div className="flex gap-3">
+                    <div className="p-2 rounded-md bg-muted">
+                      {getTypeIcon(notify.type)}
                     </div>
 
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => removeNotification(notify.id)}
-                      className="text-muted-foreground hover:text-primary transition">
-                      <X size={16} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+                    <div>
+                      <p className="font-medium text-sm">
+                        {notify.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {notify.message}
+                      </p>
+                      <span className="text-[11px] text-muted-foreground block mt-1">
+                        {notify.time}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* MARK AS READ */}
+                  <button
+                    onClick={() =>
+                      markAsReadMutation.mutate(notify.id)
+                    }
+                    className="text-muted-foreground hover:text-primary"
+                  >
+                    <X size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 

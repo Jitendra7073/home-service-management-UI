@@ -134,11 +134,11 @@ export default function ServiceDetailPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
         <div className="relative w-full overflow-hidden rounded-md aspect-[16/8] md:aspect-[19/7] shadow-sm">
           <Image
-            src={service.coverImage || "/home-service-banner.jpeg"}
+            src={service.coverImage || "/images/default-service-banner.png"}
             alt={service.name || "Service Name"}
             fill
             priority
-            className="object-cover"
+            className={`object-cover`}
           />
         </div>
 
@@ -166,19 +166,17 @@ export default function ServiceDetailPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
                       label="Duration"
-                      value={`${
-                        (service.durationInMinutes / 60)
-                          .toFixed(2)
-                          .split(".")[0]
-                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
-                        (service.durationInMinutes / 60)
+                      value={`${(service.durationInMinutes / 60)
+                        .toFixed(2)
+                        .split(".")[0]
+                        } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
                           .toFixed(2)
                           .split(".")[1] == "00"
                           ? ""
                           : (service.durationInMinutes / 60)
-                              .toFixed(2)
-                              .split(".")[1] + " Min"
-                      } 
+                            .toFixed(2)
+                            .split(".")[1] + " Min"
+                        } 
                       `}
                     />
 
@@ -192,9 +190,8 @@ export default function ServiceDetailPage() {
                     />
                     <FeaturePill
                       label="Reviews"
-                      value={`${service.reviewCount} review${
-                        service.reviewCount !== 1 ? "s" : ""
-                      }`}
+                      value={`${service.reviewCount} review${service.reviewCount !== 1 ? "s" : ""
+                        }`}
                     />
                     <FeaturePill
                       label="Status"
@@ -265,7 +262,7 @@ export default function ServiceDetailPage() {
             <PoliciesGrid />
 
             {/* OUR GALLERY */}
-            {images.length > 0 && 
+            {images.length > 0 &&
               <div>
                 <div className="bg-white rounded-sm border p-4 sm:p-6">
                   <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
@@ -356,17 +353,15 @@ export default function ServiceDetailPage() {
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
                     label="Duration"
-                    value={`${
-                      (service.durationInMinutes / 60).toFixed(2).split(".")[0]
-                    } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
-                      (service.durationInMinutes / 60)
+                    value={`${(service.durationInMinutes / 60).toFixed(2).split(".")[0]
+                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
                         .toFixed(2)
                         .split(".")[1] == "00"
                         ? ""
                         : (service.durationInMinutes / 60)
-                            .toFixed(2)
-                            .split(".")[1] + " Min"
-                    } 
+                          .toFixed(2)
+                          .split(".")[1] + " Min"
+                      } 
                       `}
                   />
                   <SummaryRow label="Provider" value={provider.name} />

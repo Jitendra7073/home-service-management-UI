@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import TanstackProvider from "../../tanstackProvider";
 
 export const metadata: Metadata = {
-  title: "HSM | Customer",
+  title: "HSM | Provider Dashboard",
   description: "description not yet created",
 };
 
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <TanstackProvider>
-     
+
       <main className="w-full">{children}</main>
     </TanstackProvider>
   );

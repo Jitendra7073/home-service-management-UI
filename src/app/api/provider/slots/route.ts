@@ -41,3 +41,34 @@ export async function POST(req: Request) {
     return NextResponse.json({ msg: "Server error in route" }, { status: 500 });
   }
 }
+
+
+// -------------------- DELETE --------------------
+export async function DELETE(req: Request) {
+  const { id } = await req.json();
+
+  try {
+
+    const { ok, data } = await backend(
+      `/api/v1/provider/slot/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!ok) {
+      return NextResponse.json(
+        { success: false, msg: data?.msg || "Failed to delete service" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ success: true, msg: "Service deleted" });
+  } catch (error) {
+    console.error("Service delete error:", error);
+    return NextResponse.json(
+      { success: false, msg: "Something went wrong" },
+      { status: 500 }
+    );
+  }
+}

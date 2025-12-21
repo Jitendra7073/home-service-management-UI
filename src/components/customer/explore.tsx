@@ -5,13 +5,12 @@ import React, { useMemo, useState } from "react";
 import ExploreHeader from "@/components/customer/explore/exploreHeroSection";
 import SearchBar from "@/components/customer/explore/exploreSearchBar";
 import Filters from "@/components/customer/explore/exploreFilters";
-import Results, {
-  ExtendedService,
-} from "@/components/customer/explore/exploreResults";
+
 import Pagination from "@/components/customer/explore/explorePagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Zap } from "lucide-react";
+import Results from "./explore/exploreResults";
 
 // --- Types ---
 interface Service {
@@ -115,20 +114,18 @@ const Explore: React.FC = () => {
   };
 
   // All services from providers
-  const allServices = useMemo<ExtendedService[]>(() => {
-    const services: ExtendedService[] = [];
+  const allServices = useMemo(() => {
+    const services: any[] = [];
 
     providers.forEach((provider) => {
       provider.businessProfile?.services.forEach((service) => {
-        if (!service.isActive) return;
-        else
-          services.push({
-            ...service,
-            businessId: provider.businessProfile!.id,
-            providerId: provider.id,
-            providerName: provider.name,
-            rating: provider.rating,
-          });
+        services.push({
+          ...service,
+          businessId: provider.businessProfile!.id,
+          providerId: provider.id,
+          providerName: provider.name,
+          rating: provider.rating,
+        });
       });
     });
     queryClient.invalidateQueries(["providers"]);
@@ -137,7 +134,7 @@ const Explore: React.FC = () => {
   }, [providers]);
 
   // Filtered services
-  const filteredServices = useMemo<ExtendedService[]>(() => {
+  const filteredServices = useMemo(() => {
     return allServices.filter((service) => {
       const matchesSearch =
         service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,11 +155,6 @@ const Explore: React.FC = () => {
     });
   }, [allServices, searchTerm, selectedCategories, priceRange, rating]);
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-
-  const paginatedServices = filteredServices.slice(startIndex, endIndex);
-
   const totalPages = Math.ceil(filteredServices.length / limit);
 
   const toggleCategory = (category: string): void => {
@@ -181,7 +173,7 @@ const Explore: React.FC = () => {
     setRating(0);
   };
 
-  const handleServiceClick = (service: ExtendedService) => {
+  const handleServiceClick = (service: any) => {
     router.push(
       `/customer/explore/${service.providerId}?serviceId=${service.id}`
     );
@@ -248,7 +240,7 @@ const Explore: React.FC = () => {
           </div>
           <div className="lg:col-span-3">
             <Results
-              services={paginatedServices}
+              services={filteredServices}
               onServiceClick={handleServiceClick}
               isLoading={isLoading || isPending}
               isError={isError}
