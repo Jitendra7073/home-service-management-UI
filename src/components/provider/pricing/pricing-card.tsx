@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Check, ShieldCheck, Lock, CreditCard } from "lucide-react";
+import { Check } from "lucide-react";
 
-/* ================= HARDCODED BENEFITS ================= */
+/* ----------------------- BENEFITS ----------------------- */
 
 const FREE_BENEFITS = [
   "Create business profile",
@@ -31,7 +31,7 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   ],
 };
 
-/* ================= HERO ================= */
+/* ----------------------- HERO ----------------------- */
 
 function PricingHero() {
   const highlights = [
@@ -41,7 +41,7 @@ function PricingHero() {
   ];
 
   return (
-    <section className="py-5 text-center space-y-4">
+    <section className="py-6 text-center space-y-4">
       <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
         Grow Your Business. Get Real Customers.
       </h1>
@@ -52,9 +52,9 @@ function PricingHero() {
       </p>
 
       <ul className="flex flex-wrap justify-center gap-3 pt-3">
-        {highlights.map((item, index) => (
+        {highlights.map((item, i) => (
           <li
-            key={index}
+            key={i}
             className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-semibold text-gray-600"
           >
             <Check className="h-4 w-4 text-green-600" />
@@ -66,43 +66,36 @@ function PricingHero() {
   );
 }
 
-/* ================= FREE PLAN CARD ================= */
+/* ----------------------- FREE PLAN CARD ----------------------- */
 
-function FreePlanCard() {
+function FreePlanCard({ isActive }: { isActive: boolean }) {
   return (
     <div className="relative flex flex-col rounded-3xl border-2 border-gray-300 bg-gray-50 p-6">
-      {/* Badge */}
-      <span className="absolute top-4 right-4 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
-        Currently Active
-      </span>
+      {isActive && (
+        <span className="absolute top-4 right-4 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
+          Currently Active
+        </span>
+      )}
 
       <div className="mb-6 text-center space-y-2">
-        <h3 className="text-xl font-bold text-gray-900">
-          Free Plan
-        </h3>
-
+        <h3 className="text-xl font-bold text-gray-900">Free Plan</h3>
         <p className="text-4xl font-extrabold text-gray-900">
-          ₹0
-          <span className="text-sm font-medium text-gray-500"> / forever</span>
+          ₹0 <span className="text-sm font-medium text-gray-500">/ forever</span>
         </p>
       </div>
 
       <ul className="flex-1 space-y-3 mb-6">
-        {FREE_BENEFITS.map((benefit, index) => (
-          <li
-            key={index}
-            className="flex items-start gap-3 text-sm text-gray-700"
-          >
-            <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-            <span>{benefit}</span>
+        {FREE_BENEFITS.map((benefit, i) => (
+          <li key={i} className="flex gap-3 text-sm text-gray-700">
+            <Check className="h-4 w-4 text-green-600 mt-0.5" />
+            {benefit}
           </li>
         ))}
       </ul>
 
       <button
         disabled
-        className="w-full rounded-full py-2.5 text-sm font-semibold
-                   bg-gray-300 text-gray-700 cursor-not-allowed"
+        className="w-full rounded-full py-2.5 text-sm font-semibold bg-gray-300 text-gray-700 cursor-not-allowed"
       >
         Current Plan
       </button>
@@ -114,25 +107,35 @@ function FreePlanCard() {
   );
 }
 
-/* ================= PAID PLAN CARD ================= */
+/* ----------------------- PAID PLAN CARD ----------------------- */
 
 function PricingCard({
   plan,
-  onSubscribe,
+  isActive,
   isLoading,
+  onSubscribe,
 }: {
   plan: any;
-  onSubscribe: (priceId: string) => void;
+  isActive: boolean;
   isLoading: boolean;
+  onSubscribe: (priceId: string) => void;
 }) {
   const benefits = PLAN_BENEFITS[plan.name] ?? [];
-  return (
-    <div className="relative flex flex-col rounded-3xl border bg-white p-6 transition hover:shadow-xl">
-      <div className="mb-6 text-center space-y-2">
-        <h3 className="text-xl font-bold text-gray-900">
-          {plan.name}
-        </h3>
 
+  return (
+    <div
+      className={`relative flex flex-col rounded-3xl border p-6 transition ${
+        isActive ? "border-blue-600 shadow-lg" : "bg-white hover:shadow-xl"
+      }`}
+    >
+      {isActive && (
+        <span className="absolute top-4 right-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+          Currently Active
+        </span>
+      )}
+
+      <div className="mb-6 text-center space-y-2">
+        <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
         <p className="text-4xl font-extrabold text-gray-900">
           ₹{plan.price}
           <span className="text-sm font-medium text-gray-500">
@@ -143,25 +146,25 @@ function PricingCard({
       </div>
 
       <ul className="flex-1 space-y-3 mb-6">
-        {benefits.map((benefit, index) => (
-          <li
-            key={index}
-            className="flex items-start gap-3 text-sm text-gray-700"
-          >
-            <Check className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
-            <span>{benefit}</span>
+        {benefits.map((benefit, i) => (
+          <li key={i} className="flex gap-3 text-sm text-gray-700">
+            <Check className="h-4 w-4 text-green-600 mt-0.5" />
+            {benefit}
           </li>
         ))}
       </ul>
 
       <button
-        disabled={isLoading}
+        disabled={isActive || isLoading}
         onClick={() => onSubscribe(plan.stripePriceId)}
-        className="w-full rounded-full py-2.5 text-sm font-semibold
-                   bg-blue-600 text-white hover:bg-blue-700
-                   transition disabled:opacity-60 disabled:cursor-not-allowed"
+        className={`w-full rounded-full py-2.5 text-sm font-semibold transition
+          ${
+            isActive
+              ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
       >
-        {isLoading ? "Redirecting..." : "Upgrade Plan"}
+        {isActive ? "Current Plan" : isLoading ? "Redirecting..." : "Upgrade"}
       </button>
 
       <p className="mt-4 text-center text-xs text-gray-500">
@@ -171,49 +174,10 @@ function PricingCard({
   );
 }
 
-/* ================= INFO SECTIONS ================= */
-
-function WhySubscriptionRequired() {
-  const reasons = [
-    {
-      icon: ShieldCheck,
-      title: "Quality & Trust",
-      desc: "Only subscribed businesses are publicly visible.",
-    },
-    {
-      icon: Lock,
-      title: "Platform Safety",
-      desc: "Reduces spam and fake listings.",
-    },
-    {
-      icon: CreditCard,
-      title: "Sustainable Support",
-      desc: "Supports platform development and support.",
-    },
-  ];
-
-  return (
-    <section className="py-14 bg-gray-50 rounded-3xl">
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 px-4">
-        {reasons.map((item, index) => (
-          <div
-            key={index}
-            className="rounded-2xl border bg-white p-6 text-center space-y-3"
-          >
-            <item.icon className="h-6 w-6 text-blue-600 mx-auto" />
-            <h3 className="font-semibold">{item.title}</h3>
-            <p className="text-sm text-gray-600">{item.desc}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ================= MAIN PAGE ================= */
+/* ----------------------- MAIN PAGE ----------------------- */
 
 export default function PricingSection() {
-  const { data } = useQuery({
+  const { data: plans } = useQuery({
     queryKey: ["pricingPlans"],
     queryFn: async () => {
       const res = await fetch("/api/provider/subscription");
@@ -221,7 +185,18 @@ export default function PricingSection() {
       return res.json();
     },
   });
-  console.log(data)
+
+  const { data: profile } = useQuery({
+    queryKey: ["provider-profile"],
+    queryFn: async () => {
+      const res = await fetch("/api/common/profile");
+      return res.json();
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const activePlanName =
+    profile?.user?.providerSubscription?.plan?.name?.toUpperCase() ?? "FREE";
 
   const checkoutMutation = useMutation({
     mutationFn: async (priceId: string) => {
@@ -230,7 +205,6 @@ export default function PricingSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId }),
       });
-
       if (!res.ok) throw new Error("Checkout failed");
       return res.json();
     },
@@ -240,28 +214,23 @@ export default function PricingSection() {
   });
 
   return (
-    <div className="flex w-full justify-center">
-      <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-6">
+    <div className="flex justify-center w-full">
+      <div className="w-full max-w-[1400px] px-4 space-y-6">
         <PricingHero />
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 py-14 max-w-[1200px] mx-auto">
-          {/* Free Plan */}
-          <FreePlanCard />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 py-12 max-w-[1200px] mx-auto">
+          <FreePlanCard isActive={activePlanName === "FREE"} />
 
-          {/* Paid Plans */}
-          {data?.map((plan: any) => (
+          {plans?.map((plan: any) => (
             <PricingCard
               key={plan.id}
               plan={plan}
+              isActive={activePlanName === plan.name.toUpperCase()}
               isLoading={checkoutMutation.isPending}
-              onSubscribe={(priceId) =>
-                checkoutMutation.mutate(priceId)
-              }
+              onSubscribe={(priceId) => checkoutMutation.mutate(priceId)}
             />
           ))}
         </div>
-
-        {/* <WhySubscriptionRequired /> */}
       </div>
     </div>
   );

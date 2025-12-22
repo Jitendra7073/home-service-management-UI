@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,35 +17,27 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useQuery } from "@tanstack/react-query";
-import { Bell, CreditCard, LogOut, User, EllipsisVertical } from "lucide-react";
+import {
+  Bell,
+  CreditCard,
+  LogOut,
+  User,
+  EllipsisVertical,
+  BadgeCheckIcon,
+} from "lucide-react";
 import Link from "next/link";
 
-export function NavUser() {
+export function NavUser({
+  user,
+  subscriptionStatus,
+  logoutHandle,
+}: {
+  user: any;
+  subscriptionStatus:string;
+  logoutHandle: () => void;
+}) {
   const { isMobile } = useSidebar();
-  const { data, isLoading, isPending, isError, error } = useQuery({
-    queryKey: ["provider-profile"],
-    queryFn: async () => {
-      const res = await fetch("/api/common/profile", {
-        method: "GET",
-      });
-      const data = await res.json();
-      return data;
-    },
-    staleTime: 5 * 60 * 60 * 1000,
-  });
-  const user = data?.user ?? [];
 
-  const LogoutHandler = async () => {
-    const res = await fetch("/api/auth/logout", {
-      method: "POST",
-    });
-    const data = await res.json();
-    if (data.success) {
-      window.location.reload();
-    }
-    return data;
-  };
 
   return (
     <SidebarMenu>
@@ -65,9 +57,17 @@ export function NavUser() {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {user.name || "fetching..."}
-                </span>
+                <div className="flex justify-between">
+                  <span className="truncate font-medium">
+                    {user.name || "fetching..."}
+                  </span>
+                  <Badge
+                    className={`flex items-center gap-1.5 border px-2.5 py-0.5 text-xs font-medium ${subscriptionStatus !== "free" && "text-yellow-600 bg-transparent border border-yellow-600"}`}>
+                    {subscriptionStatus !== "free" &&<BadgeCheckIcon className="h-3.5 w-3.5" />}
+                    {subscriptionStatus}
+                  </Badge>
+                </div>
+
                 <span className="text-muted-foreground truncate text-xs">
                   {user.email || "fetching..."}
                 </span>
@@ -103,10 +103,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User />
-                Account
-              </DropdownMenuItem>
+              <Link href="/provider/dashboard/profile">
+                <DropdownMenuItem>
+                  <User />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <Link href="/provider/dashboard/pricing">
                 <DropdownMenuItem>
                   <CreditCard />
@@ -119,7 +121,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => LogoutHandler()}>
+            <DropdownMenuItem onClick={() => logoutHandle()}>
               <LogOut />
               Log out
             </DropdownMenuItem>

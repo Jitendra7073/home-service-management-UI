@@ -221,15 +221,16 @@ export default function AddServiceModal() {
       const data = await res.json();
 
       if (!res.ok) {
-        // IF SUBMISSION FAILS: Trigger Cleanup!
-        toast.error(data?.msg || "Failed to create service");
-        // Optional: You might want to auto-cleanup here, or let the user fix the form.
-        // For strict cleanup on fail:
-        // await handleCleanupAndClose();
+        toast.error(data?.msg);
         return;
       }
+      if(data.success === false){
+        toast.warning(data?.msg)
+      }
+      if(data.success === true){
+        toast.success(data?.msg || "Service created successfully");
+      }
 
-      toast.success("Service created successfully");
       resetForm(); // Normal reset, don't delete images
       onClose();
     } catch (error) {

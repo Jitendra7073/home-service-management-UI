@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import {
   LayoutDashboard,
-  ListChecks,
   BarChart,
   PanelsTopLeft,
   HandCoins,
@@ -23,6 +22,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
+import { profileUpgradedTag } from "@/global-states/state";
 
 // Sidebar links
 const data = {
@@ -43,11 +45,7 @@ const data = {
       url: "/provider/dashboard/business",
       icon: Building2,
     },
-    {
-      title: "Bookings",
-      url: "/provider/dashboard/bookings",
-      icon: ListChecks,
-    },
+   
     {
       title: "Services",
       url: "/provider/dashboard/services",
@@ -63,6 +61,30 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
+    const { data:UserData, isLoading, isPending, isError, error } = useQuery({
+    queryKey: ["provider-profile"],
+    queryFn: async () => {
+      const res = await fetch("/api/common/profile", {
+        method: "GET",
+      });
+      const data = await res.json();
+      return data;
+    },
+    staleTime: 5 * 60 * 60 * 1000,
+  });
+  const user = UserData?.user ?? [];
+  const subscriptionStatus = user?.providerSubscription !== null ? user?.providerSubscription?.plan.name.toLowerCase() : "free"
+
+  const LogoutHandler = async () => {
+    const res = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.reload();
+    }
+    return data;
+  };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -81,11 +103,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} subscriptionStatus={subscriptionStatus}/>
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser/>
+        <NavUser user={user} logoutHandle={LogoutHandler} subscriptionStatus ={subscriptionStatus}/>
       </SidebarFooter>
     </Sidebar>
   );

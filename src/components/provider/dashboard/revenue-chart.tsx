@@ -77,8 +77,8 @@ const RevenueChart = (
         <CardDescription>Monthly revenue analysis</CardDescription>
       </CardHeader>
 
-      <CardContent className="w-full">
-        <ChartContainer config={chartConfig}>
+      <CardContent className="w-full ">
+        <ChartContainer config={chartConfig} className="h-80">
           <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
             {/* Grid */}
             <CartesianGrid vertical={false} strokeDasharray="3 3" />

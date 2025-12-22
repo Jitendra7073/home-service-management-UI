@@ -1,9 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ComponentType } from "react";
 
+import { cn } from "@/lib/utils";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -11,48 +12,72 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { TicketCheck } from "lucide-react";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: any;
-  }[];
-}) {
-  const pathname = usePathname(); 
+type NavItem = {
+  title: string;
+  url: string;
+  icon?: ComponentType<{ className?: string }>;
+};
+
+type NavMainProps = {
+  items: NavItem[];
+  subscriptionStatus:string
+};
+
+export function NavMain({ items, subscriptionStatus }: NavMainProps) {
+  const pathname = usePathname();
+  const getStateValue = "pro"
+
+  const hasPremiumAccess = ["premimum", "pro"].some((keyword) =>
+    subscriptionStatus?.includes(keyword)
+  );
+
+  const isItemActive = (url: string) =>
+    pathname === url || pathname.startsWith(`${url}/`);
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-1">
         <SidebarMenu>
-          {items.map((item) => {
-            const Icon = item.icon;
-
-            const isActive =
-              pathname === item.url || pathname.startsWith(item.url + "/");
+          {items.map(({ title, url, icon: Icon }) => {
+            const active = isItemActive(url);
 
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={title}>
                 <SidebarMenuButton
                   asChild
-                  tooltip={item.title}
+                  tooltip={title}
                   className={cn(
                     "transition-colors",
-                    isActive
+                    active
                       ? "bg-gray-200 text-gray-900 font-medium"
                       : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   )}
                 >
-                  <Link href={item.url}>
-                    {Icon && <Icon className="w-4 h-4" />}
-                    <span>{item.title}</span>
+                  <Link href={url} aria-current={active ? "page" : undefined}>
+                    {Icon && <Icon className="h-4 w-4" />}
+                    <span>{title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
           })}
+
+          {hasPremiumAccess && (
+            <SidebarMenuItem key="booking">
+              <SidebarMenuButton
+                asChild
+                tooltip="Booking"
+                className="transition-colors text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              >
+                <Link href="/provider/dashboard/bookings">
+                <TicketCheck className="h-4 w-4" />
+                  <span>Booking</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

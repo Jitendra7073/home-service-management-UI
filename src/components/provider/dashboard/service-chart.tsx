@@ -53,7 +53,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
       <Card className="w-full shadow-sm border rounded-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            Popular Services
+            Most Booked Services
           </CardTitle>
           <CardDescription>No booking data available</CardDescription>
           <CardContent className="w-full h-64 flex items-center justify-center">
@@ -79,7 +79,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
     <Card className="w-full shadow-sm border rounded-md">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
-          Popular Services
+          Most Booked Services
         </CardTitle>
         <CardDescription>
           Top 5 most booked services

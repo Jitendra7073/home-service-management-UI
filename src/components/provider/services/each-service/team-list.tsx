@@ -56,7 +56,6 @@ interface TeamMemberForm {
   status: "Available" | "Busy" | "Off";
 }
 
-// NOTE: This type should match your backend response structure
 interface MemberData {
   id: string;
   name: string;
@@ -271,14 +270,13 @@ export function TeamList({ serviceId, isEditing }: TeamListProps) {
 
           {!isEditing && (
             <div className="py-2 px-3 rounded-sm bg-blue-50 border border-blue-200 text-[12px] text-blue-800 font-medium">
-              You can add multiple team members. When a service request is
-              received, all assigned members will get an email & notification.
+              You can also add team partners for this service. (click on Edit)
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* ======================= ADD/EDIT MODAL ======================= */}
+      {/* ------------------------------ ADD/EDIT MODAL ------------------------------ */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -353,13 +351,13 @@ export function TeamList({ serviceId, isEditing }: TeamListProps) {
         </DialogContent>
       </Dialog>
       
-      {/* ======================= DELETE CONFIRMATION ======================= */}
+      {/* ------------------------------ DELETE CONFIRMATION ------------------------------ */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
           <AlertDialogContent>
               <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                      This action will permanently delete **{form?.name}** from this service team. They will no longer receive notifications for new service requests.
+                      This action will permanently delete <b>{form?.name}</b> from this service team. 
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

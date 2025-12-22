@@ -78,7 +78,6 @@ export default function FeedbackTable() {
     "all" | "approved" | "pending"
   >("all");
 
-  /* ---------- FETCH ---------- */
   const { data } = useQuery({
     queryKey: ["customer-feedback"],
     queryFn: async () => {
@@ -87,7 +86,6 @@ export default function FeedbackTable() {
     },
   });
 
-  /* ---------- FILTER WEEKLY ---------- */
   const weeklyFeedback: Feedback[] = React.useMemo(
     () =>
       data?.feedbacks?.filter((f: Feedback) =>
@@ -96,11 +94,9 @@ export default function FeedbackTable() {
     [data?.feedbacks]
   );
 
-  /* ---------- STATUS COUNTS ---------- */
   const approvedCount = weeklyFeedback.filter(f => f.approved).length;
   const pendingCount = weeklyFeedback.filter(f => !f.approved).length;
 
-  /* ---------- STATUS FILTER ---------- */
   const filteredByStatus = React.useMemo(() => {
     if (statusFilter === "approved")
       return weeklyFeedback.filter(f => f.approved);
@@ -109,14 +105,12 @@ export default function FeedbackTable() {
     return weeklyFeedback;
   }, [weeklyFeedback, statusFilter]);
 
-  /* ---------- SORT (PENDING FIRST) ---------- */
   const sortedFeedback = React.useMemo(() => {
     return [...filteredByStatus].sort(
       (a, b) => Number(a.approved) - Number(b.approved)
     );
   }, [filteredByStatus]);
 
-  /* ---------- APPROVE MUTATION ---------- */
   const approveMutation = useMutation({
     mutationFn: async (feedbackId: string) => {
       const res = await fetch("/api/provider/feedback", {

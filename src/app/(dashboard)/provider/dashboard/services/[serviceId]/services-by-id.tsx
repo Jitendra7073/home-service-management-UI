@@ -116,7 +116,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     return JSON.stringify(currentGallery) !== JSON.stringify(originalGallery);
   };
 
-  /* ================= IMAGE UPLOAD ================= */
+  /* --------------------------- IMAGE UPLOAD --------------------------- */
   const handleUpload = async (files: FileList, type: "cover" | "gallery") => {
     const fileArray = Array.from(files);
 
@@ -167,7 +167,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     });
   };
 
-  /* ================= UPDATE ================= */
+  /* --------------------------- UPDATE --------------------------- */
   const handleSave = async () => {
     if (!hasChanges()) {
       toast.info("No changes to save");
@@ -213,7 +213,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     }
   };
 
-  /* =================  DELETE ================= */
+  /* ---------------------------  DELETE --------------------------- */
   const handleDelete = async () => {
     if (
       !confirm(

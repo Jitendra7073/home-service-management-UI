@@ -16,6 +16,8 @@ const Results = ({
   isError,
   error,
 }: any) => {
+
+  console.log("Services : ",services)
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -57,15 +59,7 @@ const Results = ({
           onClick={() => onServiceClick(service)}
           className="cursor-pointer overflow-hidden rounded-md group border border-gray-200 hover:shadow-md transition py-2"
         >
-          {/* IMAGE */}
-          <div className="relative h-40 w-full">
-            <Image
-              src={service.image || DEFAULT_IMAGE}
-              alt={service.name}
-              fill
-              className={`${!service.image ? "object-contain" : "object-cover group-hover:scale-102"}  transition`}
-            />
-          </div>
+          
 
           {/* CONTENT */}
           <div className="p-4">

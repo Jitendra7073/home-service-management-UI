@@ -10,6 +10,7 @@ import Welcome from "@/components/provider/dashboard/welcome";
 import { useQuery } from "@tanstack/react-query";
 
 const DashboardComponents = () => {
+
   const { data, isLoading, isPending, isError, error } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
@@ -19,40 +20,77 @@ const DashboardComponents = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const subscriptionstate =
+    data?.user?.providerSubscription !== null
+      ? data?.user?.providerSubscription
+      : {};
+
+  const plans = subscriptionstate !== null ? subscriptionstate?.plan : {};
+
   return (
     <div className="flex w-full justify-center">
       <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-10 md:space-y-14">
-        
-        <Welcome />
-
-        <QuickCounts
-          data={data}
+        <Welcome
+          username={data?.user.name}
           isLoading={isLoading}
           isPending={isPending}
-          isError={isError}
-          error={error}
         />
 
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {["premimum", "pro"].some((keyword) =>
+          plans?.name?.toLowerCase().includes(keyword)
+        ) && (
+          <QuickCounts
+            data={data}
+            plan={plans}
+            isLoading={isLoading}
+            isPending={isPending}
+            isError={isError}
+            error={error}
+          />
+        )}
+
+        <section
+          className={`${
+            plans?.name?.toLowerCase() === "pro" &&
+            "grid grid-cols-1 md:grid-cols-2 gap-6"
+          }`}>
+          {["premimum", "pro"].some((keyword) =>
+            plans?.name?.toLowerCase().includes(keyword)
+          ) && (
             <RevenueChart
               data={data?.monthlyAnalysis || []}
               isLoading={isLoading || isPending}
             />
+          )}
+          {["pro"].some((keyword) =>
+            plans?.name?.toLowerCase().includes(keyword)
+          ) && (
             <ServiceChart
               data={data?.serviceBookingStats || []}
               isLoading={isLoading || isPending}
             />
-          </section>
-
-        <section className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ServicesTable />
-            <FeedbackTable />
-          </div>
+          )}
         </section>
 
+        {["premimum", "pro"].some((keyword) =>
+          plans?.name?.toLowerCase().includes(keyword)
+        ) && (
+          <section className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ServicesTable />
+              <FeedbackTable />
+            </div>
+          </section>
+        )}
+
         <section>
-          <BookingTable />
+          {["premimum", "pro"].some((keyword) =>
+            plans?.name?.toLowerCase().includes(keyword)
+          ) ? (
+            <BookingTable />
+          ) : (
+            <ServicesTable />
+          )}
         </section>
       </div>
     </div>

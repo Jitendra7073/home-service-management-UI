@@ -11,12 +11,12 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+
 import {
   ArrowUpDown,
   ChevronDown,
   Loader,
   MoreHorizontal,
-  RefreshCcw,
   RefreshCw,
 } from "lucide-react";
 
@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -43,29 +44,35 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
 
-/* ================= Types ================= */
-
 type Booking = {
   id: string;
   customer: string;
   service: string;
+  serviceId: string;
   dateTime: string;
   amount: number;
   payment: "paid" | "pending" | "failed";
   status: "pending" | "confirmed" | "completed" | "cancelled";
+  partnerId: string | null;
+  partnerName: string | null;
 };
 
-/* ================= Status Dropdown ================= */
+type TeamMember = {
+  id: string;
+  name: string;
+};
 
 function StatusDropdown({
   bookingId,
-  currentStatus,
-  paymentStatus,
+  status,
+  payment,
+  partnerId,
   queryClient,
 }: {
   bookingId: string;
-  currentStatus: Booking["status"];
-  paymentStatus: Booking["payment"];
+  status: Booking["status"];
+  payment: Booking["payment"];
+  partnerId: string | null;
   queryClient: ReturnType<typeof useQueryClient>;
 }) {
   const statuses: Booking["status"][] = [
@@ -75,65 +82,56 @@ function StatusDropdown({
     "cancelled",
   ];
 
-  // Business rules for disabling options
-  const isDisabled = (status: Booking["status"]) => {
-    if (currentStatus === "completed") return true;
-    if (paymentStatus === "paid" && status === "pending") return true;
-    if (status === currentStatus) return true;
+  const isDisabled = (next: Booking["status"]) => {
+    if (status === "completed" || status === "cancelled") return true;
+    if (next === "completed" && !partnerId) return true;
+    if (payment === "paid" && next === "pending") return true;
+    if (next === status) return true;
     return false;
   };
 
-  // Update booking status
-  const updateStatus = async (status: Booking["status"]) => {
-    if (isDisabled(status)) return;
-
-    try {
-      const res = await fetch(`/api/provider/bookings`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId, status }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data?.error || "Status update failed");
-        return;
+  const updateStatus = async (next: Booking["status"]) => {
+    if (isDisabled(next)) {
+      if (next === "completed" && !partnerId) {
+        toast.error("Assign a partner before completing the booking");
       }
-
-      toast.success("Booking status updated");
-
-      // Refetch booking list without reloading the page
-      queryClient.invalidateQueries({
-        queryKey: ["provider-bookings"],
-      });
-    } catch (error) {
-      console.error("Status update error:", error);
-      toast.error("Something went wrong");
+      return;
     }
+
+    const res = await fetch(`/api/provider/bookings/${bookingId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data?.msg || "Status update failed");
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["provider-bookings"] });
+    toast.success("Booking updated");
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={currentStatus === "completed"}
-          className="capitalize">
-          {currentStatus}
+        <Button size="sm" variant="ghost" className="capitalize">
+          {status}
           <ChevronDown className="w-4 h-4 ml-1" />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent>
-        {statuses.map((status) => (
+        {statuses.map((s) => (
           <DropdownMenuItem
-            key={status}
-            disabled={isDisabled(status)}
+            key={s}
+            disabled={isDisabled(s)}
             className="capitalize"
-            onClick={() => updateStatus(status)}>
-            {status}
+            onClick={() => updateStatus(s)}>
+            {s}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -141,7 +139,76 @@ function StatusDropdown({
   );
 }
 
-/* ================= Columns ================= */
+function PartnerDropdown({
+  bookingId,
+  serviceId,
+  status,
+  queryClient,
+}: {
+  bookingId: string;
+  serviceId: string;
+  status: Booking["status"];
+  queryClient: ReturnType<typeof useQueryClient>;
+}) {
+  const disabled = status === "completed" || status === "cancelled";
+
+  const { data, isLoading } = useQuery<TeamMember[]>({
+    queryKey: ["service-team", serviceId],
+    queryFn: async () => {
+      const res = await fetch(`/api/provider/teams/${serviceId}`);
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+    enabled: !!serviceId && !disabled,
+  });
+
+  const assignPartner = async (partnerId: string) => {
+    const res = await fetch(`/api/provider/bookings/${bookingId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ partnerId }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      toast.error(result?.msg || "Assignment failed");
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["provider-bookings"] });
+    toast.success("Partner assigned");
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm" variant="outline" disabled={disabled}>
+          Assign Partner
+          <ChevronDown className="w-4 h-4 ml-2" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="min-w-56">
+        {isLoading && (
+          <DropdownMenuItem disabled>
+            <Loader className="w-4 h-4 mr-2 animate-spin" />
+            Loading
+          </DropdownMenuItem>
+        )}
+
+        {!isLoading &&
+          data?.members.map((m) => (
+            <DropdownMenuItem
+              key={m.id}
+              onClick={() => assignPartner(m.id)}>
+              {m.name}
+            </DropdownMenuItem>
+          ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 const columns: ColumnDef<Booking>[] = [
   { accessorKey: "customer", header: "Customer" },
@@ -150,7 +217,7 @@ const columns: ColumnDef<Booking>[] = [
     accessorKey: "dateTime",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting()}>
-        Date & Time <ArrowUpDown className="w-4 h-4 ml-2" />
+        Date and Time <ArrowUpDown className="w-4 h-4 ml-2" />
       </Button>
     ),
   },
@@ -167,23 +234,39 @@ const columns: ColumnDef<Booking>[] = [
     accessorKey: "payment",
     header: "Payment",
     cell: ({ row }) => {
-      const value = row.getValue("payment") as string;
-      const colors: Record<string, string> = {
+      const v = row.getValue("payment") as string;
+      const map: Record<string, string> = {
         paid: "text-green-600",
         pending: "text-yellow-600",
         failed: "text-red-600",
       };
-      return <span className={`capitalize ${colors[value]}`}>{value}</span>;
+      return <span className={`capitalize ${map[v]}`}>{v}</span>;
     },
   },
   {
-    accessorKey: "status",
+    header: "Partner",
+    cell: ({ row, table }) => (
+      <div className="flex flex-col gap-1">
+        <span className="text-sm">
+          {row.original.partnerName ?? "Not Assigned"}
+        </span>
+        <PartnerDropdown
+          bookingId={row.original.id}
+          serviceId={row.original.serviceId}
+          status={row.original.status}
+          queryClient={table.options.meta?.queryClient}
+        />
+      </div>
+    ),
+  },
+  {
     header: "Status",
     cell: ({ row, table }) => (
       <StatusDropdown
         bookingId={row.original.id}
-        currentStatus={row.original.status}
-        paymentStatus={row.original.payment}
+        status={row.original.status}
+        payment={row.original.payment}
+        partnerId={row.original.partnerId}
         queryClient={table.options.meta?.queryClient}
       />
     ),
@@ -199,10 +282,8 @@ const columns: ColumnDef<Booking>[] = [
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>
-            <Link
-              href={`/provider/dashboard/bookings/${row.original.id}`}
-              className="w-full block">
+          <DropdownMenuItem asChild>
+            <Link href={`/provider/dashboard/bookings/${row.original.id}`}>
               View Details
             </Link>
           </DropdownMenuItem>
@@ -217,42 +298,41 @@ const columns: ColumnDef<Booking>[] = [
   },
 ];
 
-/* ================= Component ================= */
-
 export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-
   const queryClient = useQueryClient();
 
-  // Fetch bookings
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["provider-bookings"],
     queryFn: async () => {
       const res = await fetch("/api/provider/bookings", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch bookings");
+      if (!res.ok) throw new Error("Failed");
       return res.json();
     },
-    staleTime: 30 * 60 * 1000,
-    refetchOnWindowFocus: false,
   });
 
-  // Transform API response for table
-  const bookingData: Booking[] = React.useMemo(() => {
-    if (!data) return [];
-    return data.map((b: any) => ({
+  const bookings: Booking[] = React.useMemo(() => {
+    if (!data?.bookings && !Array.isArray(data)) return [];
+
+    const list = Array.isArray(data) ? data : [data.bookings];
+
+    return list.map((b: any) => ({
       id: b.id,
       customer: b.user?.name ?? "Unknown",
       service: b.service?.name ?? "Unknown",
+      serviceId: b.service?.id,
       dateTime: new Date(b.createdAt).toLocaleString("en-IN"),
       amount: b.totalAmount,
       payment: b.paymentStatus.toLowerCase(),
       status: b.bookingStatus.toLowerCase(),
+      partnerId: b.partnerId ?? null,
+      partnerName: b.partner?.name ?? null,
     }));
   }, [data]);
 
   const table = useReactTable({
-    data: bookingData,
+    data: bookings,
     columns,
     meta: { queryClient },
     state: {
@@ -274,7 +354,7 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
         <h2 className="font-semibold">Booking List</h2>
         <div className="flex gap-2">
           <Input
-            placeholder="Search bookings..."
+            placeholder="Search bookings"
             value={globalFilter}
             onChange={(e) => {
               setGlobalFilter(e.target.value);
@@ -282,29 +362,24 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
             }}
             className="max-w-sm"
           />
-          {!isLoading && <Button
-            className="bg-transparent text-black hover:bg-gray-100"
-            onClick={() => refetch()}
-            disabled={isFetching}>
+          <Button variant="ghost" onClick={() => refetch()} disabled={isFetching}>
             <RefreshCw
-              className={`h-4 w-4 transition-transform ${
-                isFetching ? "animate-spin" : ""
-              }`}
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
             />
-          </Button>}
+          </Button>
         </div>
       </div>
 
       <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
-                {group.headers.map((header) => (
-                  <TableHead key={header.id}>
+            {table.getHeaderGroups().map((g) => (
+              <TableRow key={g.id}>
+                {g.headers.map((h) => (
+                  <TableHead key={h.id}>
                     {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
+                      h.column.columnDef.header,
+                      h.getContext()
                     )}
                   </TableHead>
                 ))}
@@ -315,10 +390,8 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-6">
-                  Loading bookings...
+                <TableCell colSpan={columns.length} className="text-center py-6">
+                  Loading bookings
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows.length ? (
@@ -336,38 +409,13 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-10">
-                  No bookings found.
+                <TableCell colSpan={columns.length} className="text-center py-10">
+                  No bookings found
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </div>
-
-      <div className="flex justify-between items-center py-4">
-        <p className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </p>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}>
-            Previous
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}>
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   );

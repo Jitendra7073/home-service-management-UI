@@ -24,6 +24,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import Feedback from "@/components/customer/serviceDetails/feedbacks";
 
 interface Slot {
   id: string;
@@ -113,7 +114,7 @@ export default function ServiceDetailPage() {
   const primaryAddress = provider?.addresses?.[0] || null;
   const images = service?.images ?? [];
 
-  const useCarousel = images.length > 4;
+  const useCarousel = images.length > 3;
 
   if (isLoading || !providerId) return <ServiceDetailSkeleton />;
 
@@ -166,17 +167,19 @@ export default function ServiceDetailPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
                       label="Duration"
-                      value={`${(service.durationInMinutes / 60)
-                        .toFixed(2)
-                        .split(".")[0]
-                        } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
+                      value={`${
+                        (service.durationInMinutes / 60)
+                          .toFixed(2)
+                          .split(".")[0]
+                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
+                        (service.durationInMinutes / 60)
                           .toFixed(2)
                           .split(".")[1] == "00"
                           ? ""
                           : (service.durationInMinutes / 60)
-                            .toFixed(2)
-                            .split(".")[1] + " Min"
-                        } 
+                              .toFixed(2)
+                              .split(".")[1] + " Min"
+                      } 
                       `}
                     />
 
@@ -190,8 +193,9 @@ export default function ServiceDetailPage() {
                     />
                     <FeaturePill
                       label="Reviews"
-                      value={`${service.reviewCount} review${service.reviewCount !== 1 ? "s" : ""
-                        }`}
+                      value={`${service.reviewCount} review${
+                        service.reviewCount !== 1 ? "s" : ""
+                      }`}
                     />
                     <FeaturePill
                       label="Status"
@@ -262,7 +266,7 @@ export default function ServiceDetailPage() {
             <PoliciesGrid />
 
             {/* OUR GALLERY */}
-            {images.length > 0 &&
+            {images.length > 0 && (
               <div>
                 <div className="bg-white rounded-sm border p-4 sm:p-6">
                   <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
@@ -338,7 +342,12 @@ export default function ServiceDetailPage() {
                   </DialogContent>
                 </Dialog>
               </div>
-            }
+            )}
+
+            {/* FEEDBACKS */}
+            {service?.feedback.length > 0 && (
+              <Feedback feedback={service?.feedback} />
+            )}
           </div>
 
           {/* RIGHT SIDE — BOOKING SUMMARY */}
@@ -353,15 +362,17 @@ export default function ServiceDetailPage() {
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
                     label="Duration"
-                    value={`${(service.durationInMinutes / 60).toFixed(2).split(".")[0]
-                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
+                    value={`${
+                      (service.durationInMinutes / 60).toFixed(2).split(".")[0]
+                    } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
+                      (service.durationInMinutes / 60)
                         .toFixed(2)
                         .split(".")[1] == "00"
                         ? ""
                         : (service.durationInMinutes / 60)
-                          .toFixed(2)
-                          .split(".")[1] + " Min"
-                      } 
+                            .toFixed(2)
+                            .split(".")[1] + " Min"
+                    } 
                       `}
                   />
                   <SummaryRow label="Provider" value={provider.name} />
