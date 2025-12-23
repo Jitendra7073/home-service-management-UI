@@ -42,7 +42,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error("POST Subscription error:", error);
         return NextResponse.json(
             { msg: "Internal Server Error" },
             { status: 500 }

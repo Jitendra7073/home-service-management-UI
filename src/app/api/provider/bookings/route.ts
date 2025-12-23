@@ -11,7 +11,6 @@ export async function GET() {
 
         return NextResponse.json(data?.bookings || []);
     } catch (error) {
-        console.error(error);
         return NextResponse.json({ msg: "Something went wrong" });
     }
 }
@@ -35,8 +34,6 @@ export async function PATCH(
 
         return NextResponse.json(data)
     } catch (error: any) {
-        console.error("PATCH booking error:", error);
-
         return NextResponse.json(
             { error: error.message || "Internal Server Error" },
             { status: 500 }

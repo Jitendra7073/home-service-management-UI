@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import ConfettiBurst from "./ConfettiBurst";
+import { Input } from "@/components/ui/input";
 
 const Required = () => <span className="text-red-500">*</span>;
 
@@ -38,16 +39,6 @@ function toMinutes(timeStr: string) {
   if (period === "AM" && h === 12) h = 0;
   return h * 60 + m;
 }
-
-// Format minutes back to "hh:mm AM/PM"
-function formatMinutes(mins: number) {
-  let hours = Math.floor(mins / 60);
-  let minutes = mins % 60;
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12;
-  return `${hours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
-}
-
 // Preview how many slots will be created
 function calculateSlotsCount(
   startTime: string,
@@ -64,7 +55,6 @@ function calculateSlotsCount(
   let count = 0;
 
   for (let t = start; t < end; t += durationMin) {
-    // Skip break window
     if (t >= bStart && t < bEnd) continue;
     count++;
   }
@@ -149,6 +139,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
 
   const onSubmit = async (values: SlotFormValues) => {
     setLoading(true);
+    // console.log("Slot form submitting value :",values)
 
     try {
       const response = await fetch("/api/provider/slots", {
@@ -168,11 +159,9 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
       const fireConfetti = ConfettiBurst();
       fireConfetti();
 
-
       onNext(data);
       setLoading(false);
     } catch (err) {
-      console.error(err);
       toast.error("Something went wrong");
       setLoading(false);
     }
@@ -299,9 +288,10 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                         <label
                           key={opt.value}
                           className={`relative flex items-center gap-4 py-2 px-4 rounded-md border-2 cursor-pointer transition-all w-fit
-                            ${field.value === opt.value
-                              ? "border-green-600 bg-green-100 shadow-md"
-                              : "border-gray-200 bg-white hover:border-green-300"
+                            ${
+                              field.value === opt.value
+                                ? "border-green-600 bg-green-100 shadow-md"
+                                : "border-gray-200 bg-white hover:border-green-300"
                             }
                           `}>
                           <input

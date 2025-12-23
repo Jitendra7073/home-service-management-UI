@@ -30,8 +30,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("POST service error:", error);
-
     return NextResponse.json(error);
   }
 }
@@ -51,8 +49,6 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("PATCH service error:", error);
-
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }

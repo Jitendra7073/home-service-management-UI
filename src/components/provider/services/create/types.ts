@@ -3,6 +3,7 @@ export interface ServiceFormData {
   description: string;
   durationInMinutes: number;
   price: number;
+  totalBookingAllow:number;
   currency: string;
   isActive: boolean;
 }

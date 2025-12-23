@@ -29,18 +29,17 @@ import { ServiceModelState } from "@/global-states/state";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
-const MAX_GALLERY_IMAGES = 5;
+const MAX_GALLERY_IMAGES = 10;
 
 const INITIAL_FORM: ServiceFormData = {
   name: "",
   description: "",
   durationInMinutes: 0,
   price: 0,
+  totalBookingAllow: 0,
   currency: "INR",
   isActive: true,
 };
-
-
 
 export default function AddServiceModal() {
   const [loading, setLoading] = useState(false);
@@ -48,20 +47,22 @@ export default function AddServiceModal() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [coverImage, setCoverImage] = useState<UploadedImage[]>([]);
   const [galleryImages, setGalleryImages] = useState<UploadedImage[]>([]);
-  const [open, setOpen] = useAtom(ServiceModelState)
-  
+  const [open, setOpen] = useAtom(ServiceModelState);
 
   const onClose = () => {
     setOpen(false);
   };
-
 
   /* VALIDATION */
   const validateForm = () => {
     const e: Record<string, string> = {};
     if (form.name.length < 5) e.name = "Minimum 5 characters required";
     if (form.description.length < 10) e.description = "Min 10 chars required";
-    if (form.durationInMinutes <= 0) e.durationInMinutes = "Enter a valid duration";
+    if (form.durationInMinutes <= 0)
+      e.durationInMinutes = "Enter a valid duration";
+    if (form.totalBookingAllow <= 0)
+      e.totalBookingAllow =
+        "Enter a valid number of booking for each slot.";
     if (form.price <= 0) e.price = "Enter a valid price";
 
     setErrors(e);
@@ -75,7 +76,6 @@ export default function AddServiceModal() {
   };
 
   /* IMAGE HANDLERS */
-
   const handleUpload = async (
     files: FileList,
     targetState: "cover" | "gallery"
@@ -166,7 +166,6 @@ export default function AddServiceModal() {
   };
 
   /* CLEANUP LOGIC */
-
   const handleCleanupAndClose = async () => {
     const allImages = [...coverImage, ...galleryImages];
     const uploadedImages = allImages.filter((img) => img.publicId);
@@ -205,12 +204,13 @@ export default function AddServiceModal() {
 
     try {
       setLoading(true);
-
+      
       const payload = {
         ...form,
         coverImage: coverImage[0]?.url || null,
         images: galleryImages.map((i) => i.url),
       };
+      console.log("Frontend side value :", payload)
 
       const res = await fetch("/api/provider/service", {
         method: "POST",
@@ -224,10 +224,10 @@ export default function AddServiceModal() {
         toast.error(data?.msg);
         return;
       }
-      if(data.success === false){
-        toast.warning(data?.msg)
+      if (data.success === false) {
+        toast.warning(data?.msg);
       }
-      if(data.success === true){
+      if (data.success === true) {
         toast.success(data?.msg || "Service created successfully");
       }
 
@@ -249,20 +249,28 @@ export default function AddServiceModal() {
           <DialogTitle>Add New Service</DialogTitle>
         </DialogHeader>
 
-        <ImageUploader
-            label="Cover Image"
-            single
-            images={coverImage}
-            onSelect={(files: any) => handleUpload(files, "cover")}
-            onRemove={(i: any) => handleRemoveImage("cover", i)}
+        <div className="flex items-center justify-between border p-3 rounded-md">
+          <Label>Service Active Status</Label>
+          <Switch
+            checked={form.isActive}
+            onCheckedChange={(v) => setForm({ ...form, isActive: v })}
           />
+        </div>
 
-          <ImageUploader
-            label={`Gallery Images (Max ${MAX_GALLERY_IMAGES})`}
-            images={galleryImages}
-            onSelect={(files: any) => handleUpload(files, "gallery")}
-            onRemove={(i: any) => handleRemoveImage("gallery", i)}
-          />
+        <ImageUploader
+          label="Cover Image"
+          single
+          images={coverImage}
+          onSelect={(files: any) => handleUpload(files, "cover")}
+          onRemove={(i: any) => handleRemoveImage("cover", i)}
+        />
+
+        <ImageUploader
+          label={`Gallery Images (Max ${MAX_GALLERY_IMAGES})`}
+          images={galleryImages}
+          onSelect={(files: any) => handleUpload(files, "gallery")}
+          onRemove={(i: any) => handleRemoveImage("gallery", i)}
+        />
 
         <div className="space-y-4">
           <Field label="Service Name" error={errors.name}>
@@ -308,13 +316,15 @@ export default function AddServiceModal() {
           </div>
 
           <div className="grid grid-col-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between border p-3 rounded-md">
-              <Label>Service Active Status</Label>
-              <Switch
-                checked={form.isActive}
-                onCheckedChange={(v) => setForm({ ...form, isActive: v })}
+            <Field label="Number of booking per slot" error={errors.totalBookingAllow}>
+              <Input
+                type="number"
+                value={form.totalBookingAllow}
+                onChange={(e) =>
+                  setForm({ ...form, totalBookingAllow: Number(e.target.value) })
+                }
               />
-            </div>
+            </Field>
             <Field label="Currency">
               <Select
                 value={form.currency}
@@ -329,8 +339,6 @@ export default function AddServiceModal() {
               </Select>
             </Field>
           </div>
-
-          
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t mt-6">

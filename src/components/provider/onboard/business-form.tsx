@@ -204,7 +204,6 @@ export default function BusinessProfileForm({
 
       onNext(payload);
     } catch (error) {
-      console.error("Business error:", error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);

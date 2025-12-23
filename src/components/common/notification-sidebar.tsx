@@ -41,9 +41,10 @@ const NotificationSideBar = () => {
 
   /* ---------------- MARK AS READ ---------------- */
   const markAsReadMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/notifications/${id}/read`, {
+    mutationFn: async (notificationId: string) => {
+      const res = await fetch(`/api/notification/customer-side`, {
         method: "PATCH",
+        body:JSON.stringify({notificationId})
       });
       if (!res.ok) throw new Error("Failed to update notification");
     },

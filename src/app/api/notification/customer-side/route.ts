@@ -12,9 +12,29 @@ export async function GET() {
         }
         return NextResponse.json(data)
     } catch (error) {
-        console.error("Error", error);
         return NextResponse.json({
             msg: "Error During fetching notifications!",
         });
+    }
+}
+
+
+/* ---------------- CUSTOMER UPDATE NOTIFICATIONS STATUS ---------------- */
+export async function PATCH(req:Request){
+    const {notificationId} = await req.json();
+    try {
+        const {ok, data} = await backend(`/api/v1/customer/notification/${notificationId}`,{
+            method:"PATCH",
+        })
+        if(!ok){
+            return NextResponse.json({
+                msg:"Something went wrong"
+            })
+        }
+        return NextResponse.json(data)
+    } catch (error) {
+        return NextResponse.json({
+            msg:"Error to updating the status"
+        })
     }
 }

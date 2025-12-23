@@ -12,7 +12,6 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ msg: "Something went wrong" });
   }
 }
@@ -39,7 +38,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ msg: "Server error in route" }, { status: 500 });
   }
 }
@@ -67,7 +65,6 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Service update error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }
@@ -95,7 +92,6 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true, msg: "Service deleted" });
   } catch (error) {
-    console.error("Service delete error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }

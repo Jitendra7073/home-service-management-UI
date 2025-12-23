@@ -53,8 +53,6 @@ type Booking = {
   amount: number;
   payment: "paid" | "pending" | "failed";
   status: "pending" | "confirmed" | "completed" | "cancelled";
-  partnerId: string | null;
-  partnerName: string | null;
 };
 
 type TeamMember = {
@@ -66,13 +64,11 @@ function StatusDropdown({
   bookingId,
   status,
   payment,
-  partnerId,
   queryClient,
 }: {
   bookingId: string;
   status: Booking["status"];
   payment: Booking["payment"];
-  partnerId: string | null;
   queryClient: ReturnType<typeof useQueryClient>;
 }) {
   const statuses: Booking["status"][] = [
@@ -84,19 +80,11 @@ function StatusDropdown({
 
   const isDisabled = (next: Booking["status"]) => {
     if (status === "completed" || status === "cancelled") return true;
-    if (next === "completed" && !partnerId) return true;
-    if (payment === "paid" && next === "pending") return true;
     if (next === status) return true;
     return false;
   };
 
   const updateStatus = async (next: Booking["status"]) => {
-    if (isDisabled(next)) {
-      if (next === "completed" && !partnerId) {
-        toast.error("Assign a partner before completing the booking");
-      }
-      return;
-    }
 
     const res = await fetch(`/api/provider/bookings/${bookingId}`, {
       method: "PATCH",
@@ -139,77 +127,6 @@ function StatusDropdown({
   );
 }
 
-function PartnerDropdown({
-  bookingId,
-  serviceId,
-  status,
-  queryClient,
-}: {
-  bookingId: string;
-  serviceId: string;
-  status: Booking["status"];
-  queryClient: ReturnType<typeof useQueryClient>;
-}) {
-  const disabled = status === "completed" || status === "cancelled";
-
-  const { data, isLoading } = useQuery<TeamMember[]>({
-    queryKey: ["service-team", serviceId],
-    queryFn: async () => {
-      const res = await fetch(`/api/provider/teams/${serviceId}`);
-      if (!res.ok) throw new Error("Failed");
-      return res.json();
-    },
-    enabled: !!serviceId && !disabled,
-  });
-
-  const assignPartner = async (partnerId: string) => {
-    const res = await fetch(`/api/provider/bookings/${bookingId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ partnerId }),
-    });
-
-    const result = await res.json();
-
-    if (!res.ok) {
-      toast.error(result?.msg || "Assignment failed");
-      return;
-    }
-
-    queryClient.invalidateQueries({ queryKey: ["provider-bookings"] });
-    toast.success("Partner assigned");
-  };
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="outline" disabled={disabled}>
-          Assign Partner
-          <ChevronDown className="w-4 h-4 ml-2" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent className="min-w-56">
-        {isLoading && (
-          <DropdownMenuItem disabled>
-            <Loader className="w-4 h-4 mr-2 animate-spin" />
-            Loading
-          </DropdownMenuItem>
-        )}
-
-        {!isLoading &&
-          data?.members.map((m) => (
-            <DropdownMenuItem
-              key={m.id}
-              onClick={() => assignPartner(m.id)}>
-              {m.name}
-            </DropdownMenuItem>
-          ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
 const columns: ColumnDef<Booking>[] = [
   { accessorKey: "customer", header: "Customer" },
   { accessorKey: "service", header: "Service" },
@@ -244,29 +161,12 @@ const columns: ColumnDef<Booking>[] = [
     },
   },
   {
-    header: "Partner",
-    cell: ({ row, table }) => (
-      <div className="flex flex-col gap-1">
-        <span className="text-sm">
-          {row.original.partnerName ?? "Not Assigned"}
-        </span>
-        <PartnerDropdown
-          bookingId={row.original.id}
-          serviceId={row.original.serviceId}
-          status={row.original.status}
-          queryClient={table.options.meta?.queryClient}
-        />
-      </div>
-    ),
-  },
-  {
     header: "Status",
     cell: ({ row, table }) => (
       <StatusDropdown
         bookingId={row.original.id}
         status={row.original.status}
         payment={row.original.payment}
-        partnerId={row.original.partnerId}
         queryClient={table.options.meta?.queryClient}
       />
     ),
@@ -312,6 +212,7 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     },
   });
 
+
   const bookings: Booking[] = React.useMemo(() => {
     if (!data?.bookings && !Array.isArray(data)) return [];
 
@@ -326,7 +227,6 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
       amount: b.totalAmount,
       payment: b.paymentStatus.toLowerCase(),
       status: b.bookingStatus.toLowerCase(),
-      partnerId: b.partnerId ?? null,
       partnerName: b.partner?.name ?? null,
     }));
   }, [data]);

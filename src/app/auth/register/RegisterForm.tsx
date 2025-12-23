@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { User, Wrench } from "lucide-react";
 import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -237,18 +238,14 @@ export default function RegisterForm() {
                     type="submit"
                     className="w-full"
                     disabled={isSubmitting}>
-                    {isSubmitting ? "Creating Account..." : "Create Account"}
+                    {isSubmitting ? <div className="flex justify-center items-center gap-2">
+                      <Spinner className="w-4 h-4"/>
+                      <span>Creating...</span>
+                    </div> : "Create Account"}
                   </Button>
                 </div>
               </form>
             </CardContent>
-
-            <CardFooter className="px-0 flex-col gap-4">
-              <Separator />
-              <Button variant="outline" className="w-full">
-                Sign up with Google
-              </Button>
-            </CardFooter>
           </Card>
         </div>
 

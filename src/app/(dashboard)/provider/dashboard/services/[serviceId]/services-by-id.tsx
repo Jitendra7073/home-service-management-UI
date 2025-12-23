@@ -11,7 +11,7 @@ import {
   Banknote,
   ShieldCheck,
   Trash2,
-  Loader2, // Added Loader
+  Loader2, 
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,6 @@ import { Separator } from "@/components/ui/separator";
 import { ImageUploader } from "@/components/provider/services/create/ImageUpload";
 import { uploadToCloudinary } from "@/components/provider/services/create/cloudinary";
 import { UploadedImage } from "@/components/provider/services/create/types";
-import { TeamList } from "@/components/provider/services/each-service/team-list";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ServiceData {
@@ -116,7 +115,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     return JSON.stringify(currentGallery) !== JSON.stringify(originalGallery);
   };
 
-  /* --------------------------- IMAGE UPLOAD --------------------------- */
+  /* ------------ IMAGE UPLOAD ------------ */
   const handleUpload = async (files: FileList, type: "cover" | "gallery") => {
     const fileArray = Array.from(files);
 
@@ -167,7 +166,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     });
   };
 
-  /* --------------------------- UPDATE --------------------------- */
+  /* ------------ UPDATE ------------ */
   const handleSave = async () => {
     if (!hasChanges()) {
       toast.info("No changes to save");
@@ -213,7 +212,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
     }
   };
 
-  /* ---------------------------  DELETE --------------------------- */
+  /* ------------  DELETE ------------ */
   const handleDelete = async () => {
     if (
       !confirm(
@@ -245,6 +244,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   return (
     <div className="flex w-full justify-center">
       <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-6">
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button
@@ -502,9 +502,6 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                 </div>
               </CardContent>
             </Card>
-
-            <TeamList serviceId={originalData.id} isEditing={isEditing} />
-
             <Card className="bg-gray-50 border-dashed border-gray-200 shadow-none rounded-md">
               <CardContent className="pt-6 space-y-4">
                 <div className="flex justify-between text-xs">

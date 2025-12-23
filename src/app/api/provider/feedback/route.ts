@@ -16,7 +16,6 @@ export async function GET() {
             status: 500,
         })
     } catch (error) {
-        console.error("Error: while fetchin the feedback")
         return NextResponse.json({ message: "Internal Server Error (GET)" }, {
             status: 500,
         })
@@ -54,7 +53,6 @@ export async function PATCH(req: Request) {
             { status: 200 }
         );
     } catch (error) {
-        console.error("PATCH feedback error:", error);
         return NextResponse.json(
             { msg: "Internal Server Error" },
             { status: 500 }

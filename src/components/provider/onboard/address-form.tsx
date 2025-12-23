@@ -78,7 +78,6 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
       // Call onNext which will handle navigation
       onNext();
     } catch (error) {
-      console.error("Address error:", error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);

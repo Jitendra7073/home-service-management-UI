@@ -59,7 +59,6 @@ export const RequestFCMToken = async () => {
 
     return token;
   } catch (error) {
-    console.error("Error getting FCM Token:", error);
     return null;
   }
 };

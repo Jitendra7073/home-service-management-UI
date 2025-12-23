@@ -159,7 +159,6 @@ export default function CustomerBookingsPage() {
       setCancelDialogOpen(false);
       setSelectedBooking(null);
     } catch (err) {
-      console.error("Cancel Error:", err);
       toast.error("Something went wrong while cancelling.");
     }
   };

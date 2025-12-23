@@ -17,7 +17,6 @@ const Results = ({
   error,
 }: any) => {
 
-  console.log("Services : ",services)
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

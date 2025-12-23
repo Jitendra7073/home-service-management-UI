@@ -26,7 +26,6 @@ export async function GET(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Service fetch error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }
@@ -58,7 +57,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Service update error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }
@@ -87,7 +85,6 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     return NextResponse.json({ success: true, msg: "Service deleted" });
   } catch (error) {
-    console.error("Service delete error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }

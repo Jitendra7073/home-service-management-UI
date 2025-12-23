@@ -29,7 +29,6 @@ export default function ServiceView() {
                 isLoading={isLoading}
             />
             <ServicesTable NumberOfRows={10} />
-
         </div>
     </div>
 }

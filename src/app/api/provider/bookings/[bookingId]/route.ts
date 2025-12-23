@@ -27,7 +27,6 @@ export async function GET(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("booking fetch error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }
@@ -59,7 +58,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Service update error:", error);
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
       { status: 500 }

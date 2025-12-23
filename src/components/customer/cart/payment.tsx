@@ -57,7 +57,6 @@ const Payment: React.FC<PaymentProps> = ({ cartData, selectedAddress }) => {
 
       window.location.assign(data.url);
     } catch (error) {
-      console.error(error);
       toast.error("Payment error occurred.");
     } finally {
       setLoading(false);

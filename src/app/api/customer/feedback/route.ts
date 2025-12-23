@@ -16,8 +16,6 @@ export async function GET(){
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error during fetching", error);
-
     return NextResponse.json(
       { msg: "Unable to fetch feedback." },
       { status: 500 }
@@ -58,8 +56,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GiveFeedback API Error:", error);
-
     return NextResponse.json(
       { msg: "Unable to create feedback." },
       { status: 500 }

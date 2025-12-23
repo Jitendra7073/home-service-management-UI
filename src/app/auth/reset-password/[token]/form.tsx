@@ -11,13 +11,18 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { resetPasswordSchema } from "@/lib/validator/auth-validator";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
-
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(resetPasswordSchema),
     defaultValues: {
       newPassword: "",
@@ -26,6 +31,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   });
 
   const onSubmit = async (data: any) => {
+    setIsSubmitting(true)
     try {
       const res = await fetch(`/api/auth/reset-password/${token}`, {
         method: "POST",
@@ -37,20 +43,23 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
       if (!res.ok) {
         toast.error(result.message || "Something went wrong");
+        setIsSubmitting(false)
         return;
       }
 
-      toast.success(result.message ||"Password reset successfully!");
+      toast.success(result.message || "Password reset successfully!");
       router.push("/auth/login");
+      setIsSubmitting(false)
     } catch (err: any) {
       toast.error(err.message);
+    } finally {
+      setIsSubmitting(false)
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-5">
-
         <div className="grid gap-2">
           <Label htmlFor="newPassword">New Password</Label>
           <Input
@@ -73,7 +82,9 @@ export default function ResetPasswordForm({ token }: { token: string }) {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+            <p className="text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
@@ -83,13 +94,22 @@ export default function ResetPasswordForm({ token }: { token: string }) {
             checked={showPassword}
             onCheckedChange={(v) => setShowPassword(v as boolean)}
           />
-          <label htmlFor="showPassword" className="text-sm font-medium leading-none cursor-pointer">
+          <label
+            htmlFor="showPassword"
+            className="text-sm font-medium leading-none cursor-pointer">
             Show password
           </label>
         </div>
 
-        <Button type="submit" className="w-full mt-3">
-          Reset Password
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <div className="flex justify-center items-center gap-2">
+              <Spinner className="w-4 h-4" />
+              <span>Updating...</span>
+            </div>
+          ) : (
+            "Update Password"
+          )}
         </Button>
       </div>
     </form>

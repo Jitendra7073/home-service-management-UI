@@ -15,7 +15,7 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(error);
+    
     return NextResponse.json({ error });
   }
 }
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error(error);
+    
     return NextResponse.json({ msg: "Server error in route" }, { status: 500 });
   }
 }
@@ -59,7 +59,6 @@ export async function DELETE(req:Request) {
     }
     return NextResponse.json(data);
   } catch (err) {
-    console.error(err);
     return NextResponse.json({ err });
   }
 }

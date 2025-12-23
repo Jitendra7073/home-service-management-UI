@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface LoginValues {
   email: string;
@@ -18,6 +20,7 @@ interface LoginValues {
 }
 
 export default function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const {
@@ -80,14 +83,37 @@ export default function LoginForm() {
           </Link>
         </div>
 
-        <Input type="password" placeholder="******" {...register("password")} />
+        <Input
+          type={`${showPassword ? "text" : "password"}`}
+          placeholder="******"
+          {...register("password")}
+        />
         {errors.password && (
           <p className="text-red-500 text-sm">{errors.password.message}</p>
         )}
       </div>
 
+      {/* Show Password */}
+      <div className="col-span-2">
+        <label className="flex gap-2 items-center text-sm">
+          <input
+            type="checkbox"
+            checked={showPassword}
+            onChange={(e) => setShowPassword(e.target.checked)}
+          />
+          Show Password
+        </label>
+      </div>
+
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Logging in..." : "Login"}
+        {isSubmitting ? (
+          <div className="flex justify-center items-center gap-2">
+            <Spinner className="w-4 h-4" />
+            <span>Login...</span>
+          </div>
+        ) : (
+          "Login"
+        )}
       </Button>
     </form>
   );

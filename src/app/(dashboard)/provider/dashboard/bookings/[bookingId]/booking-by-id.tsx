@@ -17,6 +17,7 @@ import {
   XCircle,
   Loader2,
   Image as ImageIcon,
+  User2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
 
-/* ================= TYPES ================= */
+/* --------------------- TYPES --------------------- */
 
 interface BookingData {
   user: {
@@ -288,6 +289,7 @@ export default function BookingDetailsDashboard({
                 </div>
               </CardContent>
             </Card>
+
             <Card className="rounded-md shadow border-gray-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -317,6 +319,7 @@ export default function BookingDetailsDashboard({
                 </div>
               </CardContent>
             </Card>
+
             <Card className="bg-gray-50 border-dashed border-gray-300 shadow-none rounded-md">
               <CardContent className="pt-6 space-y-3">
                 <div className="flex justify-between text-xs">

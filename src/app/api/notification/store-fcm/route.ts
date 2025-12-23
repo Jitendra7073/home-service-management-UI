@@ -15,7 +15,6 @@ export async function POST(req: Request) {
     }
     return NextResponse.json(data)
   } catch (error) {
-    console.error("Error", error);
     return NextResponse.json({
       msg: "Error During storing fcm token!",
     });

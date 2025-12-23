@@ -22,7 +22,6 @@ export async function GET(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("GET team-member error:", error);
     return NextResponse.json(
       { success: false, msg: "Internal Server Error" },
       { status: 500 }
@@ -54,7 +53,6 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error("POST team-member error:", error);
     return NextResponse.json(
       { success: false, msg: "Internal Server Error" },
       { status: 500 }
@@ -105,7 +103,6 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error("PATCH team-member error:", error);
     return NextResponse.json(
       { success: false, msg: "Internal Server Error" },
       { status: 500 }
@@ -143,7 +140,6 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error("DELETE team-member error:", error);
     return NextResponse.json(
       { success: false, msg: "Internal Server Error" },
       { status: 500 }

@@ -37,8 +37,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data, { status });
   } catch (err) {
-    console.error("Next.js route error:", err);
-
     return NextResponse.json(
       { msg: "Failed to contact backend server" },
       { status: 500 }

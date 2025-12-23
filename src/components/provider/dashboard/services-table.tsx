@@ -93,7 +93,6 @@ export default function ServicesTable({
         queryKey: ["services"],
       });
     } catch (error) {
-      console.error("Service status update error:", error);
       toast.error("Something went wrong");
     }
   };
