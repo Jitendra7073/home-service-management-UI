@@ -1,13 +1,10 @@
 import { backend } from "@/lib/backend";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-interface RouteParams {
-  params: {
-    providerId: string;
-  };
-}
-
-export async function GET(req: Request, { params }: RouteParams) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ providerId: string }> }
+) {
   try {
     const { providerId } = await params;
 
@@ -16,7 +13,6 @@ export async function GET(req: Request, { params }: RouteParams) {
       { method: "GET" }
     );
 
-    // If backend returns a failure response
     if (!ok) {
       return NextResponse.json(
         {
