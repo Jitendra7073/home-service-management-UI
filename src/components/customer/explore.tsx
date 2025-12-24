@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react"; // ✅ ADDED useEffect
 
 import ExploreHeader from "@/components/customer/explore/exploreHeroSection";
 import SearchBar from "@/components/customer/explore/exploreSearchBar";
@@ -26,10 +26,7 @@ interface Service {
   isActive: boolean;
   slots: Array<{
     id: string;
-    date: string;
-    startTime: string;
-    endTime: string;
-    isBooked: boolean;
+    time: true;
   }>;
 }
 
@@ -56,7 +53,6 @@ interface Provider {
   name: string;
   email: string;
   mobile: string;
-  rating?: number;
   reviews?: number;
   businessProfile: BusinessProfile | null;
   addresses: Address[];
@@ -79,18 +75,54 @@ const Explore: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const pageFromUrl = Number(searchParams.get("page") || 1);
-  const limitFromUrl = Number(searchParams.get("limit") || 6);
-
-  const [page, setPage] = useState(pageFromUrl);
-  const [limit, setLimit] = useState(limitFromUrl);
-
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
-  const [selectedState, setSelectedState] = useState<string>(""); // reserved for future
-  const [rating, setRating] = useState<number>(0);
+  const [page, setPage] = useState(Number(searchParams.get("page") || 1));
+  const [limit, setLimit] = useState(Number(searchParams.get("limit") || 6));
+  const [searchTerm, setSearchTerm] = useState<string>(
+    searchParams.get("search") || ""
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    const cats = searchParams.get("categories");
+    return cats ? cats.split(",") : [];
+  });
+  const [priceRange, setPriceRange] = useState<[number, number]>(() => {
+    const min = Number(searchParams.get("minPrice") || 0);
+    const max = Number(searchParams.get("maxPrice") || 5000);
+    return [min, max];
+  });
+  const [selectedState, setSelectedState] = useState<string>(
+    searchParams.get("state") || ""
+  );
   const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    // Add filters to URL
+    if (searchTerm) params.set("search", searchTerm);
+    if (selectedCategories.length > 0)
+      params.set("categories", selectedCategories.join(","));
+    if (priceRange[0] > 0) params.set("minPrice", String(priceRange[0]));
+    if (priceRange[1] < 5000) params.set("maxPrice", String(priceRange[1]));
+    if (selectedState) params.set("state", selectedState);
+
+    // Add pagination
+    if (page !== 1) params.set("page", String(page));
+    if (limit !== 6) params.set("limit", String(limit));
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    router.replace(newUrl, { scroll: false });
+  }, [
+    searchTerm,
+    selectedCategories,
+    priceRange,
+    selectedState,
+    page,
+    limit,
+    router,
+  ]);
 
   // Categories
   const categories = useMemo<string[]>(() => {
@@ -107,10 +139,6 @@ const Explore: React.FC = () => {
 
   const updatePage = (newPage: number) => {
     setPage(newPage);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(newPage));
-    params.set("limit", String(limit));
-    router.push(`?${params.toString()}`);
   };
 
   // All services from providers
@@ -124,7 +152,6 @@ const Explore: React.FC = () => {
           businessId: provider.businessProfile!.id,
           providerId: provider.id,
           providerName: provider.name,
-          rating: provider.rating,
         });
       });
     });
@@ -149,11 +176,9 @@ const Explore: React.FC = () => {
           ? service.price >= priceRange[0] && service.price <= priceRange[1]
           : true;
 
-      const matchesRating = rating === 0 || (service.rating || 0) >= rating;
-
-      return matchesSearch && matchesCategory && matchesRating && matchesPrice;
+      return matchesSearch && matchesCategory && matchesPrice;
     });
-  }, [allServices, searchTerm, selectedCategories, priceRange, rating]);
+  }, [allServices, searchTerm, selectedCategories, priceRange]);
 
   const totalPages = Math.ceil(filteredServices.length / limit);
 
@@ -163,6 +188,7 @@ const Explore: React.FC = () => {
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
+    setPage(1); 
   };
 
   const clearFilters = (): void => {
@@ -170,7 +196,8 @@ const Explore: React.FC = () => {
     setSelectedCategories([]);
     setPriceRange([0, 5000]);
     setSelectedState("");
-    setRating(0);
+    setPage(1);
+    router.replace(window.location.pathname, { scroll: false });
   };
 
   const handleServiceClick = (service: any) => {
@@ -184,11 +211,10 @@ const Explore: React.FC = () => {
     selectedCategories.length > 0 ||
     priceRange[0] > 0 ||
     priceRange[1] < 5000 ||
-    !!selectedState ||
-    rating > 0;
+    !!selectedState
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-gray-50">
       <ExploreHeader
         totalServices={allServices.length}
         filteredCount={filteredServices.length}
@@ -213,8 +239,6 @@ const Explore: React.FC = () => {
               onToggleCategory={toggleCategory}
               priceRange={priceRange}
               onPriceChange={setPriceRange}
-              rating={rating}
-              onRatingChange={setRating}
               hasActiveFilters={hasActiveFilters}
               onClearFilters={clearFilters}
               mobileFilterOpen={mobileFilterOpen}
@@ -222,16 +246,14 @@ const Explore: React.FC = () => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          <div className="hidden lg:block">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="hidden lg:block bg-white">
             <Filters
               categories={categories}
               selectedCategories={selectedCategories}
               onToggleCategory={toggleCategory}
               priceRange={priceRange}
               onPriceChange={setPriceRange}
-              rating={rating}
-              onRatingChange={setRating}
               hasActiveFilters={hasActiveFilters}
               onClearFilters={clearFilters}
               mobileFilterOpen={mobileFilterOpen}

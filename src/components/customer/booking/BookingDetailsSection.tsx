@@ -8,6 +8,7 @@ import {
   MapPin,
   IndianRupee,
   Smile,
+  CheckCircle,
 } from "lucide-react";
 import CopyField from "@/components/customer/booking/CopyField";
 import { PaymentStatusBadge } from "./StatusBadge";
@@ -199,12 +200,26 @@ export default function BookingDetailsSection({
           )}
           {booking.bookingStatus === "COMPLETED" && (
             <Button
-              variant="outline"
+              variant={booking?.isFeedbackProvided ? "secondary" : "outline"}
               size="sm"
-              onClick={() => handleFeedBackClick(booking?.serviceId)}
-              className="flex items-center gap-2 border-green-300 text-green-700 hover:bg-green-50">
-              <Smile className="w-4 h-4" />
-              Give Feedback
+              onClick={() => handleFeedBackClick(booking?.id)}
+              disabled={booking?.isFeedbackProvided}
+              className={` flex items-center gap-2 px-4 transition-all duration-300 ease-in-out ${
+                booking?.isFeedbackProvided
+                  ? "bg-green-100 text-green-700 border-green-200 cursor-default"
+                  : "border-green-300 text-green-700 hover:bg-green-50"
+              }`}>
+              {booking?.isFeedbackProvided ? (
+                <>
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <span className="font-medium">Feedback Submitted</span>
+                </>
+              ) : (
+                <>
+                  <Smile className="w-4 h-4" />
+                  <span className="font-medium">Give Feedback</span>
+                </>
+              )}
             </Button>
           )}
         </div>

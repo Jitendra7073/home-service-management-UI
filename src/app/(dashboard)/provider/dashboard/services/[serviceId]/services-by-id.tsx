@@ -25,6 +25,7 @@ import { ImageUploader } from "@/components/provider/services/create/ImageUpload
 import { uploadToCloudinary } from "@/components/provider/services/create/cloudinary";
 import { UploadedImage } from "@/components/provider/services/create/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import ServiceDetailsSkeleton from "./serviceDetailsSkeleton";
 
 interface ServiceData {
   id: string;
@@ -91,7 +92,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   }, [isEditing, formData]);
 
   if (isLoading || !originalData || !formData) {
-    return <div className="p-6">Loading service...</div>;
+    return <ServiceDetailsSkeleton/>;
   }
 
   const hasChanges = () => {

@@ -1,11 +1,7 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
 import { Clock, Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
-const DEFAULT_IMAGE = "/images/Image_not_available.png";
 
 /* ---------------- COMPONENT ---------------- */
 
@@ -14,7 +10,6 @@ const Results = ({
   onServiceClick,
   isLoading,
   isError,
-  error,
 }: any) => {
 
   if (isLoading) {
@@ -35,7 +30,7 @@ const Results = ({
       <div className="text-center py-20">
         <Zap className="w-12 h-12 mx-auto text-gray-400 mb-4" />
         <p className="text-gray-600">
-          {error?.message || "Failed to load services"}
+          {"Failed to load services, please refresh the page!"}
         </p>
       </div>
     );
@@ -65,7 +60,6 @@ const Results = ({
             <h3 className="font-bold text-gray-900 line-clamp-1">
               {service.name}
             </h3>
-
             <p className="text-sm text-gray-600 line-clamp-2 mt-1">
               {service.category.description || service.category.name}
             </p>

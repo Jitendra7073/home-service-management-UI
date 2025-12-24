@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import ManageBusinessSkeleton from "./businessSkeleton";
 
 const BUSINESS_QUERY_KEY = ["provider-business"];
 
@@ -202,7 +203,7 @@ export default function BusinessInfo() {
   const [deleteSlotOpen, setDeleteSlotOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
 
-  if (isLoading) return <p className="p-10">Loading...</p>;
+  if (isLoading) return <ManageBusinessSkeleton/>;
   if (!data?.business) return <p className="p-10">No business found</p>;
 
   const { business, category, slots = [] } = data;

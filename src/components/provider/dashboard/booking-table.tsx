@@ -43,6 +43,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
+import TableSkeleton from "../tableSkeleton";
 
 type Booking = {
   id: string;
@@ -248,6 +249,10 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  if(isLoading){
+    return <TableSkeleton rows={10} columns = {5}/>
+  }
+
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
@@ -288,13 +293,7 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
           </TableHeader>
 
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-6">
-                  Loading bookings
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (

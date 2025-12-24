@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Star } from "lucide-react";
+import { CheckCheck, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,8 +48,9 @@ import {
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import TableSkeleton from "../tableSkeleton";
 
-/* ================= TYPES ================= */
+/* -------------------- TYPES -------------------- */
 
 export type Feedback = {
   id: string;
@@ -60,7 +61,7 @@ export type Feedback = {
   approved: boolean;
 };
 
-/* ================= HELPERS ================= */
+/* -------------------- HELPERS -------------------- */
 
 const isWithin7Days = (date: string) =>
   Date.now() - new Date(date).getTime() < 7 * 24 * 60 * 60 * 1000;
@@ -68,7 +69,7 @@ const isWithin7Days = (date: string) =>
 const truncate = (text: string, len = 20) =>
   text.length > len ? text.slice(0, len) + "…" : text;
 
-/* ================= COMPONENT ================= */
+/* -------------------- COMPONENT -------------------- */
 
 export default function FeedbackTable() {
   const queryClient = useQueryClient();
@@ -78,7 +79,7 @@ export default function FeedbackTable() {
     "all" | "approved" | "pending"
   >("all");
 
-  const { data } = useQuery({
+  const { data,isLoading,isPending } = useQuery({
     queryKey: ["customer-feedback"],
     queryFn: async () => {
       const res = await fetch("/api/provider/feedback");
@@ -88,20 +89,19 @@ export default function FeedbackTable() {
 
   const weeklyFeedback: Feedback[] = React.useMemo(
     () =>
-      data?.feedbacks?.filter((f: Feedback) =>
-        isWithin7Days(f.createdAt)
-      ) || [],
+      data?.feedbacks?.filter((f: Feedback) => isWithin7Days(f.createdAt)) ||
+      [],
     [data?.feedbacks]
   );
 
-  const approvedCount = weeklyFeedback.filter(f => f.approved).length;
-  const pendingCount = weeklyFeedback.filter(f => !f.approved).length;
+  const approvedCount = weeklyFeedback.filter((f) => f.approved).length;
+  const pendingCount = weeklyFeedback.filter((f) => !f.approved).length;
 
   const filteredByStatus = React.useMemo(() => {
     if (statusFilter === "approved")
-      return weeklyFeedback.filter(f => f.approved);
+      return weeklyFeedback.filter((f) => f.approved);
     if (statusFilter === "pending")
-      return weeklyFeedback.filter(f => !f.approved);
+      return weeklyFeedback.filter((f) => !f.approved);
     return weeklyFeedback;
   }, [weeklyFeedback, statusFilter]);
 
@@ -130,7 +130,7 @@ export default function FeedbackTable() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  /* ================= COLUMNS ================= */
+  /* -------------------- COLUMNS -------------------- */
 
   const columns: ColumnDef<Feedback>[] = [
     { accessorKey: "username", header: "Customer" },
@@ -149,12 +149,51 @@ export default function FeedbackTable() {
     {
       accessorKey: "approved",
       header: "Status",
-      cell: ({ row }) =>
-        row.original.approved ? (
-          <Badge className="bg-green-100 text-green-700">Approved</Badge>
-        ) : (
-          <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
-        ),
+      cell: ({ row }) => {
+        const feedback = row.original;
+        const isApproved = feedback.approved;
+        return (
+          <>
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <p className="cursor-pointer text-sm">
+                  {row.original.approved ? (
+                    <Badge className="bg-green-100 text-green-700">
+                      Approved
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-yellow-100 text-yellow-700">
+                      Pending
+                    </Badge>
+                  )}
+                </p>
+              </HoverCardTrigger>
+
+              <HoverCardContent className="w-72 space-y-3">
+                <p className="text-sm"><strong>Comment:</strong> {feedback.comment}</p>
+                <span className="w-full inline-block">
+                  <Button
+                    size="sm"
+                    className={`${isApproved ? "cursor-not-allowed bg-green-100 border border-green-700 text-green-700":"cursor-pointer bg-transparent hover:bg-yellow-100 border border-yellow-700 text-yellow-700"} w-full`}
+                    disabled={isApproved}
+                    onClick={() =>
+                      !isApproved && approveMutation.mutate(feedback.id)
+                    }>
+                    {isApproved ? (
+                      <div className={`flex gap-2 justify-center items-center `}>
+                        <CheckCheck className="w-4 h-4" />
+                        <span>Feedback Approved</span>
+                      </div>
+                    ) : (
+                      "Approve & Publish"
+                    )}
+                  </Button>
+                </span>
+              </HoverCardContent>
+            </HoverCard>
+          </>
+        );
+      },
     },
 
     {
@@ -162,44 +201,8 @@ export default function FeedbackTable() {
       header: "Feedback",
       cell: ({ row }) => {
         const feedback = row.original;
-        const isApproved = feedback.approved;
-
         return (
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <p className="cursor-pointer text-sm">
-                {truncate(feedback.comment)}
-              </p>
-            </HoverCardTrigger>
-
-            <HoverCardContent className="w-72 space-y-3">
-              <p className="text-sm">{feedback.comment}</p>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="w-full inline-block">
-                      <Button
-                        size="sm"
-                        className="w-full"
-                        disabled={isApproved}
-                        onClick={() =>
-                          !isApproved &&
-                          approveMutation.mutate(feedback.id)
-                        }
-                      >
-                        {isApproved ? "Approved" : "Approve & Publish"}
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-
-                  {isApproved && (
-                    <TooltipContent>Already approved</TooltipContent>
-                  )}
-                </Tooltip>
-              </TooltipProvider>
-            </HoverCardContent>
-          </HoverCard>
+          <p className="cursor-pointer text-sm">{truncate(feedback.comment)}</p>
         );
       },
     },
@@ -212,7 +215,7 @@ export default function FeedbackTable() {
     },
   ];
 
-  /* ================= TABLE ================= */
+  /* -------------------- TABLE -------------------- */
 
   const table = useReactTable({
     data: sortedFeedback,
@@ -228,8 +231,12 @@ export default function FeedbackTable() {
     },
   });
 
-  /* ================= RENDER ================= */
+  /* -------------------- RENDER -------------------- */
 
+
+    if(isLoading || isPending) {
+      return <TableSkeleton rows={5} columns={5}/>
+    }
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -259,8 +266,7 @@ export default function FeedbackTable() {
           value={statusFilter}
           onValueChange={(v) =>
             setStatusFilter(v as "all" | "approved" | "pending")
-          }
-        >
+          }>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Filter status" />
           </SelectTrigger>
@@ -276,9 +282,9 @@ export default function FeedbackTable() {
       <div className="border rounded-md">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(g => (
+            {table.getHeaderGroups().map((g) => (
               <TableRow key={g.id}>
-                {g.headers.map(h => (
+                {g.headers.map((h) => (
                   <TableHead key={h.id}>
                     {flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
@@ -288,9 +294,9 @@ export default function FeedbackTable() {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.map(row => (
+            {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map(cell => (
+                {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -307,16 +313,14 @@ export default function FeedbackTable() {
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
+          disabled={!table.getCanPreviousPage()}>
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
+          disabled={!table.getCanNextPage()}>
           Next
         </Button>
       </div>

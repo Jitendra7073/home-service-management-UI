@@ -32,15 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-
-// Skeleton Loader
-const ProfileSkeleton = () => (
-  <div className="space-y-4">
-    <div className="h-32 bg-gray-200 rounded-lg animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-lg animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-lg animate-pulse" />
-  </div>
-);
+import ProfileSkeleton from "./profileSkeleton";
 
 const CustomerProfilePage = () => {
   const router = useRouter();
@@ -124,14 +116,8 @@ const CustomerProfilePage = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <ProfileSkeleton />
-        </div>
-      </div>
-    );
+  if (!isLoading)
+    return <ProfileSkeleton/>
 
   if (isError || !user)
     return (

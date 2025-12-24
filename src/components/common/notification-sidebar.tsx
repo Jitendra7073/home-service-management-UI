@@ -20,14 +20,10 @@ const NotificationSideBar = () => {
   const queryClient = useQueryClient();
 
   /* ---------------- FETCH NOTIFICATIONS ---------------- */
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: NOTIFICATION_QUERY_KEY,
     queryFn: async () => {
-      const res = await fetch("/api/notification/customer-side");
+      const res = await fetch("/api/notification/all");
       if (!res.ok) throw new Error("Failed to fetch notifications");
       return res.json();
     },
@@ -42,9 +38,9 @@ const NotificationSideBar = () => {
   /* ---------------- MARK AS READ ---------------- */
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
-      const res = await fetch(`/api/notification/customer-side`, {
+      const res = await fetch(`/api/notification/all`, {
         method: "PATCH",
-        body:JSON.stringify({notificationId})
+        body: JSON.stringify({ notificationId }),
       });
       if (!res.ok) throw new Error("Failed to update notification");
     },
@@ -53,33 +49,24 @@ const NotificationSideBar = () => {
     onMutate: async (id) => {
       await queryClient.cancelQueries(NOTIFICATION_QUERY_KEY);
 
-      const previous =
-        queryClient.getQueryData(
-          NOTIFICATION_QUERY_KEY
-        );
+      const previous = queryClient.getQueryData(NOTIFICATION_QUERY_KEY);
 
-      queryClient.setQueryData(
-        NOTIFICATION_QUERY_KEY,
-        (old: any) => {
-          if (!old) return old;
-          return {
-            ...old,
-            notifications: old.notifications.map((n) =>
-              n.id === id ? { ...n, read: true } : n
-            ),
-          };
-        }
-      );
+      queryClient.setQueryData(NOTIFICATION_QUERY_KEY, (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          notifications: old.notifications.map((n) =>
+            n.id === id ? { ...n, read: true } : n
+          ),
+        };
+      });
 
       return { previous };
     },
 
     onError: (_, __, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(
-          NOTIFICATION_QUERY_KEY,
-          context.previous
-        );
+        queryClient.setQueryData(NOTIFICATION_QUERY_KEY, context.previous);
       }
       toast.error("Failed to update notification");
     },
@@ -95,7 +82,6 @@ const NotificationSideBar = () => {
         return <CalendarClock size={20} className="text-blue-600" />;
     }
   };
-
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -136,8 +122,7 @@ const NotificationSideBar = () => {
               {unreadNotifications.map((notify) => (
                 <li
                   key={notify.id}
-                  className="flex justify-between items-start p-4 hover:bg-accent transition"
-                >
+                  className="flex justify-between items-start p-4 hover:bg-accent transition">
                   {/* ICON + TEXT */}
                   <div className="flex gap-3">
                     <div className="p-2 rounded-md bg-muted">
@@ -145,9 +130,7 @@ const NotificationSideBar = () => {
                     </div>
 
                     <div>
-                      <p className="font-medium text-sm">
-                        {notify.title}
-                      </p>
+                      <p className="font-medium text-sm">{notify.title}</p>
                       <p className="text-xs text-muted-foreground">
                         {notify.message}
                       </p>
@@ -159,11 +142,8 @@ const NotificationSideBar = () => {
 
                   {/* MARK AS READ */}
                   <button
-                    onClick={() =>
-                      markAsReadMutation.mutate(notify.id)
-                    }
-                    className="text-muted-foreground hover:text-primary"
-                  >
+                    onClick={() => markAsReadMutation.mutate(notify.id)}
+                    className="text-muted-foreground hover:text-primary">
                     <X size={16} />
                   </button>
                 </li>

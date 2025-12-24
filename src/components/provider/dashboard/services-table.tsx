@@ -35,6 +35,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
+import TableSkeleton from "../tableSkeleton";
 
 export type Service = {
   id: string;
@@ -65,6 +66,7 @@ export default function ServicesTable({
     staleTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
+
 
   const toggleServiceStatus = async (
     serviceId: string,
@@ -217,6 +219,11 @@ export default function ServicesTable({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  
+  if(isLoading) {
+    return <TableSkeleton rows={5} columns={5}/>
+  }
 
   return (
     <div className="w-full space-y-4">

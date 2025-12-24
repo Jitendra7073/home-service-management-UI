@@ -1,5 +1,6 @@
 "use client";
 
+import NotificationSideBar from "@/components/common/notification-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -115,10 +116,6 @@ export function NavUser({
                   Pricing
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logoutHandle()}>

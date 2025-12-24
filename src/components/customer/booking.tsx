@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExploreHeader from "./explore/exploreHeroSection";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation"; 
 
 // Large Components
 import FiltersPanel from "@/components/customer/booking/FiltersPanel";
@@ -16,11 +17,19 @@ import FeedbackDialog from "./feedback/feedbackForm";
 
 export default function CustomerBookingsPage() {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const searchParams = useSearchParams(); 
 
-  // Filters
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("date-desc");
+
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || "all"
+  );
+  const [sortBy, setSortBy] = useState(
+    searchParams.get("sort") || "date-desc"
+  );
 
   // UI States
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -34,6 +43,21 @@ export default function CustomerBookingsPage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] =
     useState<any>(null);
+
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (searchQuery) params.set("search", searchQuery);
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (sortBy !== "date-desc") params.set("sort", sortBy);
+
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+
+    router.replace(newUrl, { scroll: false });
+  }, [searchQuery, statusFilter, sortBy, router]);
 
   // Fetch bookings
   const { data, isLoading, isError } = useQuery({
@@ -178,11 +202,12 @@ export default function CustomerBookingsPage() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  // Reset filters
+
   const resetFilters = () => {
     setSearchQuery("");
     setStatusFilter("all");
     setSortBy("date-desc");
+    router.replace(window.location.pathname, { scroll: false });
   };
 
   if (isError) {
@@ -284,7 +309,7 @@ export default function CustomerBookingsPage() {
             setFeedbackOpen(false);
             setSelectedBookingForFeedback(null);
           }}
-          serviceId={selectedBookingForFeedback}
+          bookingId={selectedBookingForFeedback}
         />
       )}
     </>

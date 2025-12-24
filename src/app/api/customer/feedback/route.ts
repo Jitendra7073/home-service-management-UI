@@ -25,10 +25,12 @@ export async function GET(){
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("Body",body)
 
-    const { rating, comment, serviceId} = body;
+    const { rating, comment, bookingId} = body;
+    console.log(`Rating: ${rating}, comment: ${comment}, bookingId: ${bookingId}`)
 
-    if (!rating || !comment || !serviceId) {
+    if (!rating || !comment || !bookingId) {
       return NextResponse.json(
         { msg: "Missing required fields" },
         { status: 400 }
@@ -43,9 +45,10 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         rating,
         comment,
-        serviceId,
+        bookingId,
       }),
     });
+    console.log("Data",data)
 
     if (!ok) {
       return NextResponse.json(

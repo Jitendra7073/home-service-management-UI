@@ -1,10 +1,10 @@
 import { backend } from "@/lib/backend";
 import { NextResponse } from "next/server";
 
-/* ---------------- CUSTOMER RECEIVED NOTIFICATIONS ---------------- */
+/* ---------------- RECEIVED All NOTIFICATIONS ---------------- */
 export async function GET() {
     try {
-        const { ok, data } = await backend("/api/v1/customer/notifications", {
+        const { ok, data } = await backend("/api/v1/notification/all", {
             method: "GET"
         });
         if (!ok) {
@@ -18,12 +18,11 @@ export async function GET() {
     }
 }
 
-
 /* ---------------- CUSTOMER UPDATE NOTIFICATIONS STATUS ---------------- */
 export async function PATCH(req:Request){
     const {notificationId} = await req.json();
     try {
-        const {ok, data} = await backend(`/api/v1/customer/notification/${notificationId}`,{
+        const {ok, data} = await backend(`/api/v1/notification/read/${notificationId}`,{
             method:"PATCH",
         })
         if(!ok){

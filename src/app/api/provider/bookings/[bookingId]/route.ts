@@ -10,6 +10,7 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const { bookingId } = await params;
+    console.log("Booking Id:",bookingId)
 
     const { ok, data } = await backend(
       `/api/v1/provider/booking?bookingId=${bookingId}`,
@@ -17,6 +18,8 @@ export async function GET(req: Request, { params }: RouteParams) {
         method: "GET",
       }
     );
+
+    console.log("Data",data)
 
     if (!ok) {
       return NextResponse.json(

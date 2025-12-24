@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Check } from "lucide-react";
+import PricingSkeleton from "./pricingSkeleton";
 
 /* ----------------------- BENEFITS ----------------------- */
 
@@ -186,7 +187,7 @@ export default function PricingSection() {
     },
   });
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ["provider-profile"],
     queryFn: async () => {
       const res = await fetch("/api/common/profile");
@@ -212,6 +213,10 @@ export default function PricingSection() {
       window.location.href = data.url;
     },
   });
+
+  if(isLoading){
+    return <PricingSkeleton/>
+  }
 
   return (
     <div className="flex justify-center w-full">

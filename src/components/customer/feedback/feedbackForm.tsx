@@ -11,23 +11,24 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Star, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface FeedbackFormProps {
   open: boolean;
   close: () => void;
-  serviceId: string;
+  bookingId: string;
 }
 
 const FeedbackDialog: React.FC<FeedbackFormProps> = ({
   open,
   close,
-  serviceId,
+  bookingId,
 }) => {
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState("");
   const [touched, setTouched] = useState(false);
+    const queryClient = useQueryClient();
 
   const commentLength = comment.length;
 
@@ -43,7 +44,7 @@ const FeedbackDialog: React.FC<FeedbackFormProps> = ({
     mutationFn: async (payload: {
       rating: number;
       comment: string;
-      serviceId: string;
+      bookingId: string;
     }) => {
       const res = await fetch("/api/customer/feedback", {
         method: "POST",
@@ -65,6 +66,7 @@ const FeedbackDialog: React.FC<FeedbackFormProps> = ({
       setRating(0);
       setComment("");
       setTouched(false);
+      queryClient.invalidateQueries(["customer-bookings"]);
       close();
     },
 
@@ -83,7 +85,7 @@ const FeedbackDialog: React.FC<FeedbackFormProps> = ({
     feedbackMutation.mutate({
       rating,
       comment,
-      serviceId,
+      bookingId,
     });
   };
 

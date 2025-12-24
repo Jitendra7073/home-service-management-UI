@@ -1,8 +1,5 @@
 import React from "react";
 import {
-  Mail,
-  Phone,
-  MapPin,
   Facebook,
   Twitter,
   Linkedin,
@@ -10,29 +7,81 @@ import {
   ArrowRight,
   ChevronRight,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Footer = () => {
+  const BASE_URL = "http://localhost:3000";
   const footerlinks = [
     {
-      title: "Services",
-      links: ["Consulting", "Support", "Solutions", "Training"],
-    },
-    {
-      title: "Support",
-      links: ["Help Center", "Contact Us", "FAQs", "Documentation"],
+      title: "Bookings",
+      options: [
+        {
+          label: "Pending",
+          endPoint: `${BASE_URL}/customer/booking?status=pending`,
+        },
+        {
+          label: "Confirmed",
+          endPoint: `${BASE_URL}/customer/booking?status=confirmed`,
+        },
+        {
+          label: "Completed",
+          endPoint: `${BASE_URL}/customer/booking?status=completed`,
+        },
+        {
+          label: "Cancelled",
+          endPoint: `${BASE_URL}/customer/booking?status=cancelled`,
+        },
+      ],
     },
     {
       title: "Legal",
-      links: [
-        "Privacy Policy",
-        "Terms of Service",
-        "Cookie Policy",
-        "Compliance",
+      options: [
+        {
+          label: "Privacy Policy",
+          endPoint: ``,
+          tooltips: "Not yet created!",
+        },
+        {
+          label: "Terms of Service",
+          endPoint: ``,
+          tooltips: "Not yet created!",
+        },
+        {
+          label: "Cookie Policy",
+          endPoint: ``,
+          tooltips: "Not yet created!",
+        },
+        {
+          label: "Compliance",
+          endPoint: ``,
+          tooltips: "Not yet created!",
+        },
       ],
     },
     {
       title: "Company",
-      links: ["About Us", "Blog", "Careers", "Press Kit"],
+      options: [
+        {
+          label: "Explore",
+          endPoint: `${BASE_URL}/customer/explore`,
+        },
+        {
+          label: "Booking",
+          endPoint: `${BASE_URL}/customer/booking`,
+        },
+        {
+          label: "Cart",
+          endPoint: `${BASE_URL}/customer/cart`,
+        },
+        {
+          label: "Profile",
+          endPoint: `${BASE_URL}/customer/profile`,
+        },
+      ],
     },
   ];
 
@@ -134,16 +183,27 @@ const Footer = () => {
                 {section.title}
               </h4>
               <ul className="space-y-2 sm:space-y-3">
-                {section.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-gray-400 text-xs sm:text-sm hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                      <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {section?.options.map((item, index) => {
+                  return (
+                    <li key={index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={item.endPoint}
+                            className="text-gray-400 text-xs sm:text-sm hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            {item.label}
+                          </a>
+                        </TooltipTrigger>
+                        {item.tooltips && (
+                          <TooltipContent>
+                            <p>{item.tooltips}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -178,27 +238,6 @@ const Footer = () => {
             <p className="text-gray-500 text-xs sm:text-sm">
               &copy; {currentYear} HSM Inc. All rights reserved.
             </p>
-
-            {/* Bottom Links */}
-            <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm flex-wrap justify-center">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors">
-                Privacy Policy
-              </a>
-              <span className="text-gray-600">•</span>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors">
-                Terms of Service
-              </a>
-              <span className="text-gray-600">•</span>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-blue-400 transition-colors">
-                Cookie Settings
-              </a>
-            </div>
           </div>
         </div>
       </div>

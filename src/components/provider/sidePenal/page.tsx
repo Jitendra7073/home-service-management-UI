@@ -25,6 +25,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { profileUpgradedTag } from "@/global-states/state";
+import NotificationSideBar from "@/components/common/notification-sidebar";
 
 // Sidebar links
 const data = {
