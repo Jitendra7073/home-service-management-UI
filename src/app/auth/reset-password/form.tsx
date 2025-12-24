@@ -10,14 +10,16 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { resetPasswordSchema } from "@/lib/validator/auth-validator";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 
-export default function ResetPasswordForm({ token }: { token: string }) {
+export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const [token, setToken] = useState(searchParams.get("token"));
   const {
     register,
     handleSubmit,
@@ -31,7 +33,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   });
 
   const onSubmit = async (data: any) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const res = await fetch(`/api/auth/reset-password/${token}`, {
         method: "POST",
@@ -43,17 +45,17 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
       if (!res.ok) {
         toast.error(result.message || "Something went wrong");
-        setIsSubmitting(false)
+        setIsSubmitting(false);
         return;
       }
 
       toast.success(result.message || "Password reset successfully!");
       router.push("/auth/login");
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     } catch (err: any) {
       toast.error(err.message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
 

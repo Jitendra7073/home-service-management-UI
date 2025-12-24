@@ -10,17 +10,11 @@ import {
 } from "@/components/ui/card";
 import ResetPasswordForm from "./form";
 
-export default async function ResetPasswordPage({
-  params,
-}: {
-  params: { token: string };
-}) {
-  const {token} = await params;
+export default async function ResetPasswordPage() {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-3xl md:max-w-4xl rounded-xl bg-white shadow-lg border overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        
         <div className="p-8 flex items-center justify-center">
           <Card className="w-full border-0 shadow-none">
             <CardHeader className="px-0">
@@ -31,14 +25,16 @@ export default async function ResetPasswordPage({
                 Enter your new password below to complete the reset process.
                 <br />
                 Go back to{" "}
-                <Link href="/auth/login" className="text-primary hover:underline font-medium">
+                <Link
+                  href="/auth/login"
+                  className="text-primary hover:underline font-medium">
                   Login
                 </Link>
               </CardDescription>
             </CardHeader>
 
             <CardContent className="px-0">
-              <ResetPasswordForm token={token} />
+              <ResetPasswordForm/>
             </CardContent>
           </Card>
         </div>
