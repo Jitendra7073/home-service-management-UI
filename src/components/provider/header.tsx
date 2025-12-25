@@ -32,14 +32,14 @@ export default function BookingHeader({
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-2">
-          <Button
+          {/* <Button
             variant="outline"
             size="sm"
             className="border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             <Download className="w-4 h-4 mr-1" />
             Export
-          </Button>
+          </Button> */}
 
           {isVisibleAddServiceButton && (
             <Button

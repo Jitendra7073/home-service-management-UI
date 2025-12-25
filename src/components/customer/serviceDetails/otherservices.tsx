@@ -4,7 +4,7 @@ const OtherServicesGrid = ({
   services,
   currentServiceId,
 }: {
-  services: Service[];
+  services: any[];
   currentServiceId: string;
 }) => {
   const otherServices = services.filter((s) => s.id !== currentServiceId);

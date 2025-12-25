@@ -6,5 +6,5 @@ export const addressSchema = z.object({
   state: z.string().min(2, "State is required"),
   postalCode: z.string().min(6, "Postal Code is required"),
   country: z.string().min(2, "Country is required"),
-  type:z.string().default("HOME"),
+  type:z.string().min(1),
 });

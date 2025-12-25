@@ -66,7 +66,9 @@ const FeedbackDialog: React.FC<FeedbackFormProps> = ({
       setRating(0);
       setComment("");
       setTouched(false);
-      queryClient.invalidateQueries(["customer-bookings"]);
+      queryClient.invalidateQueries({
+        queryKey:["customer-bookings"]
+      });
       close();
     },
 

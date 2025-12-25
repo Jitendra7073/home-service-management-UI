@@ -71,8 +71,9 @@ export default function BusinessProfileForm({
     { key: "Instagram", value: "" },
   ]);
 
-  // Local validation errors
-  const [socialErrors, setSocialErrors] = useState([]);
+  type SocialError = { key: string; value: string };
+
+  const [socialErrors, setSocialErrors] = useState<SocialError[]>([]);
 
   // Fetch categories
   const { data, isLoading } = useQuery({
@@ -171,6 +172,7 @@ export default function BusinessProfileForm({
   };
 
   async function onSubmit(values: BusinessFormValues) {
+    console.log("values",values)
     try {
       setLoading(true);
 

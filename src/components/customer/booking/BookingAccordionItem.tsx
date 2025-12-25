@@ -37,7 +37,7 @@ export default function BookingAccordionItem({
             {/* LEFT SECTION */}
             <div className="flex items-start gap-4 flex-1">
               {/* Icon */}
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
 

@@ -86,7 +86,6 @@ function StatusDropdown({
   };
 
   const updateStatus = async (next: Booking["status"]) => {
-
     const res = await fetch(`/api/provider/bookings/${bookingId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -163,14 +162,19 @@ const columns: ColumnDef<Booking>[] = [
   },
   {
     header: "Status",
-    cell: ({ row, table }) => (
-      <StatusDropdown
-        bookingId={row.original.id}
-        status={row.original.status}
-        payment={row.original.payment}
-        queryClient={table.options.meta?.queryClient}
-      />
-    ),
+    cell: ({ row, table }) => {
+      const queryClient = table.options.meta?.queryClient;
+      if (!queryClient) return null;
+
+      return (
+        <StatusDropdown
+          bookingId={row.original.id}
+          status={row.original.status}
+          payment={row.original.payment}
+          queryClient={queryClient}
+        />
+      );
+    },
   },
   {
     id: "actions",
@@ -213,7 +217,6 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     },
   });
 
-
   const bookings: Booking[] = React.useMemo(() => {
     if (!data?.bookings && !Array.isArray(data)) return [];
 
@@ -249,8 +252,8 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  if(isLoading){
-    return <TableSkeleton rows={10} columns = {5}/>
+  if (isLoading) {
+    return <TableSkeleton rows={10} columns={5} />;
   }
 
   return (
@@ -267,7 +270,10 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
             }}
             className="max-w-sm"
           />
-          <Button variant="ghost" onClick={() => refetch()} disabled={isFetching}>
+          <Button
+            variant="ghost"
+            onClick={() => refetch()}
+            disabled={isFetching}>
             <RefreshCw
               className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
             />
@@ -282,10 +288,7 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
               <TableRow key={g.id}>
                 {g.headers.map((h) => (
                   <TableHead key={h.id}>
-                    {flexRender(
-                      h.column.columnDef.header,
-                      h.getContext()
-                    )}
+                    {flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -308,7 +311,9 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-10">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-10">
                   No bookings found
                 </TableCell>
               </TableRow>

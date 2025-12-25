@@ -30,7 +30,6 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog";
 import ManageBusinessSkeleton from "./businessSkeleton";
 
-const BUSINESS_QUERY_KEY = ["provider-business"];
 
 function LabelAndValue({ label, value, icon: Icon }: any) {
   return (
@@ -150,7 +149,7 @@ export default function BusinessInfo() {
 
   /* ---------------- FETCH ---------------- */
   const { data, isLoading } = useQuery({
-    queryKey: BUSINESS_QUERY_KEY,
+    queryKey: ["provider-business"],
     queryFn: async () => {
       const res = await fetch("/api/provider/business");
       if (!res.ok) throw new Error();
@@ -169,7 +168,9 @@ export default function BusinessInfo() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(BUSINESS_QUERY_KEY);
+      queryClient.invalidateQueries({
+        queryKey:["provider-business"]
+      });
       toast.success("Business updated");
       setEditBusinessOpen(false);
     },
@@ -180,7 +181,9 @@ export default function BusinessInfo() {
       await fetch(`/api/provider/slots`, { method: "DELETE", body: JSON.stringify({ id }) });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(BUSINESS_QUERY_KEY);
+      queryClient.invalidateQueries({
+        queryKey:["provider-business"]
+      });
       toast.success("Slot deleted");
       setDeleteSlotOpen(false);
       setSelectedSlot(null);
@@ -209,7 +212,7 @@ export default function BusinessInfo() {
   const { business, category, slots = [] } = data;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10">
+    <div className="max-w-6xl mx-auto space-y-10 px-4 md:px-2">
       <h1 className="text-3xl font-bold">Manage Business Profile</h1>
 
       <section className="bg-white sm:p-6 sm:border rounded-lg space-y-4">

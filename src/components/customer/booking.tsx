@@ -6,7 +6,7 @@ import { Search, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExploreHeader from "./explore/exploreHeroSection";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation"; 
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Large Components
 import FiltersPanel from "@/components/customer/booking/FiltersPanel";
@@ -18,8 +18,7 @@ import FeedbackDialog from "./feedback/feedbackForm";
 export default function CustomerBookingsPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const searchParams = useSearchParams(); 
-
+  const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
@@ -27,9 +26,7 @@ export default function CustomerBookingsPage() {
   const [statusFilter, setStatusFilter] = useState(
     searchParams.get("status") || "all"
   );
-  const [sortBy, setSortBy] = useState(
-    searchParams.get("sort") || "date-desc"
-  );
+  const [sortBy, setSortBy] = useState(searchParams.get("sort") || "date-desc");
 
   // UI States
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -43,7 +40,6 @@ export default function CustomerBookingsPage() {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] =
     useState<any>(null);
-
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -178,7 +174,9 @@ export default function CustomerBookingsPage() {
 
       toast.success("Booking cancelled successfully!");
 
-      queryClient.invalidateQueries(["customer-bookings"]);
+      queryClient.invalidateQueries({
+        queryKey: ["customer-bookings"],
+      });
 
       setCancelDialogOpen(false);
       setSelectedBooking(null);
@@ -202,7 +200,6 @@ export default function CustomerBookingsPage() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-
   const resetFilters = () => {
     setSearchQuery("");
     setStatusFilter("all");
@@ -222,6 +219,9 @@ export default function CustomerBookingsPage() {
     <>
       {/* Page Header */}
       <ExploreHeader
+        totalServices={0}
+        filteredCount={0}
+        totalProviders={0}
         isVisible={false}
         heading="All Bookings"
         description="Your past and upcoming service booking history."

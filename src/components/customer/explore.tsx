@@ -132,7 +132,9 @@ const Explore: React.FC = () => {
         cats.add(service.category.name);
       });
     });
-    queryClient.invalidateQueries(["providers"]);
+    queryClient.invalidateQueries({
+      queryKey:["providers"]
+    });
 
     return Array.from(cats);
   }, [providers]);
@@ -155,7 +157,9 @@ const Explore: React.FC = () => {
         });
       });
     });
-    queryClient.invalidateQueries(["providers"]);
+    queryClient.invalidateQueries({
+      queryKey:["providers"]
+    });
 
     return services;
   }, [providers]);

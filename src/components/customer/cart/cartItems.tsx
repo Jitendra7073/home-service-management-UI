@@ -7,26 +7,12 @@ import {
 } from "@/components/ui/tooltip";
 import Link from "next/link";
 
-interface Service {
-  name: string;
-  price: number;
-}
-interface Slot {
-  time: string;
-}
-interface Cart {
-  service: Service;
-  slot: Slot;
-  date: string;
-  id: string;
-  totalPrice: number;
-}
 interface CartItemProps {
-  data: Cart[];
+  data: any;
   isLoading: boolean;
   isError: boolean;
   isPending: boolean;
-  clickHandle: (id: String) => void;
+  clickHandle: (id: string) => void | Promise<void>;
 }
 
 const CartItems: React.FC<CartItemProps> = ({
@@ -145,14 +131,6 @@ const CartItems: React.FC<CartItemProps> = ({
             <span>₹{data.totalPrice}</span>
           )}
         </div>
-        {/* <div className="flex justify-between text-gray-600">
-          <span>Tax (2%)</span>
-          {isLoading || isPending ? (
-            <span className="h-5 bg-gray-200 rounded w-20  animate-pulse"></span>
-          ) : (
-            <span>₹{tax.toFixed(2)}</span>
-          )}
-        </div> */}
         <div className="flex justify-between text-xl font-bold text-gray-800 pt-3 border-t">
           <span>Total</span>
           {isLoading || isPending ? (

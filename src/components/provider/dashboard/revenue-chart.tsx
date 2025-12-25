@@ -15,7 +15,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { monthlyAnalysisData } from "@/components/provider/dashboard/dashboardStats";
 import { Spinner } from "@/components/ui/spinner";
 import Image from "next/image";
 

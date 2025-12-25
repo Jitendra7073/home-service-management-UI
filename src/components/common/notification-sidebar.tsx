@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Bell,
@@ -9,18 +15,36 @@ import {
   CalendarClock,
   CheckCircle,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const NOTIFICATION_QUERY_KEY = ["notifications"];
+
+const NotificationSkeleton = () => {
+  return [...Array(5)].map((_, index) => {
+    return (
+      <div
+        className="flex justify-between items-start mx-3 border py-5 rounded mb-4"
+        key={index}>
+        <div className="flex-1 space-y-2 mx-3">
+          <div className="h-5 bg-gray-200 rounded w-2/4 animate-pulse" />
+          <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+        </div>
+        <div className="h-5 bg-gray-200 rounded w-5 mr-2 animate-pulse"></div>
+      </div>
+    );
+  });
+};
 
 const NotificationSideBar = () => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
   /* ---------------- FETCH NOTIFICATIONS ---------------- */
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError,isFetching, refetch } = useQuery({
     queryKey: NOTIFICATION_QUERY_KEY,
     queryFn: async () => {
       const res = await fetch("/api/notification/all");
@@ -47,7 +71,9 @@ const NotificationSideBar = () => {
 
     // Optimistic UI update
     onMutate: async (id) => {
-      await queryClient.cancelQueries(NOTIFICATION_QUERY_KEY);
+      await queryClient.cancelQueries({
+        queryKey: ["NOTIFICATION_QUERY_KEY"],
+      });
 
       const previous = queryClient.getQueryData(NOTIFICATION_QUERY_KEY);
 
@@ -55,7 +81,7 @@ const NotificationSideBar = () => {
         if (!old) return old;
         return {
           ...old,
-          notifications: old.notifications.map((n) =>
+          notifications: old.notifications.map((n: any) =>
             n.id === id ? { ...n, read: true } : n
           ),
         };
@@ -99,27 +125,45 @@ const NotificationSideBar = () => {
 
       <SheetContent side="right" className="w-[330px] p-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b">
-          <h2 className="text-xl font-semibold">Notifications</h2>
-        </div>
+
+        <SheetTitle>
+          <div className="flex items-center justify-between px-4 py-4 border-b">
+            <h2 className="text-xl font-semibold">Notifications</h2>
+          </div>
+        </SheetTitle>
+        <SheetDescription>
+          <Button variant="ghost" className="w-fit absolute bottom-2 right-3 text-blackcursor-pointer" onClick={()=> refetch()} disabled={isFetching || isLoading }>
+            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}/>
+          </Button>
+        </SheetDescription>
 
         {/* Body */}
         <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
           {isLoading ? (
-            <p className="text-center py-6 text-muted-foreground">
-              Loading notifications...
-            </p>
+            <NotificationSkeleton />
           ) : isError ? (
             <p className="text-center py-6 text-red-500">
-              Failed to load notifications
+              Failed to load notifications,
+              <br />
+              please refresh!
             </p>
           ) : unreadNotifications.length === 0 ? (
-            <p className="text-center py-6 text-muted-foreground">
-              No new notifications
-            </p>
+            <div className="flex max-h-screen flex-col justify-center items-center">
+              <div className="w-[300px] h-[300px] opacity-60">
+                <Image
+                  src="/images/no-notification.jpg"
+                  height={500}
+                  width={500}
+                  alt="No new notification!"
+                />
+              </div>
+              <p className="text-center py-2 text-muted-foreground">
+                No new notifications
+              </p>
+            </div>
           ) : (
             <ul className="divide-y">
-              {unreadNotifications.map((notify) => (
+              {unreadNotifications.map((notify: any) => (
                 <li
                   key={notify.id}
                   className="flex justify-between items-start p-4 hover:bg-accent transition">
@@ -150,8 +194,11 @@ const NotificationSideBar = () => {
               ))}
             </ul>
           )}
+          
         </div>
+
       </SheetContent>
+      
     </Sheet>
   );
 };

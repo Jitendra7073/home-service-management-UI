@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Phone, Mail, Globe, MapPin, X } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
@@ -25,6 +24,25 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Feedback from "@/components/customer/serviceDetails/feedbacks";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import {
+  Instagram,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Youtube,
+  Globe,
+  MessageCircle,
+  Phone,
+  Mail,
+  MapPin,
+  X,
+} from "lucide-react";
 
 interface Slot {
   id: string;
@@ -35,6 +53,15 @@ interface Category {
   id: string;
   name: string;
   description: string;
+}
+
+interface Feedback {
+  id: string;
+  rating: number;
+  comment: string;
+  username: string;
+  servicename: string;
+  approved: boolean;
 }
 
 interface Service {
@@ -50,6 +77,7 @@ interface Service {
   reviewCount: number;
   category: Category;
   slots: Slot[];
+  feedback: Feedback[];
 }
 
 interface BusinessProfile {
@@ -60,6 +88,8 @@ interface BusinessProfile {
   websiteURL: string | null;
   isActive: boolean;
   services: Service[];
+  slots: Slot[];
+  socialLinks: any[];
 }
 
 interface Address {
@@ -77,6 +107,62 @@ interface Provider {
   mobile: string;
   businessProfile: BusinessProfile;
   addresses: Address[];
+}
+
+type PlatformIconProps = {
+  platform: string;
+  className?: string;
+};
+
+type SocialLink = {
+  key: string;
+  value: string;
+};
+
+function PlatformIcon({ platform, className }: PlatformIconProps) {
+  const key = platform.toLowerCase();
+
+  const icons: Record<string, JSX.Element> = {
+    instagram: <Instagram className={className} />,
+    facebook: <Facebook className={className} />,
+    linkedin: <Linkedin className={className} />,
+    twitter: <Twitter className={className} />,
+    x: <Twitter className={className} />,
+    youtube: <Youtube className={className} />,
+    website: <Globe className={className} />,
+    portfolio: <Globe className={className} />,
+    whatsapp: <MessageCircle className={className} />,
+  };
+
+  return icons[key] ?? <Globe className={className} />;
+}
+
+function SocialLinks({ links }: { links?: SocialLink[] }) {
+  if (!links || links.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      {links.map((item, index) => (
+        <a
+          key={index}
+          href={item.value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2 rounded-md  bg-white text-sm text-slate-700  transition">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 group-hover:text-blue-500 transition-colors">
+                <PlatformIcon platform={item.key} className="h-4 w-4" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{item.key.charAt(0).toLocaleUpperCase() + item.key.slice(1)}</p>
+            </TooltipContent>
+          </Tooltip>
+        </a>
+      ))}
+    </div>
+  );
 }
 
 export default function ServiceDetailPage() {
@@ -105,6 +191,7 @@ export default function ServiceDetailPage() {
 
   const provider = data || null;
   const business = provider?.businessProfile || null;
+  const socialLinks = business?.socialLinks || [];
 
   const service = useMemo(() => {
     if (!business || !serviceId) return null;
@@ -208,14 +295,23 @@ export default function ServiceDetailPage() {
 
             {/* BUSINESS DETAILS */}
             <div className="bg-white rounded-sm shadow-xs border p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                Business Details
-              </h2>
-              <h3 className="text-lg font-semibold text-gray-900 mb-5">
-                {business.businessName}
-              </h3>
+              <div className="flex justify-between">
+                <div className="">
+                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                    Business Details
+                  </h2>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-5">
+                    {business.businessName}
+                  </h3>
+                </div>
+                <div className="hidden md:block">
+                  <SocialLinks
+                  links={socialLinks}
+                />
+                </div>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
                 <InfoRow
                   icon={<Phone className="w-4 h-4" />}
                   label="Phone"
@@ -244,6 +340,12 @@ export default function ServiceDetailPage() {
                   />
                 )}
               </div>
+
+              <div className="block md:hidden">
+                  <SocialLinks
+                  links={socialLinks}
+                />
+                </div>
             </div>
 
             {/* SLOT SELECTOR */}

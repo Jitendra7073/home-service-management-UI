@@ -11,7 +11,7 @@ import { toast } from "sonner";
 export default function HomeServiceCart() {
   const clientQuery = useQueryClient();
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
   const { data, isLoading, isPending, isError } = useQuery({
     queryKey: ["cart-items"],
@@ -59,7 +59,9 @@ export default function HomeServiceCart() {
 
     toast.success(response.msg || "Item removed from cart");
 
-    clientQuery.invalidateQueries(["cart-items"]);
+    clientQuery.invalidateQueries({
+      queryKey: ["cart-items"],
+    });
   };
 
   return (
