@@ -6,19 +6,32 @@ export async function backend(path: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
   const cookieString = cookieStore
     .getAll()
-    .map((c:any) => `${c.name}=${c.value}`)
+    .map((c: any) => `${c.name}=${c.value}`)
     .join("; ");
 
   const res = await fetch(url, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
       Cookie: cookieString,
       ...(options.headers || {}),
     },
   });
 
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  let data: any = null;
 
-  return { status: res.status, ok: res.ok, data, headers: res.headers };
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  return {
+    status: res.status,
+    ok: res.ok,
+    data,
+    headers: res.headers,
+  };
 }
