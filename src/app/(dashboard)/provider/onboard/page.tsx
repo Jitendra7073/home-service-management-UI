@@ -1,11 +1,20 @@
 import OnboardSteps from "./onboard-steps";
+import { Suspense } from "react";
 
-const OnBoard = async () => {
+export default function OnBoard() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <Suspense fallback={<OnBoardLoading />}>
+      <div className="min-h-screen flex items-center justify-center">
       <OnboardSteps />
     </div>
+    </Suspense>
   );
-};
+}
 
-export default OnBoard;
+function OnBoardLoading() {
+  return (
+    <div className="p-6 text-center text-muted-foreground">
+      OnBoard fallback loading...
+    </div>
+  );
+}

@@ -1,12 +1,19 @@
 import React from "react";
 import Explore from "@/components/customer/explore";
+import { Suspense } from "react";
 
-const ExplorePage = () => {
+export default function ExplorePage() {
   return (
-    <>
+    <Suspense fallback={<BookingLoading />}>
       <Explore />
-    </>
+    </Suspense>
   );
-};
+}
 
-export default ExplorePage;
+function BookingLoading() {
+  return (
+    <div className="p-6 text-center text-muted-foreground">
+      Loading Services details...
+    </div>
+  );
+}

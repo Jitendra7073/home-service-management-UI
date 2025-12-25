@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 
 import {
   Card,
@@ -34,7 +35,9 @@ export default async function ResetPasswordPage() {
             </CardHeader>
 
             <CardContent className="px-0">
+               <Suspense fallback={<FallbackLoading />}>
               <ResetPasswordForm/>
+                  </Suspense>
             </CardContent>
           </Card>
         </div>
@@ -52,3 +55,12 @@ export default async function ResetPasswordPage() {
     </section>
   );
 }
+
+function FallbackLoading() {
+  return (
+    <div className="p-6 text-center text-muted-foreground">
+      Loading Services details...
+    </div>
+  );
+}
+
