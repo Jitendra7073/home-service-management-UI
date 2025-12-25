@@ -6,7 +6,7 @@ export async function backend(path: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
   const cookieString = cookieStore
     .getAll()
-    .map((c) => `${c.name}=${c.value}`)
+    .map((c:any) => `${c.name}=${c.value}`)
     .join("; ");
 
   const res = await fetch(url, {
