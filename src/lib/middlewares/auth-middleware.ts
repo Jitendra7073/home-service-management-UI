@@ -13,7 +13,7 @@ const authMiddleware = async (req: any) => {
   const { pathname } = req.nextUrl;
 
   try {
-    const token = await getAuthToken(req);
+    const token = await getAuthToken();
 
     // Handle root "/" route
     if (pathname === "/") {

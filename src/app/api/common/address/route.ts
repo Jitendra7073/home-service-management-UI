@@ -55,7 +55,7 @@ export async function DELETE(req:Request) {
       method: "DELETE",
     });
     if (!ok) {
-      return NextResponse.json({ msg: "Address can not be deleted" });
+      return NextResponse.json(data || "Unable to DELETE this address!");
     }
     return NextResponse.json(data);
   } catch (err) {

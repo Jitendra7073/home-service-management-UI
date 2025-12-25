@@ -10,16 +10,17 @@ import {
   TableCell,
 } from "@/components/ui/table";
 
-const TableSkeleton = ({
-  columns ,
-  rows ,
-}: {
+type TableSkeletonProps = {
   columns?: number;
   rows?: number;
-}) => {
+};
+
+const TableSkeleton = ({
+  columns = 5,
+  rows = 5,
+}: TableSkeletonProps) => {
   return (
     <div className="w-full space-y-4 animate-pulse">
-
       {/* Header */}
       <div className="flex justify-between items-center">
         <Skeleton className="h-5 w-32" />

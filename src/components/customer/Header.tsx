@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import NotificationSideBar from "../common/notification-sidebar";
 import { useQuery } from "@tanstack/react-query";
 
@@ -124,6 +124,9 @@ export default function Header() {
               </Button>
             </SheetTrigger>
 
+            <SheetTitle></SheetTitle>
+            <SheetDescription></SheetDescription>
+
             {/* MOBILE MENU */}
             <SheetContent side="left" className="w-[260px] p-0">
               <div className="flex flex-col h-full">
@@ -149,28 +152,6 @@ export default function Header() {
                     onClick={() => setOpen(false)}
                   />
                 </div>
-
-                {/* DIVIDER */}
-                <div className="my-3 border-t" />
-
-                {/* ADS SECTION */}
-                <div className="flex-1 px-4 pb-4">
-                  <p className="text-sm font-semibold mb-2 text-gray-700">
-                    Popular Home Services
-                  </p>
-
-                  <div className="space-y-3">
-                    <PromoCard
-                      title="Home Renovation"
-                      image="/images/services-banner.jpg"
-                    />
-                    <PromoCard
-                      title="Electrician Service"
-                      image="/images/services-banner.jpg"
-                    />
-                  </div>
-                </div>
-
               </div>
             </SheetContent>
           </Sheet>

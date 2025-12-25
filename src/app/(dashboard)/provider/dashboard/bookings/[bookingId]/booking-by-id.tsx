@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   User,
@@ -13,20 +12,32 @@ import {
   Banknote,
   Calendar,
   Package,
-  CheckCircle2,
-  XCircle,
   Loader2,
-  Image as ImageIcon,
-  User2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useQuery } from "@tanstack/react-query";
 
-/* --------------------- TYPES --------------------- */
+/* ---------------- TYPES ---------------- */
+
+type BookingStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "COMPLETED"
+  | "CANCELLED";
+
+type PaymentStatus =
+  | "PENDING"
+  | "PAID"
+  | "FAILED"
+  | "CANCELLED";
 
 interface BookingData {
   user: {
@@ -35,14 +46,12 @@ interface BookingData {
     mobile: string;
   };
   address: {
-    id: string;
     street: string;
     city: string;
     state: string;
     postalCode: string;
     country: string;
-    landmark: string;
-    userId: string;
+    landmark?: string;
   };
   service: {
     id: string;
@@ -51,26 +60,36 @@ interface BookingData {
     durationInMinutes: number;
     price: number;
     currency: string;
-    isActive: boolean;
-    coverImage: string;
-    images: string[];
-    averageRating: number;
-    reviewCount: number;
+    coverImage?: string;
     createdAt: string;
-    updatedAt: string;
-    businessProfileId: string;
-    businessCategoryId: string;
   };
   slot: {
     time: string;
   };
-  date:string;
-  bookingStatus: string;
-  paymentStatus: string;
-  bookingItems: any[];
+  date: string;
+  bookingStatus: BookingStatus;
+  paymentStatus: PaymentStatus;
   createdAt: string;
   updatedAt: string;
 }
+
+/* ---------------- STATUS STYLES ---------------- */
+
+const bookingStatusClasses: Record<BookingStatus, string> = {
+  PENDING: "bg-yellow-100 text-yellow-800",
+  CONFIRMED: "bg-blue-100 text-blue-800",
+  COMPLETED: "bg-green-100 text-green-800",
+  CANCELLED: "bg-red-100 text-red-800",
+};
+
+const paymentStatusClasses: Record<PaymentStatus, string> = {
+  PENDING: "bg-yellow-100 text-yellow-800",
+  PAID: "bg-green-100 text-green-800",
+  FAILED: "bg-red-100 text-red-800",
+  CANCELLED: "bg-gray-100 text-gray-800",
+};
+
+/* ---------------- COMPONENT ---------------- */
 
 export default function BookingDetailsDashboard({
   bookingId,
@@ -81,15 +100,15 @@ export default function BookingDetailsDashboard({
 
   const { data, isLoading } = useQuery({
     queryKey: ["booking-details", bookingId],
-    enabled: !!bookingId,
+    enabled: Boolean(bookingId),
     queryFn: async () => {
       const res = await fetch(`/api/provider/bookings/${bookingId}`);
       if (!res.ok) throw new Error("Failed to fetch booking");
-      return await res.json();
+      return res.json();
     },
   });
 
-  const booking: BookingData | null = data?.bookings || null;
+  const booking: BookingData | null = data?.bookings ?? null;
 
   if (isLoading) {
     return (
@@ -107,258 +126,206 @@ export default function BookingDetailsDashboard({
     );
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
   const hours = Math.floor(booking.service.durationInMinutes / 60);
   const minutes = booking.service.durationInMinutes % 60;
 
-  const bookingStatusClasses = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    CONFIRMED: "bg-blue-100 text-blue-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELLED: "bg-red-100 text-red-800",
-  };
-
-  const paymentStatusClasses = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    PAID: "bg-green-100 text-green-800",
-    FAILED: "bg-red-100 text-red-800",
-    CANCELLED: "bg-gray-100 text-gray-800",
-  };
-
   return (
     <div className="flex w-full justify-center min-h-screen">
-      <div className="w-full max-w-[1400px] px-2 md:px-6 py-6 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => router.back()}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-                  Booking Details
-                </h1>
-                <Badge
-                  className={`${
-                    bookingStatusClasses[booking.bookingStatus]
-                  } px-2 py-1 rounded`}>
-                  {booking.bookingStatus}
-                </Badge>
+      <div className="w-full max-w-[1400px] px-4 py-6 space-y-6">
+        {/* HEADER */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
 
-                <Badge
-                  className={`${
-                    paymentStatusClasses[booking.paymentStatus]
-                  } px-2 py-1 rounded`}>
-                  {booking.paymentStatus}
-                </Badge>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Booking Details
+            </h1>
+
+            <Badge
+              className={`${bookingStatusClasses[booking.bookingStatus]} px-2 py-1`}
+            >
+              {booking.bookingStatus}
+            </Badge>
+
+            <Badge
+              className={`${paymentStatusClasses[booking.paymentStatus]} px-2 py-1`}
+            >
+              {booking.paymentStatus}
+            </Badge>
           </div>
         </div>
 
+        {/* CONTENT */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* LEFT */}
           <div className="lg:col-span-2 space-y-4">
-            <Card className="rounded-md shadow border-gray-200">
+            {/* CUSTOMER */}
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5 text-blue-600" />
                   Customer Information
                 </CardTitle>
               </CardHeader>
+
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    <User className="w-5 h-5 text-gray-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-1">
-                        Full Name
-                      </p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {booking.user.name}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-                    <Phone className="w-5 h-5 text-gray-600 mt-0.5" />
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium mb-1">
-                        Mobile
-                      </p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {booking.user.mobile}
-                      </p>
-                    </div>
-                  </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <InfoBox icon={User} label="Full Name" value={booking.user.name} />
+                  <InfoBox icon={Phone} label="Mobile" value={booking.user.mobile} />
                 </div>
 
-                <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-md border border-gray-200">
-                  <Mail className="w-5 h-5 text-gray-600 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium mb-1">
-                      Email Address
-                    </p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {booking.user.email}
-                    </p>
-                  </div>
-                </div>
+                <InfoBox icon={Mail} label="Email" value={booking.user.email} />
               </CardContent>
             </Card>
-            <Card className="rounded-md shadow-sm border-gray-200">
+
+            {/* SERVICE */}
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="w-5 h-5 text-blue-600" />
                   Service Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Service Cover Image */}
+
+              <CardContent className="space-y-4">
                 {booking.service.coverImage && (
-                  <div className="relative w-full h-75 rounded-md overflow-hidden bg-gray-100">
-                    <img
-                      src={booking.service.coverImage}
-                      alt={booking.service.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <img
+                    src={booking.service.coverImage}
+                    alt={booking.service.name}
+                    className="w-full h-64 object-cover rounded-md"
+                  />
                 )}
 
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {booking.service.name}
-                  </h3>
+                <h3 className="text-xl font-semibold">
+                  {booking.service.name}
+                </h3>
 
-                  <div className="flex flex-wrap gap-3 mb-4">
-                    <div className="flex items-center gap-2 text-gray-600 bg-blue-50 px-3 py-2 rounded-full text-sm font-medium border border-blue-100">
-                      <Clock className="w-4 h-4 text-blue-600" />
-                      {hours > 0 && `${hours}H `}
-                      {minutes > 0 && `${minutes}M`}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600 bg-green-50 px-3 py-2 rounded-full text-sm font-medium border border-green-100">
-                      <Banknote className="w-4 h-4 text-green-600" />
-                      {booking.service.currency}{" "}
-                      {booking.service.price.toLocaleString()}
-                    </div>
-                  </div>
-
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                    About this service
-                  </h4>
-                  <p className="text-gray-600 leading-relaxed text-sm">
-                    {booking.service.description}
-                  </p>
+                <div className="flex gap-3">
+                  <Tag
+                    icon={Clock}
+                    text={`${hours ? `${hours}H ` : ""}${minutes}M`}
+                  />
+                  <Tag
+                    icon={Banknote}
+                    text={`${booking.service.currency} ${booking.service.price.toLocaleString()}`}
+                  />
                 </div>
+
+                <p className="text-gray-600 text-sm">
+                  {booking.service.description}
+                </p>
               </CardContent>
             </Card>
           </div>
+
+          {/* RIGHT */}
           <div className="space-y-4">
-            <Card className="rounded-md border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
+            {/* SLOT */}
+            <Card className="px-6">
+              <CardHeader className="p-0">
+                <CardTitle className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-blue-600" />
                   Appointment Slot
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-md border border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <p className="text-xs text-blue-600 font-medium mb-1">
-                        Scheduled Time
-                      </p>
-                      <p className="text-xl font-bold text-blue-900">
-                        {booking.slot.time}
-                      </p>
-                      <p className="text-md font-bold text-blue-900">
-                        {formatDate(booking.date)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              <CardContent className="p-4 bg-blue-50 rounded-md">
+                <p className="font-semibold">{booking.slot.time}</p>
+                <p>{formatDate(booking.date)}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-md shadow border-gray-200">
-              <CardHeader>
+            {/* ADDRESS */}
+            <Card className="px-6">
+              <CardHeader className="p-0">
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-blue-600" />
-                  Customer Location
+                  Location
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
-                  <p className="text-sm font-semibold text-gray-900 mb-2">
-                    {booking.address.street}
+              <CardContent className="text-sm text-gray-600 p-0">
+                <p className="font-semibold text-gray-900">
+                  {booking.address.street}
+                </p>
+                <p>
+                  {booking.address.city}, {booking.address.state}{" "}
+                  {booking.address.postalCode}
+                </p>
+                <p>{booking.address.country}</p>
+                {booking.address.landmark && (
+                  <p className="text-xs mt-2">
+                    Landmark: {booking.address.landmark}
                   </p>
-                  <p className="text-sm text-gray-600 mb-1">
-                    {booking.address.city}, {booking.address.state}{" "}
-                    {booking.address.postalCode}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {booking.address.country}
-                  </p>
-                  {booking.address.landmark &&
-                    booking.address.landmark !== "N/A" && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        <span className="font-medium">Landmark:</span>{" "}
-                        {booking.address.landmark}
-                      </p>
-                    )}
-                </div>
+                )}
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-50 border-dashed border-gray-300 shadow-none rounded-md">
-              <CardContent className="pt-6 space-y-3">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">Service ID</span>
-                  <span className="font-mono text-gray-700 text-right break-all max-w-[60%]">
-                    {booking.service.id.slice(0, 12)}...
-                  </span>
-                </div>
-                <Separator className="bg-gray-300" />
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">
-                    Booking Created
-                  </span>
-                  <span className="text-gray-700">
-                    {formatDate(booking.createdAt)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">
-                    Last Updated
-                  </span>
-                  <span className="text-gray-700">
-                    {formatDate(booking.updatedAt)}
-                  </span>
-                </div>
-                <Separator className="bg-gray-300" />
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-500 font-medium">
-                    Service Created
-                  </span>
-                  <span className="text-gray-700">
-                    {formatDate(booking.service.createdAt)}
-                  </span>
-                </div>
+            {/* META */}
+            <Card className="bg-gray-50 border-dashed">
+              <CardContent className="pt-6 space-y-3 text-xs">
+                <MetaRow label="Service ID" value={booking.service.id} />
+                <Separator />
+                <MetaRow label="Booking Created" value={formatDate(booking.createdAt)} />
+                <MetaRow label="Last Updated" value={formatDate(booking.updatedAt)} />
+                <Separator />
+                <MetaRow label="Service Created" value={formatDate(booking.service.createdAt)} />
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ---------------- SMALL COMPONENTS ---------------- */
+
+function InfoBox({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: any;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex gap-3 p-3 bg-gray-50 border rounded-md">
+      <Icon className="w-5 h-5 text-gray-600" />
+      <div>
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="font-semibold text-gray-900">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function Tag({ icon: Icon, text }: { icon: any; text: string }) {
+  return (
+    <span className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 rounded-full">
+      <Icon className="w-4 h-4 text-gray-600" />
+      {text}
+    </span>
+  );
+}
+
+function MetaRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-gray-500">{label}</span>
+      <span className="text-gray-700">{value}</span>
     </div>
   );
 }

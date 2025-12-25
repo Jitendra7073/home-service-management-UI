@@ -30,6 +30,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import type { ReactNode } from "react";
+
 import {
   Instagram,
   Facebook,
@@ -122,7 +124,7 @@ type SocialLink = {
 function PlatformIcon({ platform, className }: PlatformIconProps) {
   const key = platform.toLowerCase();
 
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, ReactNode> = {
     instagram: <Instagram className={className} />,
     facebook: <Facebook className={className} />,
     linkedin: <Linkedin className={className} />,

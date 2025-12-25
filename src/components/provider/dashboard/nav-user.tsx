@@ -34,11 +34,10 @@ export function NavUser({
   logoutHandle,
 }: {
   user: any;
-  subscriptionStatus:string;
+  subscriptionStatus: string;
   logoutHandle: () => void;
 }) {
   const { isMobile } = useSidebar();
-
 
   return (
     <SidebarMenu>
@@ -62,11 +61,6 @@ export function NavUser({
                   <span className="truncate font-medium">
                     {user.name || "fetching..."}
                   </span>
-                  <Badge
-                    className={`flex items-center gap-1.5 border px-2.5 py-0.5 text-xs font-medium ${subscriptionStatus !== "free" && "text-yellow-600 bg-transparent border border-yellow-600"}`}>
-                    {subscriptionStatus !== "free" &&<BadgeCheckIcon className="h-3.5 w-3.5" />}
-                    {subscriptionStatus}
-                  </Badge>
                 </div>
 
                 <span className="text-muted-foreground truncate text-xs">
@@ -82,6 +76,16 @@ export function NavUser({
             align="end"
             sideOffset={4}>
             <DropdownMenuLabel className="p-0 font-normal">
+              <Badge
+                className={`flex items-center w-full gap-1.5 border px-2.5 py-1 text-xs font-medium ${
+                  subscriptionStatus !== "free" &&
+                  "text-yellow-600 bg-transparent border border-yellow-600"
+                }`}>
+                {subscriptionStatus !== "free" && (
+                  <BadgeCheckIcon className="h-3.5 w-3.5" />
+                )}
+                {subscriptionStatus}
+              </Badge>
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
@@ -101,6 +105,7 @@ export function NavUser({
                   </span>
                 </div>
               </div>
+              
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

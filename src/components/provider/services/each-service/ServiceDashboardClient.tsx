@@ -7,7 +7,6 @@ import { ServiceData } from "./types";
 import { UploadedImage } from "@/components/provider/services/create/types"; // From your previous files
 import { ServiceStats } from "./ServiceStats";  
 import { ServiceHeader } from "./service-header";
-import { TeamList } from "./team-list";          
 import { ReviewsList } from "./review-list";    
 
 // UI imports...
@@ -140,13 +139,6 @@ export default function ServiceDashboardClient({ initialData }: ClientProps) {
           {/* REVIEWS COMPONENT */}
           {!isEditing && <ReviewsList reviews={data.reviews} />}
         </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="space-y-8">
-           {/* TEAM COMPONENT */}
-           <TeamList members={data.teamMembers} isEditing={isEditing} />
-        </div>
-
       </div>
     </div>
   );

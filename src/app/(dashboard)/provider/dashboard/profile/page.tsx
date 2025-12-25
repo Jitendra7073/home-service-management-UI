@@ -116,7 +116,7 @@ const CustomerProfilePage = () => {
     }
   };
 
-  if (!isLoading)
+  if (isLoading)
     return <ProfileSkeleton/>
 
   if (isError || !user)

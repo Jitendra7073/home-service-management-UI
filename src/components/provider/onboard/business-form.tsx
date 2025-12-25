@@ -171,8 +171,10 @@ export default function BusinessProfileForm({
     setOpenSocialModal(false);
   };
 
+  const socialLinks = form.watch("socialLinks") ?? [];
+
   async function onSubmit(values: BusinessFormValues) {
-    console.log("values",values)
+    console.log("values", values);
     try {
       setLoading(true);
 
@@ -272,7 +274,7 @@ export default function BusinessProfileForm({
                           Loading...
                         </SelectItem>
                       ) : (
-                        categories.map((cat) => (
+                        categories.map((cat: any) => (
                           <SelectItem key={cat.id} value={cat.id}>
                             {cat.name}
                           </SelectItem>
@@ -345,12 +347,10 @@ export default function BusinessProfileForm({
                     className="cursor-pointer"
                     placeholder="Add your social links"
                     value={
-                      form.watch("socialLinks")?.length
-                        ? `${
-                            form.watch("socialLinks")?.length > 1
-                              ? form.watch("socialLinks")?.length + " profiles"
-                              : form.watch("socialLinks")?.length + " profile"
-                          } added`
+                      socialLinks.length
+                        ? socialLinks.length > 1
+                          ? `${socialLinks.length} profiles added`
+                          : `${socialLinks.length} profile added`
                         : "Add your social links"
                     }
                   />

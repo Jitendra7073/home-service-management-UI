@@ -23,6 +23,7 @@ import { MapPin, Trash2, Plus } from "lucide-react";
 import React, { useState } from "react";
 import AddAddressForm from "./addressForm";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface AddressProps {
   selectedAddress: string | null;
@@ -57,7 +58,16 @@ const Address: React.FC<AddressProps> = ({
         },
         body: JSON.stringify(addressId),
       });
-      if (!res.ok) throw new Error("Delete failed");
+      const data = await res.json()
+      if (!res.ok){
+        toast.error(data?.msg || "Failed to Delete!")
+      };
+      if(!data.success){
+        toast.warning(data?.msg)
+      }
+      if(data.success){
+        toast.success(data?.msg)
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["address"] });
