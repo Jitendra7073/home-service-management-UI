@@ -73,7 +73,7 @@ export default function Header() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/cart" className="relative">
-                    <ShoppingCart />
+                    <ShoppingCart className="text-primary"/>
                     {cartCount > 0 && (
 
                       <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
@@ -87,7 +87,7 @@ export default function Header() {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/profile">
-                    <User2 />
+                    <User2 className="text-primary"/>
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>

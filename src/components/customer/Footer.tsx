@@ -40,7 +40,7 @@ type SocialMedia = {
  */
 
 const Footer: React.FC = () => {
-  const BASE_URL = "https://home-service-management-rho.vercel.app";
+  const BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
   const footerlinks: FooterSection[] = [
     {

@@ -226,7 +226,7 @@ export default function ServicesTable({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 mb-10">
       <div className="flex justify-between items-center">
         <h2 className="font-semibold">All Services</h2>
 
@@ -238,7 +238,7 @@ export default function ServicesTable({
             setGlobalFilter(e.target.value);
             table.setPageIndex(0);
           }}
-          className="max-w-sm"
+          className="w-full md:max-w-sm"
         />
         {!isLoading && (
           <Button

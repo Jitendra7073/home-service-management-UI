@@ -1,8 +1,6 @@
 "use client";
 
-/* 
-   IMPORTS
-    */
+/* ---------------- IMPORTS ---------------- */
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +13,7 @@ import {
   Phone,
   Globe,
   Clock,
+  Loader2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,6 +29,7 @@ import {
 import { DialogDescription } from "@radix-ui/react-dialog";
 import ManageBusinessSkeleton from "./businessSkeleton";
 
+/* ---------------- REUSABLE ---------------- */
 
 function LabelAndValue({ label, value, icon: Icon }: any) {
   return (
@@ -43,24 +43,41 @@ function LabelAndValue({ label, value, icon: Icon }: any) {
   );
 }
 
-function SlotCard({ slot, onDelete }: any) {
+/* ---------------- SLOT CARD ---------------- */
+
+function SlotCard({ slot, onDelete, isDeleting }: any) {
   return (
     <div className="flex justify-between items-center p-4 border rounded-lg bg-gray-50">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4" />
         <span>{slot.time}</span>
       </div>
-      <div className="flex gap-2">
-        <Button size="sm" variant="outline" onClick={() => onDelete(slot)}>
+
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => onDelete(slot)}
+        disabled={isDeleting}
+      >
+        {isDeleting ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
           <Trash2 className="w-4 h-4 text-red-600" />
-        </Button>
-      </div>
+        )}
+      </Button>
     </div>
   );
 }
 
-// EDIT BUSINESS
-function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
+/* ---------------- EDIT BUSINESS ---------------- */
+
+function EditBusinessDialog({
+  open,
+  onOpenChange,
+  business,
+  onSave,
+  isSaving,
+}: any) {
   const [form, setForm] = useState(business);
 
   useEffect(() => {
@@ -83,6 +100,7 @@ function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
               setForm({ ...form, businessName: e.target.value })
             }
             placeholder="Business Name"
+            disabled={isSaving}
           />
 
           <Input
@@ -91,6 +109,7 @@ function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
               setForm({ ...form, contactEmail: e.target.value })
             }
             placeholder="Email"
+            disabled={isSaving}
           />
 
           <Input
@@ -99,6 +118,7 @@ function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
               setForm({ ...form, phoneNumber: e.target.value })
             }
             placeholder="Phone"
+            disabled={isSaving}
           />
 
           <Input
@@ -107,21 +127,41 @@ function EditBusinessDialog({ open, onOpenChange, business, onSave }: any) {
               setForm({ ...form, websiteURL: e.target.value })
             }
             placeholder="Website"
+            disabled={isSaving}
           />
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSaving}
+          >
             Cancel
           </Button>
-          <Button onClick={() => onSave(form)}>Save</Button>
+
+          <Button onClick={() => onSave(form)} disabled={isSaving}>
+            {isSaving && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Save
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-// DELETE CONFIRMATION
-function DeleteDialog({ open, onOpenChange, title, description, onConfirm }: any) {
+
+/* ---------------- DELETE CONFIRM ---------------- */
+
+function DeleteDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  onConfirm,
+  isDeleting,
+}: any) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -131,10 +171,22 @@ function DeleteDialog({ open, onOpenChange, title, description, onConfirm }: any
         </DialogHeader>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isDeleting}
+          >
             Cancel
           </Button>
-          <Button variant="destructive" onClick={onConfirm}>
+
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isDeleting}
+          >
+            {isDeleting && (
+              <Loader2 className=" h-4 w-4 animate-spin" />
+            )}
             Delete
           </Button>
         </DialogFooter>
@@ -143,11 +195,17 @@ function DeleteDialog({ open, onOpenChange, title, description, onConfirm }: any
   );
 }
 
+/* ---------------- MAIN ---------------- */
+
 export default function BusinessInfo() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  /* ---------------- FETCH ---------------- */
+  const [editBusinessOpen, setEditBusinessOpen] = useState(false);
+  const [deleteSlotOpen, setDeleteSlotOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+
+  /* ---------- FETCH ---------- */
   const { data, isLoading } = useQuery({
     queryKey: ["provider-business"],
     queryFn: async () => {
@@ -157,7 +215,7 @@ export default function BusinessInfo() {
     },
   });
 
-  /* ---------------- MUTATIONS ---------------- */
+  /* ---------- MUTATIONS ---------- */
 
   const editBusiness = useMutation({
     mutationFn: async (payload: any) => {
@@ -168,9 +226,7 @@ export default function BusinessInfo() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:["provider-business"]
-      });
+      queryClient.invalidateQueries({ queryKey: ["provider-business"] });
       toast.success("Business updated");
       setEditBusinessOpen(false);
     },
@@ -178,12 +234,14 @@ export default function BusinessInfo() {
 
   const deleteSlot = useMutation({
     mutationFn: async (id: string) => {
-      await fetch(`/api/provider/slots`, { method: "DELETE", body: JSON.stringify({ id }) });
+      await fetch("/api/provider/slots", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:["provider-business"]
-      });
+      queryClient.invalidateQueries({ queryKey: ["provider-business"] });
       toast.success("Slot deleted");
       setDeleteSlotOpen(false);
       setSelectedSlot(null);
@@ -192,21 +250,21 @@ export default function BusinessInfo() {
 
   const deleteBusiness = useMutation({
     mutationFn: async () => {
-      const sure = confirm("Are you sure want to delete you business this action must not undone and delete you account premanently!\nDo you want to DELETE your account ?")
-      if (!sure) return;
+      const sure = confirm(
+        "This will permanently delete your business and account. Continue?"
+      );
+      if (!sure) throw new Error("Cancelled");
       await fetch("/api/provider/business", { method: "DELETE" });
-      toast.success("Business deleted");
     },
     onSuccess: () => {
+      toast.success("Business deleted");
       router.push("/provider/dashboard");
     },
   });
 
-  const [editBusinessOpen, setEditBusinessOpen] = useState(false);
-  const [deleteSlotOpen, setDeleteSlotOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  /* ---------- UI ---------- */
 
-  if (isLoading) return <ManageBusinessSkeleton/>;
+  if (isLoading) return <ManageBusinessSkeleton />;
   if (!data?.business) return <p className="p-10">No business found</p>;
 
   const { business, category, slots = [] } = data;
@@ -215,6 +273,7 @@ export default function BusinessInfo() {
     <div className="max-w-6xl mx-auto space-y-10 px-4 md:px-2">
       <h1 className="text-3xl font-bold">Manage Business Profile</h1>
 
+      {/* BUSINESS DETAILS */}
       <section className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
         <div className="flex justify-between">
           <h2 className="text-xl font-semibold">Business Details</h2>
@@ -232,47 +291,56 @@ export default function BusinessInfo() {
         </div>
       </section>
 
+      {/* SLOTS */}
       <section className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
         <h2 className="text-xl font-semibold">Time Slots</h2>
 
-        <div className="grid grid-colo-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {Array.isArray(slots) &&
-            slots.map((slot: any) => (
-              <SlotCard
-                key={slot.id}
-                slot={slot}
-                onDelete={(s: any) => {
-                  setSelectedSlot(s);
-                  setDeleteSlotOpen(true);
-                }}
-              />
-            ))}
+        <div className="grid sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {slots.map((slot: any) => (
+            <SlotCard
+              key={slot.id}
+              slot={slot}
+              isDeleting={deleteSlot.isPending && selectedSlot?.id === slot.id}
+              onDelete={(s: any) => {
+                setSelectedSlot(s);
+                setDeleteSlotOpen(true);
+              }}
+            />
+          ))}
         </div>
       </section>
 
+      {/* DIALOGS */}
       <EditBusinessDialog
         open={editBusinessOpen}
         onOpenChange={setEditBusinessOpen}
         business={business}
         onSave={(data: any) => editBusiness.mutate(data)}
+        isSaving={editBusiness.isPending}
       />
 
       <DeleteDialog
         open={deleteSlotOpen}
         onOpenChange={setDeleteSlotOpen}
         title="Delete Slot?"
-        description="Are you sure to delete this slot because this action can't be undone!"
+        description="This action cannot be undone."
         onConfirm={() => {
           if (!selectedSlot) return;
           deleteSlot.mutate(selectedSlot.id);
         }}
+        isDeleting={deleteSlot.isPending}
       />
 
+      {/* DELETE BUSINESS */}
       <Button
         variant="destructive"
         className="mb-6"
         onClick={() => deleteBusiness.mutate()}
+        disabled={deleteBusiness.isPending}
       >
+        {deleteBusiness.isPending && (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        )}
         Delete Business
       </Button>
     </div>

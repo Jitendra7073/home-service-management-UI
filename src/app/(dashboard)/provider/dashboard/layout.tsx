@@ -13,7 +13,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
 
-      <main className="relative w-full transition-all duration-300">
+      <main className="w-full transition-all duration-300">
         <SidebarTrigger />
         {children}
         <ServiceAwarenessModal />

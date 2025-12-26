@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -10,8 +10,9 @@ interface Category {
   id: string;
   name: string;
   description: string;
-  providersCount: number;
   color: string;
+  totalProvidersCount:number;
+  activeProvidersCount:number;
 }
 
 const CategoryList = ({ isVisible, search }: any) => {
@@ -120,39 +121,63 @@ const CategoryList = ({ isVisible, search }: any) => {
 
         {/* CATEGORY CARDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayedCategories.map((category: Category) => (
-            <div
-              key={category.id}
-              className="group relative bg-white rounded-2xl overflow-hidden border-2 hover:shadow-lg border-gray-200 transition-all cursor-pointer">
-              <div className="p-6 space-y-4">
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">
-                    {category.name.charAt(0).toUpperCase() +
-                      category.name.slice(1)}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {category.description}
-                  </p>
-                </div>
+          {displayedCategories.map((category: Category) => {
+            const categoryName =
+              category.name.charAt(0).toUpperCase() + category.name.slice(1);
 
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-semibold text-gray-700">
-                      {category.providersCount} Providers
-                    </span>
+            return (
+              <Link
+                key={category.id}
+                href={`/customer/explore?categories=${category.id}`}
+                className="group relative block bg-white rounded-2xl overflow-hidden
+                   border border-gray-200 hover:border-blue-200
+                   hover:shadow-lg transition-all">
+                <div className="p-6 space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-bold text-gray-900">
+                        {categoryName}
+                      </h3>
+
+                      <ChevronRight
+                        className="w-4 h-4 text-blue-600 opacity-0
+                           group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
+
+                    <p className="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-2">
+                      {category.description}
+                    </p>
                   </div>
 
-                  <Link
-                    href="/customer/explore"
-                    className="flex items-center gap-1 text-blue-600 font-semibold text-sm hover:underline">
-                    Explore
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  {/* STATS */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    {/* Total Providers */}
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                      <span className="text-sm text-gray-700">
+                        Total Providers
+                        <span className="ml-1 font-semibold text-gray-900">
+                          {category.totalProvidersCount ?? 0}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Available Providers */}
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-sm text-gray-700">
+                        Available Now
+                        <span className="ml-1 font-semibold text-green-600">
+                          {category.activeProvidersCount ?? 0}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Mobile button */}

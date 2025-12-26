@@ -13,7 +13,7 @@ export function BookingStatusBadge({
 
   return (
     <Badge
-      className={`border font-medium px-2 py-1 ${
+      className={`border font-medium px-2 py-1 rounded-sm md:rounded-full ${
         colors[status] || "bg-gray-50 text-gray-700 border-gray-200"
       }`}>
       {status}

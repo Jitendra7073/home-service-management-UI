@@ -60,10 +60,11 @@ export default function RegisterForm() {
 
   const onSubmit = async (data: any) => {
     try {
+      const UserEmail = String(data.email).toLocaleLowerCase();
       const payload = {
         role: data.role,
         name: data.name,
-        email: data.email,
+        email: UserEmail,
         mobile: data.mobile,
         password: data.password,
       };
@@ -160,7 +161,11 @@ export default function RegisterForm() {
                 {/* Name */}
                 <div className="col-span-2">
                   <Label>Full Name</Label>
-                  <Input type="text" placeholder="John Doe" {...register("name")} />
+                  <Input
+                    type="text"
+                    placeholder="John Doe"
+                    {...register("name")}
+                  />
                   {errors.name && (
                     <p className="text-red-600 text-sm">
                       {errors.name.message}

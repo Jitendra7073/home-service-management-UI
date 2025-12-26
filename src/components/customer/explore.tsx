@@ -251,7 +251,7 @@ const Explore: React.FC = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="hidden lg:block bg-white">
+          <div className="hidden lg:block bg-white h-fit">
             <Filters
               categories={categories}
               selectedCategories={selectedCategories}

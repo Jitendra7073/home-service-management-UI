@@ -34,7 +34,7 @@ const RevenueChart = (
 
   if (isLoading) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-auto md:w-full shadow-sm border rounded-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Revenue Chart</CardTitle>
           <CardDescription>Monthly revenue analysis</CardDescription>
@@ -48,7 +48,7 @@ const RevenueChart = (
 
   if (!data || data.length === 0) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-auto md:w-full shadow-sm border rounded-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Revenue Chart
@@ -70,14 +70,14 @@ const RevenueChart = (
 
 
   return (
-    <Card className="w-full shadow-sm border rounded-md">
+    <Card className="w-auto md:w-full shadow-sm border rounded-md">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">Revenue Chart</CardTitle>
         <CardDescription>Monthly revenue analysis</CardDescription>
       </CardHeader>
 
-      <CardContent className="w-full ">
-        <ChartContainer config={chartConfig} className="h-80">
+      <CardContent className="w-auto md:w-full">
+        <ChartContainer config={chartConfig} className="w-auto h-auto md:h-80">
           <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
             {/* Grid */}
             <CartesianGrid vertical={false} strokeDasharray="3 3" />

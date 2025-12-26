@@ -83,7 +83,7 @@ const DashboardComponents = () => {
           </section>
         )}
 
-        <section>
+        <section className="mb-10">
           {["premimum", "pro"].some((keyword) =>
             plans?.name?.toLowerCase().includes(keyword)
           ) ? (

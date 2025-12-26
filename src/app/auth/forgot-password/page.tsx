@@ -34,10 +34,14 @@ export default function ForgotPassword() {
 
   const onSubmit = async (data: any) => {
     try {
+      const UserEmail = String(data.email).toLocaleLowerCase()
+      const payload = {
+        email: UserEmail,
+      };
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();

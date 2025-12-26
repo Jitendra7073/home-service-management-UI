@@ -26,17 +26,19 @@ export default function BookingAccordionItem({
   const businessPhone = booking.business?.phone || "N/A";
   const amount = booking.totalAmount || 0;
 
+  console.log(booking);
+
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
         value={booking.id}
         className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
-          <div className="flex items-center justify-between w-full pr-4">
+            <div className="relative flex items-center justify-between w-full pr-4">
             {/* LEFT SECTION */}
             <div className="flex items-start gap-4 flex-1">
               {/* Icon */}
-              <div className="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center">
+              <div className="hidden md:flex w-12 h-12 rounded-lg bg-gray-700  items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
 
@@ -46,7 +48,7 @@ export default function BookingAccordionItem({
                   {serviceName}
                 </h3>
 
-                <p className="text-sm text-gray-500 font-normal truncate">
+                <p className="hidden md:block text-sm text-gray-500 font-normal truncate">
                   Email: {businessEmail}
                 </p>
 
@@ -77,7 +79,9 @@ export default function BookingAccordionItem({
                 {amount.toLocaleString()}
               </div>
             </div>
+
           </div>
+           
         </AccordionTrigger>
 
         {/* DETAILS SECTION */}
