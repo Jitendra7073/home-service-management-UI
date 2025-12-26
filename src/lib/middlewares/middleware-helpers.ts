@@ -14,6 +14,6 @@ export function hasRouteAccess(path: string, role: string) {
 
 export function getRoleBasedRedirect(role: string) {
   if (role === "provider") return "/provider/dashboard";
-  if (role === "customer") return "/customer/home";
+  if (role === "customer") return "/customer";
   return "/auth/login";
 }
