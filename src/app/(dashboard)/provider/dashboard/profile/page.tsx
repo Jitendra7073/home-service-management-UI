@@ -46,6 +46,11 @@ const CustomerProfilePage = () => {
       if (!res.ok) throw new Error("Failed to fetch profile");
       return (await res.json()) as any;
     },
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 6,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const user = data?.user ?? null;
@@ -116,8 +121,7 @@ const CustomerProfilePage = () => {
     }
   };
 
-  if (isLoading)
-    return <ProfileSkeleton/>
+  if (isLoading) return <ProfileSkeleton />;
 
   if (isError || !user)
     return (

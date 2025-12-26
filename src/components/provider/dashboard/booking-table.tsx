@@ -73,14 +73,12 @@ function StatusDropdown({
   queryClient: ReturnType<typeof useQueryClient>;
 }) {
   const statuses: Booking["status"][] = [
-    "pending",
     "confirmed",
     "completed",
-    "cancelled",
   ];
 
   const isDisabled = (next: Booking["status"]) => {
-    if (status === "completed" || status === "cancelled") return true;
+    if (status === "completed") return true;
     if (next === status) return true;
     return false;
   };

@@ -129,7 +129,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="City" {...field} />
+                    <Input type="text" placeholder="City" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,7 +144,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <FormControl>
-                    <Input placeholder="State / Province" {...field} />
+                    <Input type="text" placeholder="State / Province" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +159,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
                 <FormItem>
                   <FormLabel>Postal Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="ZIP / Postal Code" {...field} />
+                    <Input type="text" placeholder="ZIP / Postal Code" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +174,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <FormControl>
-                    <Input placeholder="India" {...field} />
+                    <Input type="text" max={45} placeholder="India" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

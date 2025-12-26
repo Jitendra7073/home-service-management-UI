@@ -12,8 +12,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <GetFcmToken />
-        <FirebaseForegroundListener />
+
         <Toaster position="top-right" richColors />
         {children}
       </body>

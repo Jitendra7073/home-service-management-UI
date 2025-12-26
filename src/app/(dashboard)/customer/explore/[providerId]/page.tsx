@@ -63,7 +63,6 @@ interface Feedback {
   comment: string;
   username: string;
   servicename: string;
-  approved: boolean;
 }
 
 interface Service {

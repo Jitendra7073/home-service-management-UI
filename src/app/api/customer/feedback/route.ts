@@ -25,10 +25,8 @@ export async function GET(){
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("Body",body)
 
     const { rating, comment, bookingId} = body;
-    console.log(`Rating: ${rating}, comment: ${comment}, bookingId: ${bookingId}`)
 
     if (!rating || !comment || !bookingId) {
       return NextResponse.json(
@@ -48,7 +46,6 @@ export async function POST(req: Request) {
         bookingId,
       }),
     });
-    console.log("Data",data)
 
     if (!ok) {
       return NextResponse.json(

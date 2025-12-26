@@ -25,7 +25,6 @@ export default function BookingAccordionItem({
   const businessEmail = booking.business?.email || "N/A";
   const businessPhone = booking.business?.phone || "N/A";
   const amount = booking.totalAmount || 0;
-  console.log("Bookings from booking accordion item: ",booking)
 
   return (
     <Accordion type="single" collapsible className="w-full">

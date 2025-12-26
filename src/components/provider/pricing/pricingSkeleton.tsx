@@ -15,7 +15,7 @@ const PricingSkeleton = () => {
         {/* ----------- Pricing Cards Skeleton ----------- */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 py-12 max-w-[1200px] mx-auto">
           {[...Array(3)].map((_, index) => (
-            <div className="relative flex flex-col rounded-3xl border p-6 animate-pulse h-[400px]">
+            <div key={index} className="relative flex flex-col rounded-3xl border p-6 animate-pulse h-[400px]">
               <Skeleton className="absolute top-4 right-4 h-6 w-28 rounded-full" />
 
               <div className="mb-6 text-center space-y-3">

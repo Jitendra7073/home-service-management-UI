@@ -174,7 +174,6 @@ export default function BusinessProfileForm({
   const socialLinks = form.watch("socialLinks") ?? [];
 
   async function onSubmit(values: BusinessFormValues) {
-    console.log("values", values);
     try {
       setLoading(true);
 

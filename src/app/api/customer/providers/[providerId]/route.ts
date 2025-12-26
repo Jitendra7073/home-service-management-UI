@@ -12,15 +12,8 @@ export async function GET(
       `/api/v1/customer/providers/${providerId}`,
       { method: "GET" }
     );
-
     if (!ok) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: data?.message || "Failed to fetch provider",
-        },
-        { status: status || 500 }
-      );
+      return NextResponse.json(data);
     }
 
     return NextResponse.json(data, { status });

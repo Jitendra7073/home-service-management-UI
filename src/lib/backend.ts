@@ -15,6 +15,7 @@ export async function backend(path: string, options: RequestInit = {}) {
       Cookie: cookieString,
       ...(options.headers || {}),
     },
+    credentials:"include"
   });
 
   const text = await res.text();

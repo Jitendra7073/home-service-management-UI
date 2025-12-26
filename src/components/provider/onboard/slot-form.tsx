@@ -139,7 +139,6 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
 
   const onSubmit = async (values: SlotFormValues) => {
     setLoading(true);
-    // console.log("Slot form submitting value :",values)
 
     try {
       const response = await fetch("/api/provider/slots", {

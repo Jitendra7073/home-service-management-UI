@@ -160,7 +160,7 @@ export default function RegisterForm() {
                 {/* Name */}
                 <div className="col-span-2">
                   <Label>Full Name</Label>
-                  <Input placeholder="John Doe" {...register("name")} />
+                  <Input type="text" placeholder="John Doe" {...register("name")} />
                   {errors.name && (
                     <p className="text-red-600 text-sm">
                       {errors.name.message}
@@ -172,6 +172,7 @@ export default function RegisterForm() {
                 <div>
                   <Label>Email</Label>
                   <Input
+                    type="email"
                     placeholder="example@gmail.com"
                     {...register("email")}
                   />
@@ -185,7 +186,11 @@ export default function RegisterForm() {
                 {/* Mobile */}
                 <div>
                   <Label>Mobile</Label>
-                  <Input placeholder="9876543210" {...register("mobile")} />
+                  <Input
+                    type="number"
+                    placeholder="9876543210"
+                    {...register("mobile")}
+                  />
                   {errors.mobile && (
                     <p className="text-red-600 text-sm">
                       {errors.mobile.message}
@@ -238,10 +243,14 @@ export default function RegisterForm() {
                     type="submit"
                     className="w-full"
                     disabled={isSubmitting}>
-                    {isSubmitting ? <div className="flex justify-center items-center gap-2">
-                      <Spinner className="w-4 h-4"/>
-                      <span>Creating...</span>
-                    </div> : "Create Account"}
+                    {isSubmitting ? (
+                      <div className="flex justify-center items-center gap-2">
+                        <Spinner className="w-4 h-4" />
+                        <span>Creating...</span>
+                      </div>
+                    ) : (
+                      "Create Account"
+                    )}
                   </Button>
                 </div>
               </form>

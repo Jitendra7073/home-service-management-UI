@@ -17,7 +17,7 @@ export default function ServiceView() {
         },
     })
 
-    if(isLoading || isPending || isFetching){
+    if(isLoading){
         return <ServiceSkeleton/>
     }
     return <div className="flex w-full justify-center">

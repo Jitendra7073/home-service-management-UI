@@ -75,11 +75,11 @@ export default function FeedbackTable() {
   const queryClient = useQueryClient();
 
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<
-    "all" | "approved" | "pending"
-  >("all");
+  // const [statusFilter, setStatusFilter] = React.useState<
+  //   "all" | "approved" | "pending"
+  // >("all");
 
-  const { data,isLoading,isPending } = useQuery({
+  const { data, isLoading, isPending } = useQuery({
     queryKey: ["customer-feedback"],
     queryFn: async () => {
       const res = await fetch("/api/provider/feedback");
@@ -94,16 +94,16 @@ export default function FeedbackTable() {
     [data?.feedbacks]
   );
 
-  const approvedCount = weeklyFeedback.filter((f) => f.approved).length;
-  const pendingCount = weeklyFeedback.filter((f) => !f.approved).length;
+  // const approvedCount = weeklyFeedback.filter((f) => f.approved).length;
+  // const pendingCount = weeklyFeedback.filter((f) => !f.approved).length;
 
   const filteredByStatus = React.useMemo(() => {
-    if (statusFilter === "approved")
-      return weeklyFeedback.filter((f) => f.approved);
-    if (statusFilter === "pending")
-      return weeklyFeedback.filter((f) => !f.approved);
+    // if (statusFilter === "approved")
+    //   return weeklyFeedback.filter((f) => f.approved);
+    // if (statusFilter === "pending")
+    //   return weeklyFeedback.filter((f) => !f.approved);
     return weeklyFeedback;
-  }, [weeklyFeedback, statusFilter]);
+  }, [weeklyFeedback]);
 
   const sortedFeedback = React.useMemo(() => {
     return [...filteredByStatus].sort(
@@ -111,24 +111,24 @@ export default function FeedbackTable() {
     );
   }, [filteredByStatus]);
 
-  const approveMutation = useMutation({
-    mutationFn: async (feedbackId: string) => {
-      const res = await fetch("/api/provider/feedback", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ feedbackId }),
-      });
+  // const approveMutation = useMutation({
+  //   mutationFn: async (feedbackId: string) => {
+  //     const res = await fetch("/api/provider/feedback", {
+  //       method: "PATCH",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ feedbackId }),
+  //     });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Approval failed");
-      return data;
-    },
-    onSuccess: () => {
-      toast.success("Feedback approved successfully");
-      queryClient.invalidateQueries({ queryKey: ["customer-feedback"] });
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
+  //     const data = await res.json();
+  //     if (!res.ok) throw new Error(data?.message || "Approval failed");
+  //     return data;
+  //   },
+  //   onSuccess: () => {
+  //     toast.success("Feedback approved successfully");
+  //     queryClient.invalidateQueries({ queryKey: ["customer-feedback"] });
+  //   },
+  //   onError: (e: any) => toast.error(e.message),
+  // });
 
   /* -------------------- COLUMNS -------------------- */
 
@@ -147,62 +147,25 @@ export default function FeedbackTable() {
     },
 
     {
-      accessorKey: "approved",
-      header: "Status",
-      cell: ({ row }) => {
-        const feedback = row.original;
-        const isApproved = feedback.approved;
-        return (
-          <>
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <p className="cursor-pointer text-sm">
-                  {row.original.approved ? (
-                    <Badge className="bg-green-100 text-green-700">
-                      Approved
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-yellow-100 text-yellow-700">
-                      Pending
-                    </Badge>
-                  )}
-                </p>
-              </HoverCardTrigger>
-
-              <HoverCardContent className="w-72 space-y-3">
-                <p className="text-sm"><strong>Comment:</strong> {feedback.comment}</p>
-                <span className="w-full inline-block">
-                  <Button
-                    size="sm"
-                    className={`${isApproved ? "cursor-not-allowed bg-green-100 border border-green-700 text-green-700":"cursor-pointer bg-transparent hover:bg-yellow-100 border border-yellow-700 text-yellow-700"} w-full`}
-                    disabled={isApproved}
-                    onClick={() =>
-                      !isApproved && approveMutation.mutate(feedback.id)
-                    }>
-                    {isApproved ? (
-                      <div className={`flex gap-2 justify-center items-center `}>
-                        <CheckCheck className="w-4 h-4" />
-                        <span>Feedback Approved</span>
-                      </div>
-                    ) : (
-                      "Approve & Publish"
-                    )}
-                  </Button>
-                </span>
-              </HoverCardContent>
-            </HoverCard>
-          </>
-        );
-      },
-    },
-
-    {
       accessorKey: "comment",
       header: "Feedback",
       cell: ({ row }) => {
         const feedback = row.original;
         return (
-          <p className="cursor-pointer text-sm">{truncate(feedback.comment)}</p>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <p className="cursor-pointer text-sm">
+                {truncate(feedback.comment)}
+              </p>
+            </HoverCardTrigger>
+
+            <HoverCardContent className="w-72 space-y-3">
+              <p className="text-sm">
+                <strong>Comment:</strong> {feedback.comment}
+              </p>
+              
+            </HoverCardContent>
+          </HoverCard>
         );
       },
     },
@@ -233,28 +196,33 @@ export default function FeedbackTable() {
 
   /* -------------------- RENDER -------------------- */
 
-
-    if(isLoading || isPending) {
-      return <TableSkeleton rows={5} columns={5}/>
-    }
+  if (isLoading || isPending) {
+    return <TableSkeleton rows={5} columns={5} />;
+  }
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-3">
         <h2 className="font-semibold">Latest Customer Feedback</h2>
 
-        <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
           <Badge className="bg-yellow-100 text-yellow-700">
             Pending: {pendingCount}
           </Badge>
           <Badge className="bg-green-100 text-green-700">
             Approved: {approvedCount}
           </Badge>
-        </div>
+        </div> */}
+        <Input
+          placeholder="Search feedback..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 flex-wrap">
+      {/* <div className="flex gap-3 flex-wrap">
         <Input
           placeholder="Search feedback..."
           value={globalFilter}
@@ -276,7 +244,7 @@ export default function FeedbackTable() {
             <SelectItem value="pending">Pending</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       {/* Table */}
       <div className="border rounded-md">

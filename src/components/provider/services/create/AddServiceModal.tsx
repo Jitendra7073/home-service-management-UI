@@ -210,7 +210,6 @@ export default function AddServiceModal() {
         coverImage: coverImage[0]?.url || null,
         images: galleryImages.map((i) => i.url),
       };
-      console.log("Frontend side value :", payload)
 
       const res = await fetch("/api/provider/service", {
         method: "POST",

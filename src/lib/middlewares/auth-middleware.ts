@@ -32,7 +32,7 @@ const authMiddleware = async (req: any) => {
 
       // Customer root redirect
       if (user.role === "customer") {
-        return NextResponse.redirect(new URL("/customer/home", req.url));
+        return NextResponse.redirect(new URL("/customer", req.url));
       }
 
       // Provider root redirect with onboarding check

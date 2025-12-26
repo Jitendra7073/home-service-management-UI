@@ -1,8 +1,13 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  dataTagErrorSymbol,
+} from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import PricingSkeleton from "./pricingSkeleton";
+import { log } from "console";
 
 /* ----------------------- BENEFITS ----------------------- */
 
@@ -56,8 +61,7 @@ function PricingHero() {
         {highlights.map((item, i) => (
           <li
             key={i}
-            className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-semibold text-gray-600"
-          >
+            className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-semibold text-gray-600">
             <Check className="h-4 w-4 text-green-600" />
             {item}
           </li>
@@ -69,7 +73,13 @@ function PricingHero() {
 
 /* ----------------------- FREE PLAN CARD ----------------------- */
 
-function FreePlanCard({ isActive }: { isActive: boolean }) {
+function FreePlanCard({
+  isActive,
+  activePlanName,
+}: {
+  isActive: boolean;
+  activePlanName: string;
+}) {
   return (
     <div className="relative flex flex-col rounded-3xl border-2 border-gray-300 bg-gray-50 p-6">
       {isActive && (
@@ -81,7 +91,8 @@ function FreePlanCard({ isActive }: { isActive: boolean }) {
       <div className="mb-6 text-center space-y-2">
         <h3 className="text-xl font-bold text-gray-900">Free Plan</h3>
         <p className="text-4xl font-extrabold text-gray-900">
-          ₹0 <span className="text-sm font-medium text-gray-500">/ forever</span>
+          ₹0{" "}
+          <span className="text-sm font-medium text-gray-500">/ forever</span>
         </p>
       </div>
 
@@ -96,9 +107,13 @@ function FreePlanCard({ isActive }: { isActive: boolean }) {
 
       <button
         disabled
-        className="w-full rounded-full py-2.5 text-sm font-semibold bg-gray-300 text-gray-700 cursor-not-allowed"
-      >
-        Current Plan
+        className="w-full rounded-full py-2.5 text-sm font-semibold bg-gray-300 text-gray-700 cursor-not-allowed">
+        {isActive
+          ? "Current Plan"
+          : `${
+              activePlanName.charAt(0).toLocaleUpperCase() +
+              activePlanName.slice(1).toLocaleLowerCase()
+            } plan active`}
       </button>
 
       <p className="mt-4 text-center text-xs text-gray-500">
@@ -127,8 +142,7 @@ function PricingCard({
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition ${
         isActive ? "border-blue-600 shadow-lg" : "bg-white hover:shadow-xl"
-      }`}
-    >
+      }`}>
       {isActive && (
         <span className="absolute top-4 right-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
           Currently Active
@@ -163,8 +177,7 @@ function PricingCard({
             isActive
               ? "bg-gray-300 text-gray-700 cursor-not-allowed"
               : "bg-blue-600 text-white hover:bg-blue-700"
-          }`}
-      >
+          }`}>
         {isActive ? "Current Plan" : isLoading ? "Redirecting..." : "Upgrade"}
       </button>
 
@@ -185,7 +198,14 @@ export default function PricingSection() {
       if (!res.ok) throw new Error("Failed to fetch plans");
       return res.json();
     },
+
+    staleTime: Infinity,     
+    gcTime: Infinity,  
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
+
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["provider-profile"],
@@ -194,6 +214,7 @@ export default function PricingSection() {
       return res.json();
     },
     staleTime: 5 * 60 * 1000,
+    
   });
 
   const activePlanName =
@@ -214,8 +235,8 @@ export default function PricingSection() {
     },
   });
 
-  if(isLoading){
-    return <PricingSkeleton/>
+  if (isLoading) {
+    return <PricingSkeleton />;
   }
 
   return (
@@ -224,7 +245,10 @@ export default function PricingSection() {
         <PricingHero />
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 py-12 max-w-[1200px] mx-auto">
-          <FreePlanCard isActive={activePlanName === "FREE"} />
+          <FreePlanCard
+            isActive={activePlanName === "FREE"}
+            activePlanName={activePlanName}
+          />
 
           {plans?.map((plan: any) => (
             <PricingCard
