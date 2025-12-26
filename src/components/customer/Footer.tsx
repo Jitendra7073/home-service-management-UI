@@ -20,7 +20,7 @@ import {
 type FooterOption = {
   label: string;
   endPoint: string;
-  tooltips?: string; // ✅ optional
+  tooltips?: string; 
 };
 
 type FooterSection = {
@@ -40,7 +40,7 @@ type SocialMedia = {
  */
 
 const Footer: React.FC = () => {
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://home-service-management-rho.vercel.app";
 
   const footerlinks: FooterSection[] = [
     {
