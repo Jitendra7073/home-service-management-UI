@@ -36,7 +36,7 @@ export default function BookingDetailsSection({
 
   return (
     <div className="border-t border-gray-100 pt-4">
-      {/* ================= PENDING PAYMENT (FULL WIDTH ONLY) ================= */}
+      {/* ================= PENDING PAYMENT ================= */}
       {isPendingPayment ? (
         <div className="w-full">
           <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -61,7 +61,8 @@ export default function BookingDetailsSection({
                   onClick={() =>
                     window.open(booking.paymentLink, "_blank")
                   }
-                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4"
+                  disabled={booking.paymentLinkInfo.timeLeftMinutes === 0 && booking.paymentLinkInfo.timeLeftSeconds <= 5}
+                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4 disabled:bg-muted"
                   size="sm"
                 >
                   <CreditCard className="w-4 h-4" />
