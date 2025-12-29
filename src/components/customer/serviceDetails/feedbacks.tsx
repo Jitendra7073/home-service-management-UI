@@ -22,11 +22,11 @@ const Feedback = ({ feedback }: any) => {
         {feedback.map((feedback: any) => {
           return (
             <div
-              className="p-5 rounded-sm border border-gray-200 bg-gray-50 transition-all space-y-2"
+              className="p-5 rounded-sm border border-border bg-muted transition-all space-y-2"
               key={feedback.id}>
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                  <h3 className="text-md font-bold text-gray-900 flex items-center gap-2">
+                  <h3 className="text-md font-bold text-foreground flex items-center gap-2">
                     {feedback?.username}
                   </h3>
                   <div className="flex items-center gap-4 font-semibold text-sm">
@@ -52,11 +52,11 @@ const Feedback = ({ feedback }: any) => {
                     <p className=" bg-gray-200 px-3 rounded-full">{reviewTags[feedback?.rating]}</p>
                   </div>
                 </div>
-                <span className="text-gray-400 text-sm">
+                <span className="text-muted-foreground text-sm">
                   {formatedDate(feedback?.createdAt.split("T")[0])}
                 </span>
               </div>
-              <ul className="space-y-2 text-gray-700 text-sm leading-relaxed">
+              <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
                 <li>
                   {feedback?.comment.slice(0, 1).toUpperCase() +
                     feedback?.comment.slice(1)}

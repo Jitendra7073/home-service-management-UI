@@ -9,8 +9,8 @@ const InfoRow = ({
   value: string;
   isLink?: boolean;
 }) => (
-  <div className="flex  items-center gap-3 p-3 rounded-sm bg-gray-50 border border-gray-200">
-    <div className="mt-0.5 text-gray-600">{icon}</div>
+  <div className="flex  items-center gap-3 p-3 rounded-sm bg-muted border border-border">
+    <div className="mt-0.5 text-muted-foreground">{icon}</div>
     <div>
       {/* <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500 font-semibold">
         {label}

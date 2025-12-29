@@ -228,7 +228,7 @@ export default function CustomerBookingsPage() {
         icons={<Calendar className="w-8 h-8 text-gray-300" />}
       />
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted/50">
         <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
           {/* Search Bar */}
           <div className="flex justify-between mb-6 gap-2">

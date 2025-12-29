@@ -94,8 +94,8 @@ export default function RegisterForm() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
-      <div className="w-full max-w-5xl rounded-xl border bg-white shadow-lg grid grid-cols-1 md:grid-cols-2">
+    <section className="min-h-screen flex items-center justify-center bg-muted/50 px-4 py-10">
+      <div className="w-full max-w-5xl rounded-xl border bg-card shadow-lg grid grid-cols-1 md:grid-cols-2">
         {/* LEFT FORM */}
         <div className="p-8 flex items-center">
           <Card className="w-full border-0 shadow-none">
@@ -118,49 +118,75 @@ export default function RegisterForm() {
               {/* ROLE SWITCH */}
               <div className="flex items-center justify-between mb-6 p-3 border rounded-lg">
                 <span className="font-medium hidden sm:block">Register as</span>
-                <div className="flex items-center gap-3">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <User
-                        className={`w-5 h-5 ${
-                          role === "customer"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>Customer</TooltipContent>
-                  </Tooltip>
 
+                <div className="flex items-center gap-4">
+                  {/* Customer */}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`sm:hidden text-sm ${
+                        role === "customer"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}>
+                      Customer
+                    </span>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <User
+                          className={`w-5 h-5 ${
+                            role === "customer"
+                              ? "text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>Customer</TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  {/* Switch */}
                   <Switch
                     checked={role === "provider"}
                     onCheckedChange={handleRoleChange}
                   />
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Wrench
-                        className={`w-5 h-5 ${
-                          role === "provider"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                        }`}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>Provider</TooltipContent>
-                  </Tooltip>
+                  {/* Provider */}
+                  <div className="flex items-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Wrench
+                          className={`w-5 h-5 ${
+                            role === "provider"
+                              ? "text-primary"
+                              : "text-muted-foreground"
+                          }`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>Provider</TooltipContent>
+                    </Tooltip>
+
+                    <span
+                      className={`sm:hidden text-sm ${
+                        role === "provider"
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}>
+                      Provider
+                    </span>
+                  </div>
                 </div>
               </div>
 
               {/* FORM */}
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="grid md:grid-cols-2 gap-5">
+                className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <input type="hidden" {...register("role")} />
 
                 {/* Name */}
-                <div className="col-span-2">
-                  <Label>Full Name</Label>
+                <div className="md:col-span-2">
+                  <Label className="pb-2">Full Name</Label>
                   <Input
                     type="text"
                     placeholder="John Doe"
@@ -175,7 +201,7 @@ export default function RegisterForm() {
 
                 {/* Email */}
                 <div>
-                  <Label>Email</Label>
+                  <Label className="pb-2">Email</Label>
                   <Input
                     type="email"
                     placeholder="example@gmail.com"
@@ -190,7 +216,7 @@ export default function RegisterForm() {
 
                 {/* Mobile */}
                 <div>
-                  <Label>Mobile</Label>
+                  <Label className="pb-2">Mobile</Label>
                   <Input
                     type="number"
                     placeholder="9876543210"
@@ -205,9 +231,10 @@ export default function RegisterForm() {
 
                 {/* Password */}
                 <div>
-                  <Label>Password</Label>
+                  <Label className="pb-2">Password</Label>
                   <Input
                     type={showPassword ? "text" : "password"}
+                    placeholder="******"
                     {...register("password")}
                   />
                   {errors.password && (
@@ -219,9 +246,10 @@ export default function RegisterForm() {
 
                 {/* Confirm Password */}
                 <div>
-                  <Label>Confirm Password</Label>
+                  <Label className="pb-2">Confirm Password</Label>
                   <Input
                     type={showPassword ? "text" : "password"}
+                    placeholder="******"
                     {...register("confirmPassword")}
                   />
                   {errors.confirmPassword && (
@@ -232,7 +260,7 @@ export default function RegisterForm() {
                 </div>
 
                 {/* Show Password */}
-                <div className="col-span-2">
+                <div className="md:col-span-2">
                   <label className="flex gap-2 items-center text-sm">
                     <input
                       type="checkbox"
@@ -243,7 +271,7 @@ export default function RegisterForm() {
                   </label>
                 </div>
 
-                <div className="col-span-2">
+                <div className="md:col-span-2">
                   <Button
                     type="submit"
                     className="w-full"

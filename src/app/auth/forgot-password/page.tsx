@@ -59,8 +59,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-      <div className="flex w-full max-w-4xl overflow-hidden rounded-xl border bg-white shadow-lg">
+    <section className="min-h-screen flex items-center justify-center p-4 bg-muted/50">
+      <div className="flex w-full max-w-4xl overflow-hidden rounded-xl border bg-card shadow-lg">
         {/* Left Side */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
           <Card className="border-0 shadow-none">

@@ -79,9 +79,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const LogoutHandler = async () => {
     const res = await fetch("/api/auth/logout", {
       method: "POST",
+      credentials: "include",
     });
     const data = await res.json();
     if (data.success) {
+      // Clear stored tokens
+      localStorage.removeItem("accessToken");
       window.location.reload();
     }
     return data;

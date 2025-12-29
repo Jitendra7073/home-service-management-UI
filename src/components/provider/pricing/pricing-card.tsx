@@ -48,11 +48,11 @@ function PricingHero() {
 
   return (
     <section className="py-6 text-center space-y-4">
-      <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
+      <h1 className="text-2xl md:text-4xl font-bold text-foreground">
         Grow Your Business. Get Real Customers.
       </h1>
 
-      <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+      <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
         Choose the right plan to publish your business and start receiving
         customer bookings.
       </p>
@@ -61,7 +61,7 @@ function PricingHero() {
         {highlights.map((item, i) => (
           <li
             key={i}
-            className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1 text-xs font-semibold text-gray-600">
+            className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
             <Check className="h-4 w-4 text-green-600" />
             {item}
           </li>
@@ -81,24 +81,24 @@ function FreePlanCard({
   activePlanName: string;
 }) {
   return (
-    <div className="relative flex flex-col rounded-3xl border-2 border-gray-300 bg-gray-50 p-6">
+    <div className="relative flex flex-col rounded-3xl border-2 border-border bg-muted p-6">
       {isActive && (
-        <span className="absolute top-4 right-4 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
+        <span className="absolute top-4 right-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
           Currently Active
         </span>
       )}
 
       <div className="mb-6 text-center space-y-2">
-        <h3 className="text-xl font-bold text-gray-900">Free Plan</h3>
-        <p className="text-4xl font-extrabold text-gray-900">
+        <h3 className="text-xl font-bold text-foreground">Free Plan</h3>
+        <p className="text-4xl font-extrabold text-foreground">
           ₹0{" "}
-          <span className="text-sm font-medium text-gray-500">/ forever</span>
+          <span className="text-sm font-medium text-muted-foreground">/ forever</span>
         </p>
       </div>
 
       <ul className="flex-1 space-y-3 mb-6">
         {FREE_BENEFITS.map((benefit, i) => (
-          <li key={i} className="flex gap-3 text-sm text-gray-700">
+          <li key={i} className="flex gap-3 text-sm text-muted-foreground">
             <Check className="h-4 w-4 text-green-600 mt-0.5" />
             {benefit}
           </li>
@@ -141,19 +141,19 @@ function PricingCard({
   return (
     <div
       className={`relative flex flex-col rounded-3xl border p-6 transition ${
-        isActive ? "border-blue-600 shadow-lg" : "bg-white hover:shadow-xl"
+        isActive ? "border-primary shadow-lg bg-card" : "bg-card hover:shadow-xl"
       }`}>
       {isActive && (
-        <span className="absolute top-4 right-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+        <span className="absolute top-4 right-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
           Currently Active
         </span>
       )}
 
       <div className="mb-6 text-center space-y-2">
-        <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-        <p className="text-4xl font-extrabold text-gray-900">
+        <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+        <p className="text-4xl font-extrabold text-foreground">
           ₹{plan.price}
-          <span className="text-sm font-medium text-gray-500">
+          <span className="text-sm font-medium text-muted-foreground">
             {" "}
             / {plan.interval}
           </span>

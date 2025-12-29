@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 export async function getAuthToken() {
   const cookieStore = await cookies();
-  return cookieStore.get("token")?.value || null;
+  return cookieStore.get("accessToken")?.value || null;
 }
 
 export async function getUserByToken(token: string) {

@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import NotificationSideBar from "../common/notification-sidebar";
 import { useQuery } from "@tanstack/react-query";
+// import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -42,7 +43,7 @@ export default function Header() {
   const cartCount = cart?.totalItems ?? 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
+    <header className="sticky top-0 z-50 bg-background border-b border-border">
       <div className="max-w-7xl mx-auto px-3 h-14 flex items-center justify-between">
 
         {/* LOGO */}
@@ -92,6 +93,10 @@ export default function Header() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
+              {/* <NavigationMenuItem>
+                <ThemeToggle />
+              </NavigationMenuItem> */}
+
               <NavigationMenuItem>
                 <NotificationSideBar />
               </NavigationMenuItem>
@@ -105,7 +110,7 @@ export default function Header() {
 
           <Link
             href="/customer/cart"
-            className="relative p-2 rounded-md hover:bg-gray-100"
+            className="relative p-2 rounded-md hover:bg-muted"
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
@@ -114,6 +119,8 @@ export default function Header() {
               </span>
             )}
           </Link>
+
+          {/* <ThemeToggle /> */}
 
           <NotificationSideBar />
 
@@ -176,7 +183,7 @@ function MobileNavItem({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-gray-100"
+      className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-muted"
     >
       <Icon className="h-5 w-5 text-primary" />
       <span className="text-base font-medium">{label}</span>

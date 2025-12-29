@@ -149,10 +149,10 @@ function SocialLinks({ links }: { links?: SocialLink[] }) {
           href={item.value}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center gap-2 rounded-md  bg-white text-sm text-slate-700  transition">
+          className="group flex items-center gap-2 rounded-md bg-card text-sm text-muted-foreground transition">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 group-hover:text-blue-500 transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted hover:bg-muted/80 text-muted-foreground group-hover:text-primary transition-colors">
                 <PlatformIcon platform={item.key} className="h-4 w-4" />
               </div>
             </TooltipTrigger>
@@ -235,10 +235,10 @@ export default function ServiceDetailPage() {
           {/* LEFT SIDE CONTENT */}
           <div className="lg:col-span-2 space-y-6">
             {/* SERVICE HEADER CARD */}
-            <div className="relative bg-white rounded-md overflow-hidden shadow-xs border">
-              <div className="w-full bg-gray-800 backdrop-blur-xs px-6 py-6 text-white">
+            <div className="relative bg-card rounded-md overflow-hidden shadow-xs border">
+              <div className="w-full bg-primary px-6 py-6 text-primary-foreground">
                 <div className="space-y-4">
-                  <p className="text-sm uppercase tracking-widest text-gray-100">
+                  <p className="text-sm uppercase tracking-widest text-primary-foreground/80">
                     {service.category.name}
                   </p>
 
@@ -298,10 +298,10 @@ export default function ServiceDetailPage() {
             <div className="bg-white rounded-sm shadow-xs border p-6 sm:p-8">
               <div className="flex justify-between">
                 <div className="">
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-xl font-bold text-foreground mb-2">
                     Business Details
                   </h2>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-5">
+                  <h3 className="text-lg font-semibold text-foreground mb-5">
                     {business.businessName}
                   </h3>
                 </div>
@@ -371,8 +371,8 @@ export default function ServiceDetailPage() {
             {/* OUR GALLERY */}
             {images.length > 0 && (
               <div>
-                <div className="bg-white rounded-sm border p-4 sm:p-6">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
+                <div className="bg-card rounded-sm border p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground mb-4">
                     Our Gallery
                   </h2>
 
@@ -456,8 +456,8 @@ export default function ServiceDetailPage() {
           {/* RIGHT SIDE — BOOKING SUMMARY */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-4">
-              <div className="bg-white rounded-sm shadow-xs border p-6 sm:p-8">
-                <h3 className="text-xl font-black text-gray-900 mb-5">
+              <div className="bg-card rounded-sm shadow-xs border p-6 sm:p-8">
+                <h3 className="text-xl font-black text-foreground mb-5">
                   Booking Summary
                 </h3>
 

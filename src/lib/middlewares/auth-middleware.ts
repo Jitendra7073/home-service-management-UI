@@ -26,7 +26,7 @@ const authMiddleware = async (req: any) => {
       if (error || !user) {
         const loginUrl = new URL("/auth/login", req.url);
         const res = NextResponse.redirect(loginUrl);
-        res.cookies.delete("token");
+        res.cookies.delete("accessToken");
         return res;
       }
 
@@ -73,7 +73,7 @@ const authMiddleware = async (req: any) => {
     if (error || !user) {
       const loginUrl = new URL("/auth/login", req.url);
       const res = NextResponse.redirect(loginUrl);
-      res.cookies.delete("token");
+      res.cookies.delete("accessToken");
       return res;
     }
 
@@ -113,7 +113,7 @@ const authMiddleware = async (req: any) => {
 
     const loginUrl = new URL("/auth/login", req.url);
     const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete("token");
+    response.cookies.delete("accessToken");
 
     return response;
   }

@@ -218,7 +218,7 @@ const Explore: React.FC = () => {
     !!selectedState
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <ExploreHeader
         totalServices={allServices.length}
         filteredCount={filteredServices.length}

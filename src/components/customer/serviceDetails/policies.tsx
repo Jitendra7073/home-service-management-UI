@@ -6,11 +6,11 @@ const PoliciesGrid = () => {
       </h2>
 
       <div className="grid grid-cols-1 gap-5">
-        <div className="p-5 rounded-sm border border-gray-200 bg-gray-50 transition-all">
-          <h3 className="text-md font-bold text-gray-900 flex items-center gap-2 mb-3">
+        <div className="p-5 rounded-sm border border-border bg-muted transition-all">
+          <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-3">
             Cancellation Policy
           </h3>
-          <ul className="space-y-2 text-gray-700 text-sm leading-relaxed">
+          <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
             <li>• Free cancellation Before provider approve your request.</li>
             <li>
               • No refund for missed or unavailability at service location.
@@ -18,11 +18,11 @@ const PoliciesGrid = () => {
           </ul>
         </div>
 
-        <div className="p-5 rounded-sm border border-gray-200 bg-gray-50 transition-all">
-          <h3 className="text-md font-bold text-gray-900 flex items-center gap-2 mb-3">
+        <div className="p-5 rounded-sm border border-border bg-muted transition-all">
+          <h3 className="text-md font-bold text-foreground flex items-center gap-2 mb-3">
             Payment Policy
           </h3>
-          <ul className="space-y-2 text-gray-700 text-sm leading-relaxed">
+          <ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
             <li>• Prices are inclusive of all taxes.</li>
             <li>• Online payments are processed securely.</li>
           </ul>

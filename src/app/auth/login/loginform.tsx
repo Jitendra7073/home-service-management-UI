@@ -55,6 +55,11 @@ export default function LoginForm() {
         return;
       }
 
+      // Store accessToken in localStorage
+      if (json.accessToken) {
+        localStorage.setItem("accessToken", json.accessToken);
+      }
+
       toast.success("Login successful!");
       router.push("/customer");
     } catch (err: any) {

@@ -60,6 +60,7 @@ const CustomerProfilePage = () => {
     try {
       const res = await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -69,6 +70,10 @@ const CustomerProfilePage = () => {
 
       const data = await res.json();
       toast.success(data.message || "Logout Successful");
+
+      // Clear stored tokens
+      localStorage.removeItem("accessToken");
+
       router.push("/auth/login");
     } catch (error) {
       toast.error("Failed to log out");
@@ -278,7 +283,7 @@ const CustomerProfilePage = () => {
             <CardContent className="p-4 sm:p-6">
               {user?.addresses && user.addresses.length > 0 && (
                 <div className="space-y-4">
-                  <div className="p-4 sm:p-6 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all bg-gradient-to-br from-gray-50 to-white">
+                  <div className="p-4 sm:p-6 rounded-lg border-2 border-border hover:border-border/80 transition-all bg-gradient-to-br from-muted/50 to-card">
                     {/* Address Details */}
                     <div className="space-y-3">
                       {/* Street Address */}
@@ -331,9 +336,9 @@ const CustomerProfilePage = () => {
                       </div>
 
                       {/* Full Address Summary */}
-                      <div className="mt-3 pt-3 border-t border-gray-300 bg-white rounded-md p-3">
-                        <p className="text-xs sm:text-sm text-gray-700 leading-relaxed break-words">
-                          <span className="font-semibold text-gray-900">
+                      <div className="mt-3 pt-3 border-t border-border bg-card rounded-md p-3">
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed break-words">
+                          <span className="font-semibold text-foreground">
                             {address.street}
                           </span>
                           , {address.city}, {address.state} -{" "}

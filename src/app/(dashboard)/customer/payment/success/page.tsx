@@ -22,12 +22,12 @@ export default function SuccessPopup({ onClose }: SuccessPopupProps) {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-sm p-8 shadow-xl text-center max-w-sm w-full animate-fadeIn">
+      <div className="bg-card rounded-sm p-8 shadow-xl text-center max-w-sm w-full animate-fadeIn">
         <div className="flex justify-center mb-4">
           <CheckCircle className="text-green-600 w-16 h-16 animate-bounce" />
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-800">Payment Successful</h2>
+        <h2 className="text-2xl font-bold text-foreground">Payment Successful</h2>
         <p className="text-gray-600 mt-2">
           Your booking has been confirmed. Redirecting…
         </p>

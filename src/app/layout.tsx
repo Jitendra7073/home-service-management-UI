@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
-import GetFcmToken from "./fcm-token";
-import FirebaseForegroundListener from "@/components/common/firebase-foreground";
+import AuthProvider from "@/components/common/AuthProvider";
+// import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -10,11 +9,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-
-        <Toaster position="top-right" richColors />
-        {children}
+        {/* <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        > */}
+          <AuthProvider>
+            <Toaster position="top-right" richColors />
+            {children}
+          </AuthProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );

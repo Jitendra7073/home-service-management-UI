@@ -19,13 +19,13 @@ export default function BookingHeader({
   const setServiceModelOpen = useSetAtom(ServiceModelState);
 
   return (
-    <section className="w-full rounded-2xl border bg-gray-50 px-6 py-6 sm:px-8 sm:py-7">
+    <section className="w-full rounded-2xl border border-border bg-card px-6 py-6 sm:px-8 sm:py-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
             {title}
           </h1>
-          <p className="text-sm text-gray-600 max-w-xl">
+          <p className="text-sm text-muted-foreground max-w-xl">
             {description}
           </p>
         </div>
@@ -35,7 +35,7 @@ export default function BookingHeader({
           {/* <Button
             variant="outline"
             size="sm"
-            className="border-gray-300 text-gray-700 hover:bg-gray-100"
+            className="border-border text-foreground hover:bg-muted"
           >
             <Download className="w-4 h-4 mr-1" />
             Export
@@ -44,7 +44,7 @@ export default function BookingHeader({
           {isVisibleAddServiceButton && (
             <Button
               size="sm"
-              className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
               onClick={() => setServiceModelOpen(true)}
             >
               <PlusCircleIcon className="w-4 h-4 mr-1" />

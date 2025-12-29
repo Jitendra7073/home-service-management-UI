@@ -27,6 +27,7 @@ import {
   BadgeCheckIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function NavUser({
   user,
@@ -121,6 +122,11 @@ export function NavUser({
                   Pricing
                 </DropdownMenuItem>
               </Link>
+              <DropdownMenuItem asChild>
+                <div className="flex items-center justify-center">
+                  <ThemeToggle />
+                </div>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logoutHandle()}>

@@ -2,16 +2,16 @@
 
 function ServiceDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-gray-50 animate-pulse">
+    <div className="min-h-screen bg-muted/50 animate-pulse">
       <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* LEFT SECTION */}
         <div className="lg:col-span-2 space-y-6">
           {/* HERO SECTION */}
-          <div className="bg-gray-200 rounded-md p-8 h-64 border border-gray-300">
-            <div className="h-10 w-2/3 bg-gray-300 rounded mb-4"></div>
-            <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
+          <div className="bg-muted rounded-md p-8 h-64 border border-border">
+            <div className="h-10 w-2/3 bg-muted-foreground/20 rounded mb-4"></div>
+            <div className="h-4 w-1/2 bg-muted-foreground/20 rounded"></div>
 
-            <div className="grid grid-cols-4 gap-4 mt-8 pt-6 border-t border-gray-300/40">
+            <div className="grid grid-cols-4 gap-4 mt-8 pt-6 border-t border-border/40">
               {Array(4)
                 .fill("")
                 .map((_, i) => (
@@ -45,14 +45,14 @@ function ServiceDetailSkeleton() {
                 .map((_, i) => (
                   <div
                     key={i}
-                    className="h-12 w-28 min-w-[7rem] bg-gray-200 rounded-md border border-gray-300"></div>
+                    className="h-12 w-28 min-w-[7rem] bg-muted rounded-md border border-border"></div>
                 ))}
             </div>
           </div>
 
           {/* TIME SLOTS GRID */}
-          <div className="bg-white rounded-md p-8 border border-gray-200">
-            <div className="h-7 w-40 bg-gray-300 rounded mb-6"></div>
+          <div className="bg-card rounded-md p-8 border border-border">
+            <div className="h-7 w-40 bg-muted-foreground/20 rounded mb-6"></div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {Array(8)
@@ -60,7 +60,7 @@ function ServiceDetailSkeleton() {
                 .map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-gray-200 rounded-md border border-gray-300"></div>
+                    className="h-16 bg-muted rounded-md border border-border"></div>
                 ))}
             </div>
           </div>
@@ -73,16 +73,16 @@ function ServiceDetailSkeleton() {
 
             {/* Summary Fields */}
             <div className="space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div className="h-4 bg-muted-foreground/20 rounded w-full"></div>
+              <div className="h-4 bg-muted-foreground/20 rounded w-3/4"></div>
+              <div className="h-4 bg-muted-foreground/20 rounded w-2/3"></div>
             </div>
 
             {/* Quantity */}
-            <div className="h-10 bg-gray-300 rounded-md mt-4"></div>
+            <div className="h-10 bg-muted-foreground/20 rounded-md mt-4"></div>
 
             {/* Selected slot box */}
-            <div className="h-16 bg-gray-200 rounded-md"></div>
+            <div className="h-16 bg-muted-foreground/20 rounded-md"></div>
 
             {/* Price rows */}
             <div className="space-y-2">
@@ -94,7 +94,7 @@ function ServiceDetailSkeleton() {
             <div className="h-12 bg-gray-300 rounded-md"></div>
 
             {/* Benefits box */}
-            <div className="h-16 bg-gray-100 rounded-md border border-gray-200"></div>
+            <div className="h-16 bg-muted rounded-md border border-border"></div>
           </div>
         </div>
       </div>

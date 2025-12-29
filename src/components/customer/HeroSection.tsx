@@ -33,11 +33,11 @@ const HeroSection = () => {
 
             {/* Main Heading */}
             <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                 Your Home,
                 <br />
                 <span className="relative inline-block">
-                  <span className="relative z-10 bg-gradient-to-r from-gray-400 to-gray-900 bg-clip-text text-transparent">
+                  <span className="relative z-10 bg-gradient-to-r from-muted-foreground to-foreground bg-clip-text text-transparent">
                     Our Priority
                   </span>
                   <svg
@@ -65,7 +65,7 @@ const HeroSection = () => {
                   </svg>
                 </span>
               </h1>
-              <p className="text-md sm:text-xl text-gray-600 leading-relaxed max-w-xl">
+              <p className="text-md sm:text-xl text-muted-foreground leading-relaxed max-w-xl">
                 Connect with skilled, verified home service professionals in
                 minutes. From plumbing to painting, we've got you covered.
               </p>
@@ -107,21 +107,21 @@ const HeroSection = () => {
                 priority
               />
 
-              <div className="bg-gray-100/95  rounded-md p-5  z-20 border border-gray-200/50 animate-slide-up">
+              <div className="bg-card/95 rounded-md p-5 z-20 border border-border/50 animate-slide-up">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div>
-                      <p className="font-black text-gray-900 text-lg">
+                      <p className="font-black text-foreground text-lg">
                         Application Rating
                       </p>
-                      <p className="text-sm text-gray-600 font-medium">
+                      <p className="text-sm text-muted-foreground font-medium">
                         500+ professionals available
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                    <span className="font-bold text-gray-900">4.8</span>
+                    <span className="font-bold text-foreground">4.8</span>
                   </div>
                 </div>
               </div>
