@@ -5,21 +5,12 @@ import { Card } from "@/components/ui/card";
 
 /* ---------------- COMPONENT ---------------- */
 
-const Results = ({
-  services,
-  onServiceClick,
-  isLoading,
-  isError,
-}: any) => {
-
+const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="h-72 bg-gray-200 rounded-md animate-pulse"
-          />
+          <div key={i} className="h-72 bg-gray-200 rounded-md animate-pulse" />
         ))}
       </div>
     );
@@ -51,10 +42,7 @@ const Results = ({
         <Card
           key={service.id}
           onClick={() => onServiceClick(service)}
-          className="cursor-pointer overflow-hidden rounded-md group border border-gray-200 hover:shadow-md transition py-2"
-        >
-          
-
+          className="cursor-pointer overflow-hidden rounded-md group border border-gray-200 hover:shadow-md transition py-2">
           {/* CONTENT */}
           <div className="p-4">
             <h3 className="font-bold text-gray-900 line-clamp-1">
@@ -71,7 +59,13 @@ const Results = ({
 
               <div className="flex items-center text-sm text-gray-600 gap-1">
                 <Clock className="w-4 h-4" />
-                {Math.round(service.durationInMinutes / 60)} hrs
+                {(service.durationInMinutes / 60).toFixed(2).split(".")[0]}
+                {service.durationInMinutes < 60 ? "Min" : "Hrs"}{" "}
+                {(service.durationInMinutes / 60).toFixed(2).split(".")[1] ==
+                "00"
+                  ? ""
+                  : (service.durationInMinutes / 60).toFixed(2).split(".")[1] +
+                    " Min"}
               </div>
             </div>
 

@@ -35,10 +35,6 @@ type SocialMedia = {
   color: string;
 };
 
-/* 
-   COMPONENT
- */
-
 const Footer: React.FC = () => {
   const BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
 
@@ -184,6 +180,7 @@ const Footer: React.FC = () => {
                       <TooltipTrigger asChild>
                         <a
                           href={item.endPoint}
+                          target="_blank"
                           className="text-gray-400 hover:text-blue-400 flex items-center gap-2 group text-sm"
                         >
                           <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition" />

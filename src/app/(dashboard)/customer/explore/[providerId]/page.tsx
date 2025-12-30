@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 // UI Components
@@ -157,7 +157,9 @@ function SocialLinks({ links }: { links?: SocialLink[] }) {
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{item.key.charAt(0).toLocaleUpperCase() + item.key.slice(1)}</p>
+              <p>
+                {item.key.charAt(0).toLocaleUpperCase() + item.key.slice(1)}
+              </p>
             </TooltipContent>
           </Tooltip>
         </a>
@@ -218,6 +220,7 @@ export default function ServiceDetailPage() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
@@ -306,9 +309,7 @@ export default function ServiceDetailPage() {
                   </h3>
                 </div>
                 <div className="hidden md:block">
-                  <SocialLinks
-                  links={socialLinks}
-                />
+                  <SocialLinks links={socialLinks} />
                 </div>
               </div>
 
@@ -343,10 +344,8 @@ export default function ServiceDetailPage() {
               </div>
 
               <div className="block md:hidden">
-                  <SocialLinks
-                  links={socialLinks}
-                />
-                </div>
+                <SocialLinks links={socialLinks} />
+              </div>
             </div>
 
             {/* SLOT SELECTOR */}
@@ -361,7 +360,8 @@ export default function ServiceDetailPage() {
 
             {/* OTHER SERVICES */}
             <OtherServicesGrid
-              services={business.services}
+              providerId={provider}
+              business={business}
               currentServiceId={service.id}
             />
 

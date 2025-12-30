@@ -109,19 +109,14 @@ const HeroSection = () => {
 
               <div className="bg-card/95 rounded-md p-5 z-20 border border-border/50 animate-slide-up">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <p className="font-black text-foreground text-lg">
-                        Application Rating
-                      </p>
-                      <p className="text-sm text-muted-foreground font-medium">
-                        500+ professionals available
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                    <span className="font-bold text-foreground">4.8</span>
+                  {/* Left Content */}
+                  <div>
+                    <p className=" text-md font-semibold">
+                      Seamless Service Experience
+                    </p>
+                    <p className="text-sm">
+                      Easy booking, clear pricing, and reliable professionals
+                    </p>
                   </div>
                 </div>
               </div>

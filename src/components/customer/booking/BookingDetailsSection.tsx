@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Phone,
@@ -34,9 +35,38 @@ export default function BookingDetailsSection({
     booking.bookingStatus === "PENDING_PAYMENT" &&
     booking.paymentLinkInfo;
 
+  // ✅ LOCAL TIMER STATE
+  const [timeLeft, setTimeLeft] = useState({
+    minutes: booking.paymentLinkInfo?.timeLeftMinutes ?? 0,
+    seconds: booking.paymentLinkInfo?.timeLeftSeconds ?? 0,
+  });
+
+  // ✅ COUNTDOWN LOGIC
+  useEffect(() => {
+    if (!isPendingPayment) return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        }
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 };
+        }
+        clearInterval(interval);
+        return { minutes: 0, seconds: 0 };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isPendingPayment]);
+
+  const isExpired =
+    timeLeft.minutes * 60 + timeLeft.seconds <= 0;
+
   return (
     <div className="border-t border-gray-100 pt-4">
-      {/* ================= PENDING PAYMENT ================= */}
+      {/* ------------------------- PENDING PAYMENT ------------------------- */}
       {isPendingPayment ? (
         <div className="w-full">
           <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -51,18 +81,15 @@ export default function BookingDetailsSection({
               </div>
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <PaymentTimer
-                  expiresAt={booking.paymentLinkInfo.expiresAt}
-                  timeLeftMinutes={booking.paymentLinkInfo.timeLeftMinutes}
-                  timeLeftSeconds={booking.paymentLinkInfo.timeLeftSeconds}
-                />
+                <PaymentTimer timeLeft={timeLeft} />
 
                 <Button
-                  onClick={() =>
-                    window.open(booking.paymentLink, "_blank")
-                  }
-                  disabled={booking.paymentLinkInfo.timeLeftMinutes === 0 && booking.paymentLinkInfo.timeLeftSeconds <= 5}
-                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4 disabled:bg-muted"
+                  onClick={() => {
+                    if (isExpired) return;
+                    window.open(booking.paymentLink, "_blank");
+                  }}
+                  disabled={isExpired}
+                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4 disabled:bg-gray-600 disabled:cursor-not-allowed"
                   size="sm"
                 >
                   <CreditCard className="w-4 h-4" />
@@ -74,7 +101,7 @@ export default function BookingDetailsSection({
         </div>
       ) : (
         <>
-          {/* ================= MAIN DETAILS GRID ================= */}
+          {/* ------------------------- MAIN DETAILS GRID ------------------------- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {/* SERVICE DETAILS */}
             <div className="space-y-4">
@@ -91,9 +118,7 @@ export default function BookingDetailsSection({
 
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Service Time</p>
-                  <p className="text-sm text-gray-700">
-                    {slot?.time || "N/A"}
-                  </p>
+                  <p className="text-sm text-gray-700">{slot?.time || "N/A"}</p>
                 </div>
 
                 <div>
@@ -172,9 +197,7 @@ export default function BookingDetailsSection({
                   <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
                     <Phone className="w-3 h-3" /> Phone
                   </p>
-                  <p className="text-sm text-gray-700">
-                    {business?.phone}
-                  </p>
+                  <p className="text-sm text-gray-700">{business?.phone}</p>
                 </div>
 
                 <div>
@@ -198,13 +221,11 @@ export default function BookingDetailsSection({
               <div className="space-y-3 pl-3">
                 <p className="flex items-center gap-2 text-gray-700">
                   <MapPin className="w-4 h-4 text-gray-500" />
-                  {address?.street}, {address?.city},{" "}
-                  {address?.state} - {address?.postalCode}
+                  {address?.street}, {address?.city}, {address?.state} -{" "}
+                  {address?.postalCode}
                 </p>
 
-                <p className="text-sm text-gray-700">
-                  {address?.country}
-                </p>
+                <p className="text-sm text-gray-700">{address?.country}</p>
 
                 {address?.landmark && (
                   <p className="text-xs text-gray-500">
@@ -215,7 +236,7 @@ export default function BookingDetailsSection({
             </div>
           </div>
 
-          {/* ================= FOOTER ================= */}
+          {/* ------------------------- FOOTER ------------------------- */}
           <div className="flex justify-between items-center py-2">
             <div className="flex flex-wrap gap-2 border-t border-gray-100">
               {booking.bookingStatus === "PENDING" && (
@@ -223,8 +244,7 @@ export default function BookingDetailsSection({
                   variant="outline"
                   size="sm"
                   onClick={() => handleCancelClick(booking)}
-                  className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50"
-                >
+                  className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50">
                   <X className="w-4 h-4" />
                   Cancel Booking
                 </Button>
@@ -235,8 +255,7 @@ export default function BookingDetailsSection({
                   variant="outline"
                   size="sm"
                   onClick={() => handleCall(business?.phone)}
-                  className="flex items-center gap-2 border-gray-300"
-                >
+                  className="flex items-center gap-2 border-gray-300">
                   <Phone className="w-4 h-4" />
                   Call Provider
                 </Button>
@@ -245,17 +264,12 @@ export default function BookingDetailsSection({
               {booking.bookingStatus === "COMPLETED" && (
                 <Button
                   variant={
-                    booking?.isFeedbackProvided
-                      ? "secondary"
-                      : "outline"
+                    booking?.isFeedbackProvided ? "secondary" : "outline"
                   }
                   size="sm"
-                  onClick={() =>
-                    handleFeedBackClick(booking?.id)
-                  }
+                  onClick={() => handleFeedBackClick(booking?.id)}
                   disabled={booking?.isFeedbackProvided}
-                  className="flex items-center gap-2"
-                >
+                  className="flex items-center gap-2">
                   {booking?.isFeedbackProvided ? (
                     <>
                       <CheckCircle className="w-4 h-4 text-green-600" />
