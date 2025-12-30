@@ -35,13 +35,13 @@ export default function BookingDetailsSection({
     booking.bookingStatus === "PENDING_PAYMENT" &&
     booking.paymentLinkInfo;
 
-  // ✅ LOCAL TIMER STATE
+  // LOCAL TIMER STATE
   const [timeLeft, setTimeLeft] = useState({
     minutes: booking.paymentLinkInfo?.timeLeftMinutes ?? 0,
     seconds: booking.paymentLinkInfo?.timeLeftSeconds ?? 0,
   });
 
-  // ✅ COUNTDOWN LOGIC
+  // COUNTDOWN LOGIC
   useEffect(() => {
     if (!isPendingPayment) return;
 

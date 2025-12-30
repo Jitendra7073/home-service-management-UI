@@ -129,7 +129,7 @@ const CategoryList = ({ isVisible, search }: any) => {
               <Link
                 key={category.id}
                 href={`/customer/explore?categories=${category.id}`}
-                className="group relative block bg-white rounded-2xl overflow-hidden
+                className="group relative block bg-white rounded-md overflow-hidden
                    border border-gray-200 hover:border-blue-200
                    hover:shadow-lg transition-all">
                 <div className="p-6 space-y-4">

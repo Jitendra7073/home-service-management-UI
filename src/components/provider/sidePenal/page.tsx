@@ -26,6 +26,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { profileUpgradedTag } from "@/global-states/state";
 import NotificationSideBar from "@/components/common/notification-sidebar";
+import Image from "next/image";
 
 // Sidebar links
 const data = {
@@ -46,7 +47,7 @@ const data = {
       url: "/provider/dashboard/business",
       icon: Building2,
     },
-   
+
     {
       title: "Services",
       url: "/provider/dashboard/services",
@@ -61,8 +62,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
-    const { data:UserData, isLoading, isPending, isError, error } = useQuery({
+  const {
+    data: UserData,
+    isLoading,
+    isPending,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["provider-profile"],
     queryFn: async () => {
       const res = await fetch("/api/common/profile", {
@@ -74,7 +80,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     staleTime: 5 * 60 * 60 * 1000,
   });
   const user = UserData?.user ?? [];
-  const subscriptionStatus = user?.providerSubscription !== null ? user?.providerSubscription?.plan.name.toLowerCase() : "free"
+  const subscriptionStatus =
+    user?.providerSubscription !== null
+      ? user?.providerSubscription?.plan.name.toLowerCase()
+      : "free";
 
   const LogoutHandler = async () => {
     const res = await fetch("/api/auth/logout", {
@@ -91,15 +100,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="mb-5 mt-3 hover:bg-transparent">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link href="/provider/dashboard">
-                <PanelsTopLeft className="!size-5" />
-                <span className="text-base font-semibold">PROVIDER</span>
+              <Link href="/provider/dashboard" className="flex justify-center items-center relative">
+                <Image
+                  src="/HSM-logo.png"
+                  alt="ServiceHub Logo"
+                  width={140}
+                  height={70}
+                  className="object-contain"
+                />
+                <span className="absolute bottom-0 right-3 text-xs font-semibold text-slate-600">(Provider)</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -107,11 +122,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} subscriptionStatus={subscriptionStatus}/>
+        <NavMain items={data.navMain} subscriptionStatus={subscriptionStatus} />
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={user} logoutHandle={LogoutHandler} subscriptionStatus ={subscriptionStatus}/>
+        <NavUser
+          user={user}
+          logoutHandle={LogoutHandler}
+          subscriptionStatus={subscriptionStatus}
+        />
       </SidebarFooter>
     </Sidebar>
   );

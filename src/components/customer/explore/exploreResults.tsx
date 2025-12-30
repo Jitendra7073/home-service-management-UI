@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Zap } from "lucide-react";
+import { Clock, Zap, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 /* ---------------- COMPONENT ---------------- */
@@ -42,12 +42,20 @@ const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
         <Card
           key={service.id}
           onClick={() => onServiceClick(service)}
-          className="cursor-pointer overflow-hidden rounded-md group border border-gray-200 hover:shadow-md transition py-2">
+          className="group relative block bg-white rounded-md overflow-hidden
+                   border border-gray-200 hover:border-blue-200
+                   hover:shadow-lg transition-all py-2  cursor-pointer">
           {/* CONTENT */}
           <div className="p-4">
-            <h3 className="font-bold text-gray-900 line-clamp-1">
+            <div className="flex items-center gap-3">
+              <h3 className="font-bold text-gray-900 line-clamp-1">
               {service.name}
             </h3>
+            <ChevronRight
+              className="w-4 h-4 text-blue-600 opacity-0
+                           group-hover:opacity-100 transition-opacity"
+            />
+            </div>
             <p className="text-sm text-gray-600 line-clamp-2 mt-1">
               {service.category.description || service.category.name}
             </p>

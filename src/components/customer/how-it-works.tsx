@@ -106,7 +106,7 @@ export default function StepsLayout() {
                       <Icon
                         className={`w-6 h-6 ${
                           isActive
-                            ? "text-indigo-600"
+                            ? "text-blue-600"
                             : "text-slate-400"
                         }`}
                       />
@@ -141,7 +141,7 @@ export default function StepsLayout() {
                   {(() => {
                     const Icon = steps[activeStep].icon;
                     return (
-                      <Icon className="w-7 h-7 text-indigo-600" />
+                      <Icon className="w-7 h-7 text-blue-600" />
                     );
                   })()}
                 </div>
@@ -157,7 +157,7 @@ export default function StepsLayout() {
               <div className="space-y-4">
                 {steps[activeStep].features.map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <CheckCircle className="w-4 h-4 text-indigo-600" />
+                    <CheckCircle className="w-4 h-4 text-blue-600" />
                     <span className="text-slate-700 text-sm">
                       {feature}
                     </span>
@@ -194,7 +194,7 @@ export default function StepsLayout() {
                     <Icon
                       className={`w-5 h-5 ${
                         isOpen
-                          ? "text-indigo-400"
+                          ? "text-blue-400"
                           : "text-slate-400"
                       }`}
                     />
@@ -230,7 +230,7 @@ export default function StepsLayout() {
                             key={idx}
                             className="flex items-center gap-3"
                           >
-                            <CheckCircle className="w-4 h-4 text-indigo-600" />
+                            <CheckCircle className="w-4 h-4 text-blue-600" />
                             <span className="text-sm text-slate-700">
                               {feature}
                             </span>

@@ -51,7 +51,14 @@ export default function Header() {
           href="/customer"
           className="text-lg font-bold tracking-tight text-primary"
         >
-          HSM
+          
+          <Image 
+            src="/HSM-logo.png"
+            alt="ServiceHub Logo"
+            width={160}
+            height={80}
+            className="object-contain"
+          />
         </Link>
 
         {/* DESKTOP NAV */}

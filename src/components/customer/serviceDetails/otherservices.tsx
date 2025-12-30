@@ -33,16 +33,22 @@ const OtherServicesGrid = ({
       <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-5">
         More Services from this Business
       </h2>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {otherServices.map((s: any) => (
           <div
             key={s.id}
-            className="group border border-gray-200 rounded-sm bg-gray-50 transition-all cursor-pointer p-5 hover:shadow-md hover:border-gray-300 "
+            className="group border rounded-md bg-gray-50 cursor-pointer p-5  border-gray-200 hover:border-blue-200
+                   hover:shadow-lg transition-all "
             onClick={() => handleRedirecting(s)}>
-            <h3 className="flex justify-between items-center gap-1 text-sm font-bold text-gray-900 line-clamp-2 mb-2">
+            <div className="flex items-center gap-3 mb-2">
+              <h3 className="text-sm font-bold text-gray-900 line-clamp-2">
               {s.name}
             </h3>
+            <ChevronRight
+              className="w-4 h-4 text-blue-600 opacity-0
+                           group-hover:opacity-100 transition-opacity"
+            />
+            </div>
             <p className="text-xs text-gray-600 line-clamp-2 mb-4">
               {s.category.description}
             </p>
