@@ -133,7 +133,7 @@ const Explore: React.FC = () => {
       });
     });
     queryClient.invalidateQueries({
-      queryKey:["providers"]
+      queryKey: ["providers"],
     });
 
     return Array.from(cats);
@@ -158,7 +158,7 @@ const Explore: React.FC = () => {
       });
     });
     queryClient.invalidateQueries({
-      queryKey:["providers"]
+      queryKey: ["providers"],
     });
 
     return services;
@@ -192,7 +192,7 @@ const Explore: React.FC = () => {
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
-    setPage(1); 
+    setPage(1);
   };
 
   const clearFilters = (): void => {
@@ -215,7 +215,7 @@ const Explore: React.FC = () => {
     selectedCategories.length > 0 ||
     priceRange[0] > 0 ||
     priceRange[1] < 5000 ||
-    !!selectedState
+    !!selectedState;
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -231,53 +231,58 @@ const Explore: React.FC = () => {
         }
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
-        <div className="flex justify-between mb-6 gap-2">
-          <div className="relative w-full">
-            <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <div className=" py-14 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between pb-10 gap-2">
+            <div className="relative w-full">
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+              />
+            </div>
+            <div className="flex lg:hidden">
+              <Filters
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onToggleCategory={toggleCategory}
+                priceRange={priceRange}
+                onPriceChange={setPriceRange}
+                hasActiveFilters={hasActiveFilters}
+                onClearFilters={clearFilters}
+                mobileFilterOpen={mobileFilterOpen}
+                setMobileFilterOpen={setMobileFilterOpen}
+              />
+            </div>
           </div>
-          <div className="flex lg:hidden">
-            <Filters
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onToggleCategory={toggleCategory}
-              priceRange={priceRange}
-              onPriceChange={setPriceRange}
-              hasActiveFilters={hasActiveFilters}
-              onClearFilters={clearFilters}
-              mobileFilterOpen={mobileFilterOpen}
-              setMobileFilterOpen={setMobileFilterOpen}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="hidden lg:block bg-white h-fit">
-            <Filters
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onToggleCategory={toggleCategory}
-              priceRange={priceRange}
-              onPriceChange={setPriceRange}
-              hasActiveFilters={hasActiveFilters}
-              onClearFilters={clearFilters}
-              mobileFilterOpen={mobileFilterOpen}
-              setMobileFilterOpen={setMobileFilterOpen}
-            />
-          </div>
-          <div className="lg:col-span-3">
-            <Results
-              services={filteredServices}
-              onServiceClick={handleServiceClick}
-              isLoading={isLoading || isPending}
-              isError={isError}
-              error={error}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="hidden lg:block bg-white h-fit">
+              <Filters
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onToggleCategory={toggleCategory}
+                priceRange={priceRange}
+                onPriceChange={setPriceRange}
+                hasActiveFilters={hasActiveFilters}
+                onClearFilters={clearFilters}
+                mobileFilterOpen={mobileFilterOpen}
+                setMobileFilterOpen={setMobileFilterOpen}
+              />
+            </div>
+            <div className="lg:col-span-3">
+              <Results
+                services={filteredServices}
+                onServiceClick={handleServiceClick}
+                isLoading={isLoading || isPending}
+                isError={isError}
+                error={error}
+              />
 
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={updatePage}
-            />
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={updatePage}
+              />
+            </div>
           </div>
         </div>
       </div>

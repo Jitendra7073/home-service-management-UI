@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { MapPin, CreditCard, Check, ChevronRight } from "lucide-react";
+import { MapPin, CreditCard, Check, ChevronRight, ShoppingCart } from "lucide-react";
 import Address from "@/components/customer/cart/address";
 import Payment from "@/components/customer/cart/payment";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CartItems from "./cartItems";
 import { toast } from "sonner";
+import ExploreHeader from "../explore/exploreHeroSection";
 
 export default function HomeServiceCart() {
   const clientQuery = useQueryClient();
@@ -65,11 +66,20 @@ export default function HomeServiceCart() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-lg md:text-2xl uppercase font-semibold text-gray-800 mb-8">
-          Cart
-        </h1>
+    <div className="">
+        <ExploreHeader
+        totalServices={0}
+        filteredCount={0}
+        totalProviders={0}
+        isVisible={false}
+        heading="My Cart"
+        description="Review your selected services and proceed to checkout."
+        icons={<ShoppingCart className="w-8 h-8 text-gray-300" />}
+      />
+    
+    <div className="min-h-screen bg-gray-100 py-14 sm:py-16">
+       
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* LEFT SECTION */}
@@ -178,6 +188,7 @@ export default function HomeServiceCart() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

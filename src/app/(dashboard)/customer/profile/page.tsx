@@ -158,15 +158,15 @@ const CustomerProfilePage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-14 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* PROFILE HEADER CARD */}
           <Card className="shadow-md mb-6 rounded-lg overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-0">
-              <div className="h-24 sm:h-32 bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800" />
+              <div/>
 
-              <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6">
+              <div className="px-4 sm:px-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
                   {/* Left Section - Avatar & Info */}
                   <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 flex-1">
                     <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-white shadow-lg flex-shrink-0">
@@ -199,8 +199,8 @@ const CustomerProfilePage = () => {
                     </div>
                   </div>
 
-                  {/* Right Section - Buttons (Hidden on Mobile) */}
-                  <div className="hidden sm:flex flex-col gap-2 w-full sm:w-auto">
+                  {/* Right Section - Buttons*/}
+                  <div className="hidden sm:flex flex-col justify-center items-center gap-2 w-full sm:w-auto">
                     <Button
                       className="bg-gray-600 hover:bg-gray-700 text-white w-full sm:w-40 flex items-center justify-center gap-2"
                       onClick={handleLogOut}>
@@ -221,7 +221,7 @@ const CustomerProfilePage = () => {
           </Card>
 
           {/* PERSONAL INFO CARD */}
-          <Card className="shadow-md rounded-lg border-gray-200 hover:shadow-lg transition-shadow mb-6">
+          <Card className="shadow-md rounded-lg border-gray-200">
             <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
               <CardTitle className="flex items-center gap-2 text-gray-900">
                 <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -276,89 +276,6 @@ const CustomerProfilePage = () => {
                   {formatDate(user.createdAt)}
                 </p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* ADDRESS INFO CARD */}
-          <Card className="shadow-md rounded-lg border-gray-200 hover:shadow-lg transition-shadow mb-6">
-            <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-gray-900">
-                <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-lg sm:text-xl">Addresses</span>
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="p-4 sm:p-6">
-              {user?.addresses && user.addresses.length > 0 && (
-                <div className="space-y-4">
-                  <div className="p-4 sm:p-6 rounded-lg border-2 border-border hover:border-border/80 transition-all bg-gradient-to-br from-muted/50 to-card">
-                    {/* Address Details */}
-                    <div className="space-y-3">
-                      {/* Street Address */}
-                      <div>
-                        <Label className="text-gray-600 font-medium text-xs sm:text-sm uppercase tracking-wide">
-                          Street Address
-                        </Label>
-                        <p className="text-sm sm:text-base text-gray-900 font-medium break-words mt-1">
-                          {address.street}
-                        </p>
-                      </div>
-
-                      {/* City, State, Postal Code, Country Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                        <div>
-                          <Label className="text-gray-600 font-medium text-xs uppercase tracking-wide">
-                            City
-                          </Label>
-                          <p className="text-sm text-gray-900 font-medium mt-1">
-                            {address.city}
-                          </p>
-                        </div>
-
-                        <div>
-                          <Label className="text-gray-600 font-medium text-xs uppercase tracking-wide">
-                            State
-                          </Label>
-                          <p className="text-sm text-gray-900 font-medium mt-1">
-                            {address.state}
-                          </p>
-                        </div>
-
-                        <div>
-                          <Label className="text-gray-600 font-medium text-xs uppercase tracking-wide">
-                            Postal Code
-                          </Label>
-                          <p className="text-sm text-gray-900 font-medium mt-1">
-                            {address.postalCode}
-                          </p>
-                        </div>
-
-                        <div>
-                          <Label className="text-gray-600 font-medium text-xs uppercase tracking-wide">
-                            Country
-                          </Label>
-                          <p className="text-sm text-gray-900 font-medium mt-1">
-                            {address.country}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Full Address Summary */}
-                      <div className="mt-3 pt-3 border-t border-border bg-card rounded-md p-3">
-                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed break-words">
-                          <span className="font-semibold text-foreground">
-                            {address.street}
-                          </span>
-                          , {address.city}, {address.state} -{" "}
-                          {address.postalCode}, {address.country}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 

@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import ConfettiBurst from "./ConfettiBurst";
-import { Input } from "@/components/ui/input";
 
 const Required = () => <span className="text-red-500">*</span>;
 

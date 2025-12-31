@@ -44,7 +44,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
-      <div className="max-w-7xl mx-auto px-3 h-14 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
 
         {/* LOGO */}
         <Link
@@ -100,10 +100,6 @@ export default function Header() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              {/* <NavigationMenuItem>
-                <ThemeToggle />
-              </NavigationMenuItem> */}
-
               <NavigationMenuItem>
                 <NotificationSideBar />
               </NavigationMenuItem>
@@ -142,7 +138,7 @@ export default function Header() {
             <SheetDescription></SheetDescription>
 
             {/* MOBILE MENU */}
-            <SheetContent side="left" className="w-[260px] p-0">
+            <SheetContent side="right" className="w-[330px] p-0">
               <div className="flex flex-col h-full">
 
                 {/* MENU LINKS */}

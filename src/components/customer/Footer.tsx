@@ -22,7 +22,7 @@ import Image from "next/image";
 type FooterOption = {
   label: string;
   endPoint: string;
-  tooltips?: string; 
+  tooltips?: string;
 };
 
 type FooterSection = {
@@ -141,98 +141,94 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="bg-gray-900 text-gray-300">
-
       {/* Main Footer */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-8 mb-16">
-          {/* Brand */}
-          <div className="col-span-2">
-            {/* LOGO */}
-        <Link
-          href="/customer"
-          className="bg-white h-20 w-40 flex items-center justify-center rounded-lg"
-        >
-          
-          <Image
-            src="/HSM-logo.png"
-            alt="ServiceHub Logo"
-            width={160}
-            height={80}
-            className="object-contain"
-          />
-        </Link>
-            <p className="text-gray-400 mt-3">
-              Building innovative solutions to transform your business.
-            </p>
+      <div className="py-14 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-8">
+            {/* Brand */}
+            <div className="col-span-2">
+              {/* LOGO */}
+              <Link
+                href="/customer"
+                className="bg-white h-20 w-40 flex items-center justify-center rounded-lg">
+                <Image
+                  src="/HSM-logo.png"
+                  alt="ServiceHub Logo"
+                  width={160}
+                  height={80}
+                  className="object-contain"
+                />
+              </Link>
+              <p className="text-gray-400 mt-3">
+                Building innovative solutions to transform your business.
+              </p>
 
-            <div className="hidden sm:flex gap-4 mt-6">
+              <div className="hidden sm:flex gap-4 mt-6">
+                {socialMedia.map((social) => (
+                  <a
+                    key={social.platform}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center transition ${social.color}`}
+                    aria-label={social.platform}>
+                    <social.icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Links */}
+            {footerlinks.map((section) => (
+              <div key={section.title}>
+                <h4 className="text-white font-black mb-4 uppercase text-sm">
+                  {section.title}
+                </h4>
+
+                <ul className="space-y-3">
+                  {section.options.map((item, index) => (
+                    <li key={index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={item.endPoint}
+                            target="_blank"
+                            className="text-gray-400 hover:text-blue-400 flex items-center gap-2 group text-sm">
+                            <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition" />
+                            {item.label}
+                          </a>
+                        </TooltipTrigger>
+
+                        {item.tooltips && (
+                          <TooltipContent>
+                            <p>{item.tooltips}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile Social */}
+          <div className="sm:hidden mb-12">
+            <h4 className="text-white font-black mb-4 uppercase text-sm">
+              Follow Us
+            </h4>
+            <div className="flex gap-4">
               {socialMedia.map((social) => (
                 <a
                   key={social.platform}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center transition ${social.color}`}
-                  aria-label={social.platform}
-                >
-                  <social.icon className="w-5 h-5" />
+                  className={`w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center ${social.color}`}>
+                  <social.icon className="w-6 h-6" />
                 </a>
               ))}
             </div>
-          </div>
-
-          {/* Links */}
-          {footerlinks.map((section) => (
-            <div key={section.title}>
-              <h4 className="text-white font-black mb-4 uppercase text-sm">
-                {section.title}
-              </h4>
-
-              <ul className="space-y-3">
-                {section.options.map((item, index) => (
-                  <li key={index}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <a
-                          href={item.endPoint}
-                          target="_blank"
-                          className="text-gray-400 hover:text-blue-400 flex items-center gap-2 group text-sm"
-                        >
-                          <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition" />
-                          {item.label}
-                        </a>
-                      </TooltipTrigger>
-
-                      {item.tooltips && (
-                        <TooltipContent>
-                          <p>{item.tooltips}</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* Mobile Social */}
-        <div className="sm:hidden mb-12">
-          <h4 className="text-white font-black mb-4 uppercase text-sm">
-            Follow Us
-          </h4>
-          <div className="flex gap-4">
-            {socialMedia.map((social) => (
-              <a
-                key={social.platform}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center ${social.color}`}
-              >
-                <social.icon className="w-6 h-6" />
-              </a>
-            ))}
           </div>
         </div>
       </div>

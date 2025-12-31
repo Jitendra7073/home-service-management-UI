@@ -228,10 +228,10 @@ export default function CustomerBookingsPage() {
         icons={<Calendar className="w-8 h-8 text-gray-300" />}
       />
 
-      <div className="min-h-screen bg-muted/50">
-        <div className="max-w-7xl mx-auto px-4 py-5 sm:py-10">
+      <div className="min-h-screen bg-muted/50 py-14 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Search Bar */}
-          <div className="flex justify-between mb-6 gap-2">
+          <div className="flex justify-between pb-10 gap-2">
             <div className="relative w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input

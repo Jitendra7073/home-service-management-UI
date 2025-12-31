@@ -54,7 +54,7 @@ const CategoryList = ({ isVisible, search }: any) => {
   // Loading State
   if (isLoading || isPending) {
     return (
-      <section className="relative overflow-hidden py-20">
+      <section className="relative overflow-hidden py-14 md:py-16">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center sm:justify-between mb-5">
             <h2 className="text-2xl sm:text-4xl font-black text-gray-900 mb-4">

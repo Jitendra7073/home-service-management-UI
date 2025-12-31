@@ -70,7 +70,7 @@ export default function StepsLayout() {
   const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
 
   return (
-    <section className="py-14 md:py-20">
+    <section className="py-14 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">

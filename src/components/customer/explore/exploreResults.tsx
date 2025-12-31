@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock, Zap, ChevronRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 /* ---------------- COMPONENT ---------------- */
 
@@ -29,9 +29,16 @@ const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
 
   if (services.length === 0) {
     return (
-      <Card className="p-10 text-center">
-        <Zap className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-        <p className="text-gray-500">No services available</p>
+     <Card className="bg-white border-gray-200">
+        <CardContent className="py-11 text-center">
+          <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No Services found
+          </h3>
+          <p className="text-gray-600">
+           Any new service will appear here.
+          </p>
+        </CardContent>
       </Card>
     );
   }
