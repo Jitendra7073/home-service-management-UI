@@ -16,84 +16,42 @@ class ApiClient {
     this.baseURL = baseURL;
   }
 
-  private async refreshToken(): Promise<boolean> {
-    try {
-      const response = await fetch("/api/auth/refresh-token", {
-        method: "POST",
-        credentials: "include", // Sends refresh cookie
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.accessToken) {
-          localStorage.setItem("accessToken", data.accessToken);
-          return true;
-        }
-      }
-      return false;
-    } catch (error) {
-      console.error("Token refresh failed:", error);
-      return false;
-    }
-  }
-
   async request<T = any>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
 
-    const accessToken = localStorage.getItem("accessToken");
-
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...((options.headers as Record<string, string>) || {}),
     };
 
-    if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`;
-    }
+    // Note: Tokens are now handled via httpOnly cookies
+    // No need to manually attach Authorization header
+    // Middleware will handle token refresh automatically
 
     const response = await fetch(url, {
       ...options,
       headers,
-      credentials: "include", // For refresh cookie
+      credentials: "include", // Sends cookies automatically
     });
 
     if (response.status === 401) {
-      // Try to refresh token
-      const refreshed = await this.refreshToken();
-      if (refreshed) {
-        // Retry the request with new token
-        const newAccessToken = localStorage.getItem("accessToken");
-        headers.Authorization = `Bearer ${newAccessToken}`;
-        const retryResponse = await fetch(url, {
-          ...options,
-          headers,
-          credentials: "include",
-        });
-
-        if (retryResponse.ok) {
-          const text = await retryResponse.text();
-          let data: any = null;
-          if (text) {
-            try {
-              data = JSON.parse(text);
-            } catch {
-              data = text;
-            }
-          }
-          return {
-            ok: retryResponse.ok,
-            status: retryResponse.status,
-            data,
-            headers: retryResponse.headers,
-          };
+      // Check if response contains refreshRequired flag
+      let refreshRequired = false;
+      try {
+        const text = await response.text();
+        if (text) {
+          const data = JSON.parse(text);
+          refreshRequired = data.refreshRequired || false;
         }
+      } catch {
+        // If parsing fails, proceed with default behavior
       }
 
-      // Refresh failed, redirect to login
-      localStorage.removeItem("accessToken");
+      // Middleware handles token refresh automatically
+      // Just redirect to login on 401
       if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
         window.location.href = "/auth/login";
       }
@@ -145,30 +103,8 @@ class ApiClient {
 
 export const apiClient = new ApiClient(API_BASE_URL);
 
-// Setup automatic token refresh
-let refreshInterval: NodeJS.Timeout | null = null;
-
-export const setupTokenRefresh = () => {
-  if (refreshInterval) return; // Already set up
-
-  refreshInterval = setInterval(async () => {
-    try {
-      const response = await fetch("/api/auth/refresh-token", {
-        method: "POST",
-        credentials: "include",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.accessToken) {
-          localStorage.setItem("accessToken", data.accessToken);
-        }
-      }
-    } catch (error) {
-      console.error("Automatic token refresh failed:", error);
-      // Optionally redirect to login if refresh fails
-    }
-  }, 10 * 60 * 1000); // Every 10 minutes
-};
+// Note: Token refresh is now handled automatically by middleware
+// No need for manual token refresh logic
 
 // Check auth on app init
 export const checkAuth = async () => {

@@ -12,6 +12,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
+import Image from "next/image";
 
 /* 
    TYPES
@@ -145,7 +147,20 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-8 mb-16">
           {/* Brand */}
           <div className="col-span-2">
-            <h2 className="text-3xl font-black text-blue-500">HSM</h2>
+            {/* LOGO */}
+        <Link
+          href="/customer"
+          className="bg-white h-20 w-40 flex items-center justify-center rounded-lg"
+        >
+          
+          <Image
+            src="/HSM-logo.png"
+            alt="ServiceHub Logo"
+            width={160}
+            height={80}
+            className="object-contain"
+          />
+        </Link>
             <p className="text-gray-400 mt-3">
               Building innovative solutions to transform your business.
             </p>

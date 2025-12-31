@@ -55,11 +55,8 @@ export default function LoginForm() {
         return;
       }
 
-      // Store accessToken in localStorage
-      if (json.accessToken) {
-        localStorage.setItem("accessToken", json.accessToken);
-      }
-
+      // Note: Tokens are now handled via httpOnly cookies
+      // No need to manually store tokens in localStorage
       toast.success("Login successful!");
       router.push("/customer");
     } catch (err: any) {
@@ -73,8 +70,8 @@ export default function LoginForm() {
       <div className="grid gap-2">
         <Label>Email</Label>
         <Input
-          type="email"
-          placeholder="user123@gmail.com"
+          type="text"
+          placeholder="Enter your email"
           {...register("email")}
         />
         {errors.email && (
@@ -95,7 +92,7 @@ export default function LoginForm() {
 
         <Input
           type={`${showPassword ? "text" : "password"}`}
-          placeholder="******"
+          placeholder="Enter your password"
           {...register("password")}
         />
         {errors.password && (

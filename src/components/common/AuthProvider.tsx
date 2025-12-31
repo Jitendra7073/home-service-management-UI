@@ -1,17 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { setupTokenRefresh } from "@/lib/api-client";
-
 export default function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    // Setup automatic token refresh
-    setupTokenRefresh();
-  }, []);
-
+  // Note: Token refresh is now handled automatically by middleware
+  // No need for manual token refresh setup
   return <>{children}</>;
 }

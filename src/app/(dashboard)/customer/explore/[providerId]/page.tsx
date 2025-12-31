@@ -45,6 +45,7 @@ import {
   MapPin,
   X,
 } from "lucide-react";
+import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 
 interface Slot {
   id: string;
@@ -431,6 +432,8 @@ export default function ServiceDetailPage() {
                 <Dialog
                   open={!!activeImage}
                   onOpenChange={() => setActiveImage(null)}>
+                    <DialogTitle></DialogTitle>
+                    <DialogDescription></DialogDescription>
                   <DialogContent className=" p-1  max-w-[95vw] sm:max-w-3xl border-none">
                     {activeImage && (
                       <Image

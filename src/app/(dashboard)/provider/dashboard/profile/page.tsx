@@ -71,8 +71,8 @@ const CustomerProfilePage = () => {
       const data = await res.json();
       toast.success(data.message || "Logout Successful");
 
-      // Clear stored tokens
-      localStorage.removeItem("accessToken");
+      // Clear stored tokens (now handled by httpOnly cookies)
+      // No need to manually clear localStorage
 
       router.push("/auth/login");
     } catch (error) {

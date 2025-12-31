@@ -92,8 +92,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     });
     const data = await res.json();
     if (data.success) {
-      // Clear stored tokens
-      localStorage.removeItem("accessToken");
+      // Clear stored tokens (now handled by httpOnly cookies)
+      // No need to manually clear localStorage
       window.location.reload();
     }
     return data;

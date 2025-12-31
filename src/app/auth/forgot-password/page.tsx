@@ -86,8 +86,8 @@ export default function ForgotPassword() {
                   <div className="grid gap-2">
                     <Label>Email Address</Label>
                     <Input
-                      type="email"
-                      placeholder="user123@gmail.com"
+                      type="text"
+                      placeholder="Enter your email"
                       {...register("email")}
                     />
                     {errors.email && (

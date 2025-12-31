@@ -203,7 +203,7 @@ export default function RegisterForm() {
                 <div>
                   <Label className="pb-2">Email</Label>
                   <Input
-                    type="email"
+                    type="text"
                     placeholder="example@gmail.com"
                     {...register("email")}
                   />
