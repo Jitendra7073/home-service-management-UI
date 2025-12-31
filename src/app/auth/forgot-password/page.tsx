@@ -20,13 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Forgot Password | Fixora",
-  description: "Reset your password securely with Fixora.",
-};
-
 
 export default function ForgotPassword() {
    const router = useRouter();

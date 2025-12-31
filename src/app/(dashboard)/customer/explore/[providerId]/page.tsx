@@ -31,13 +31,6 @@ import {
 } from "@/components/ui/tooltip";
 
 import type { ReactNode } from "react";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Service Details | Fixora",
-  description: "View detailed information about the service with Fixora.",
-};
-
 
 import {
   Instagram,

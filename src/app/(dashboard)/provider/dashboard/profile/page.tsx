@@ -33,13 +33,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import ProfileSkeleton from "./profileSkeleton";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Profile | Fixora",
-  description: "Manage your profile information effectively with Fixora.",
-};
-
 
 const CustomerProfilePage = () => {
   const router = useRouter();

@@ -3,13 +3,6 @@
 import { useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Payment Success | Fixora",
-  description: "Your payment was successful. Manage your bookings with Fixora.",
-};
-
 
 interface SuccessPopupProps {
   onClose?: () => void;

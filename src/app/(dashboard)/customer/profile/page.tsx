@@ -32,13 +32,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Profile | Fixora",
-  description: "Manage your profile information effectively with Fixora.",
-};
-
 
 // Skeleton Loader
 const ProfileSkeleton = () => (
