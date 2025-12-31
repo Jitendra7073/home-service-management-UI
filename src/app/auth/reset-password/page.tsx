@@ -10,6 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import ResetPasswordForm from "./form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Reset Password | Fixora",
+  description: "Reset your password securely with Fixora.",
+};
 
 export default async function ResetPasswordPage() {
 

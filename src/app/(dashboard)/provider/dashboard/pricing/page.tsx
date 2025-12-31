@@ -1,5 +1,12 @@
 import PricingSection from '@/components/provider/pricing/pricing-card'
 import React from 'react'
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pricing | Fixora",
+  description: "Manage your pricing effectively with Fixora.",
+};
+
 
 const Pricing = () => {
   return (

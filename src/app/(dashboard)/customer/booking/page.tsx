@@ -1,5 +1,11 @@
 import BookingComponent from "@/components/customer/booking";
 import { Suspense } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Bookings | Fixora",
+  description: "Manage your bookings effectively with Fixora.",
+};
 
 export default function BookingPage() {
   return (

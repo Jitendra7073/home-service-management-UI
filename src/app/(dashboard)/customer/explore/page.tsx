@@ -2,6 +2,14 @@ import React from "react";
 import Explore from "@/components/customer/explore";
 import { Suspense } from "react";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Explore | Fixora",
+  description: "Discover and explore services with Fixora.",
+};
+
+
 export default function ExplorePage() {
   return (
     <Suspense fallback={<BookingLoading />}>

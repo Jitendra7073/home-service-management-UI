@@ -3,6 +3,13 @@
 import { useEffect } from "react";
 import { XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Payment Failed | Fixora",
+  description: "Your payment was not completed. Manage your bookings with Fixora.",
+};
+
 
 interface FailedPopupProps {
   onClose?: () => void;

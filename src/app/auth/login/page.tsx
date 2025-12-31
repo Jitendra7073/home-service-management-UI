@@ -11,7 +11,13 @@ import {
 } from "@/components/ui/card";
 
 import LoginForm from "./loginform";
-import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login | Fixora",
+  description: "Access your account securely with Fixora.",
+};
+
 
 export default function LoginPage() {
   return (

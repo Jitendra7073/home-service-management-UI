@@ -1,5 +1,11 @@
 import React from "react";
 import ServiceDashboard from "./services-by-id";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Services | Fixora",
+  description: "Manage your services effectively with Fixora.",
+};
 
 const ServiceById = async ({ params }: { params: { serviceId: string } }) => {
   const { serviceId } = await params;

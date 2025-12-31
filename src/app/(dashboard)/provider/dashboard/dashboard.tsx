@@ -8,6 +8,13 @@ import ServiceChart from "@/components/provider/dashboard/service-chart";
 import ServicesTable from "@/components/provider/dashboard/services-table";
 import Welcome from "@/components/provider/dashboard/welcome";
 import { useQuery } from "@tanstack/react-query";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Fixora",
+  description: "Manage your dashboard effectively with Fixora.",
+};
+
 
 const DashboardComponents = () => {
 
