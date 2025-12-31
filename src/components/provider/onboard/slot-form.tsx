@@ -197,6 +197,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                       value={new Date(`01/01/2020 ${field.value}`)}
                       onChange={(v) => field.onChange(formatTime(v))}
                       placement="bottomStart"
+                      showMeridiem
                     />
                   </FormControl>
                   <FormMessage />
@@ -219,6 +220,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                       className="w-full"
                       value={new Date(`01/01/2020 ${field.value}`)}
                       onChange={(v) => field.onChange(formatTime(v))}
+                      showMeridiem
                     />
                   </FormControl>
                   <FormMessage />
@@ -241,6 +243,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                       className="w-full"
                       value={new Date(`01/01/2020 ${field.value}`)}
                       onChange={(v) => field.onChange(formatTime(v))}
+                      showMeridiem
                     />
                   </FormControl>
                   <FormMessage />
@@ -263,6 +266,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                       className="w-full"
                       value={new Date(`01/01/2020 ${field.value}`)}
                       onChange={(v) => field.onChange(formatTime(v))}
+                      showMeridiem
                     />
                   </FormControl>
                   <FormMessage />
