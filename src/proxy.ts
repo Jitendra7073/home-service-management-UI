@@ -2,11 +2,11 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import authMiddleware from "./lib/middlewares/auth-middleware";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   try {
     return await authMiddleware(req);
   } catch (error) {
-    console.error("Middleware fatal error:", error);
+    console.error("Proxy fatal error:", error);
 
     const loginUrl = new URL("/auth/login", req.url);
     const response = NextResponse.redirect(loginUrl);
