@@ -19,13 +19,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
 import { User, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
@@ -52,8 +47,7 @@ export default function RegisterForm() {
     },
   });
 
-  const handleRoleChange = (checked: boolean) => {
-    const newRole = checked ? "provider" : "customer";
+  const handleRoleChange = (newRole: "customer" | "provider") => {
     setRole(newRole);
     setValue("role", newRole);
   };
@@ -115,67 +109,23 @@ export default function RegisterForm() {
             </CardHeader>
 
             <CardContent className="px-0">
-              {/* ROLE SWITCH */}
-              <div className="flex items-center justify-between mb-6 p-3 border rounded-lg">
-                <span className="font-medium hidden sm:block">Register as</span>
-
-                <div className="flex items-center gap-4">
-                  {/* Customer */}
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`sm:hidden text-sm ${
-                        role === "customer"
-                          ? "text-primary"
-                          : "text-muted-foreground"
-                      }`}>
+              {/* ROLE TABS */}
+              <div className="mb-6">
+                <Tabs
+                  value={role}
+                  onValueChange={(value) => handleRoleChange(value as "customer" | "provider")}
+                  className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="customer" className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
                       Customer
-                    </span>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <User
-                          className={`w-5 h-5 ${
-                            role === "customer"
-                              ? "text-primary"
-                              : "text-muted-foreground"
-                          }`}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>Customer</TooltipContent>
-                    </Tooltip>
-                  </div>
-
-                  {/* Switch */}
-                  <Switch
-                    checked={role === "provider"}
-                    onCheckedChange={handleRoleChange}
-                  />
-
-                  {/* Provider */}
-                  <div className="flex items-center gap-2">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Wrench
-                          className={`w-5 h-5 ${
-                            role === "provider"
-                              ? "text-primary"
-                              : "text-muted-foreground"
-                          }`}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>Provider</TooltipContent>
-                    </Tooltip>
-
-                    <span
-                      className={`sm:hidden text-sm ${
-                        role === "provider"
-                          ? "text-primary"
-                          : "text-muted-foreground"
-                      }`}>
+                    </TabsTrigger>
+                    <TabsTrigger value="provider" className="flex items-center gap-2">
+                      <Wrench className="w-4 h-4" />
                       Provider
-                    </span>
-                  </div>
-                </div>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
 
               {/* FORM */}
