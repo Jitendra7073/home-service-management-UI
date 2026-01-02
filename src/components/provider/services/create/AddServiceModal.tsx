@@ -41,6 +41,11 @@ const INITIAL_FORM: ServiceFormData = {
   isActive: true,
 };
 
+// Require field symbol
+const RequireField = () => {
+  return <span className="text-red-500 -ml-1">*</span>;
+};
+
 export default function AddServiceModal() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<ServiceFormData>(INITIAL_FORM);
@@ -61,8 +66,7 @@ export default function AddServiceModal() {
     if (form.durationInMinutes <= 0)
       e.durationInMinutes = "Enter a valid duration";
     if (form.totalBookingAllow <= 0)
-      e.totalBookingAllow =
-        "Enter a valid number of booking for each slot.";
+      e.totalBookingAllow = "Enter a valid number.";
     if (form.price <= 0) e.price = "Enter a valid price";
 
     setErrors(e);
@@ -204,7 +208,7 @@ export default function AddServiceModal() {
 
     try {
       setLoading(true);
-      
+
       const payload = {
         ...form,
         coverImage: coverImage[0]?.url || null,
@@ -242,19 +246,19 @@ export default function AddServiceModal() {
   return (
     <Dialog
       open={open}
-      onOpenChange={(isOpen) => !isOpen && handleCleanupAndClose()}>
+      onOpenChange={(isOpen) => !isOpen && handleCleanupAndClose()} >
       <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Service</DialogTitle>
         </DialogHeader>
 
-        <div className="flex items-center justify-between border p-3 rounded-md">
+        {/* <div className="flex items-center justify-between border p-3 rounded-md">
           <Label>Service Active Status</Label>
           <Switch
             checked={form.isActive}
             onCheckedChange={(v) => setForm({ ...form, isActive: v })}
           />
-        </div>
+        </div> */}
 
         <ImageUploader
           label="Cover Image"
@@ -272,7 +276,7 @@ export default function AddServiceModal() {
         />
 
         <div className="space-y-4">
-          <Field label="Service Name" error={errors.name}>
+          <Field label="Service Name" error={errors.name} required>
             <Input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -280,20 +284,51 @@ export default function AddServiceModal() {
             />
           </Field>
 
-          <Field label="Description" error={errors.description}>
+          <Field label="Description" error={errors.description} required>
             <Textarea
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
               rows={4}
+              placeholder="Details about the service..."
             />
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Duration (min)" error={errors.durationInMinutes}>
+            <Field label="Price" error={errors.price} required>
               <Input
                 type="number"
+                value={form.price}
+                onChange={(e) =>
+                  setForm({ ...form, price: Number(e.target.value) })
+                }
+              />
+            </Field>
+            <Field
+              label="Max customers per slot"
+              error={errors.totalBookingAllow}
+              required>
+              <Input
+                type="number"
+                value={form.totalBookingAllow}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    totalBookingAllow: Number(e.target.value),
+                  })
+                }
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-col-1 md:grid-cols-2 gap-4">
+            <Field label="Estimated Duration" error={errors.durationInMinutes}>
+              <Input
+                type="number"
+                min={10}
+                step={5}
+                placeholder="e.g. 30"
                 value={form.durationInMinutes}
                 onChange={(e) =>
                   setForm({
@@ -303,28 +338,7 @@ export default function AddServiceModal() {
                 }
               />
             </Field>
-            <Field label="Price" error={errors.price}>
-              <Input
-                type="number"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({ ...form, price: Number(e.target.value) })
-                }
-              />
-            </Field>
-          </div>
-
-          <div className="grid grid-col-1 md:grid-cols-2 gap-4">
-            <Field label="Number of booking per slot" error={errors.totalBookingAllow}>
-              <Input
-                type="number"
-                value={form.totalBookingAllow}
-                onChange={(e) =>
-                  setForm({ ...form, totalBookingAllow: Number(e.target.value) })
-                }
-              />
-            </Field>
-            <Field label="Currency">
+            <Field label="Currency" required>
               <Select
                 value={form.currency}
                 onValueChange={(v) => setForm({ ...form, currency: v })}>
@@ -338,6 +352,10 @@ export default function AddServiceModal() {
               </Select>
             </Field>
           </div>
+          <p className="mt-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-2  text-sm text-blue-700">
+            Actual service time may vary based on site conditions and service
+            complexity.
+          </p>
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t mt-6">
@@ -360,16 +378,20 @@ export default function AddServiceModal() {
 // Small helper component for Inputs
 function Field({
   label,
+  required,
   children,
   error,
 }: {
   label: string;
+  required?: boolean;
   children: React.ReactNode;
   error?: string;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className={error ? "text-red-500" : ""}>{label}</Label>
+      <Label >
+        {label} {required && <RequireField />}
+      </Label>
       {children}
       {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
     </div>

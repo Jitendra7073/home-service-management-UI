@@ -2,89 +2,129 @@
 
 import { useState } from "react";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+const CANCELLATION_REASONS = [
+  "Change of plans",
+  "Booked by mistake",
+  "Service no longer needed",
+  "Found a better option",
+  "Provider requested cancellation",
+  "Other",
+];
+
 export default function CancelBookingDialog({
-    open,
-    setOpen,
-    selectedBooking,
-    handleCancelConfirm,
+  open,
+  setOpen,
+  selectedBooking,
+  handleCancelConfirm,
+  isLoading,
 }: any) {
-    const [reason, setReason] = useState("");
-    const [error, setError] = useState("");
+  const [reasonType, setReasonType] = useState("");
+  const [customReason, setCustomReason] = useState("");
 
-    const onConfirm = () => {
-        if (!reason.trim()) {
-            toast.error("Please provide a reason for cancellation.");
-            return;
-        }
+  const isConfirmed = selectedBooking?.bookingStatus === "CONFIRMED";
 
-        handleCancelConfirm(reason);
-        setReason("");
-        setError("");
-    };
+  const onConfirm = () => {
+    if (isLoading) return;
 
-    const onClose = (state: boolean) => {
-        if (!state) {
-            setReason("");
-            setError("");
-        }
-        setOpen(state);
-    };
+    if (!reasonType) {
+      toast.error("Please select a reason.");
+      return;
+    }
 
-    return (
-        <AlertDialog open={open} onOpenChange={onClose}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Cancel Booking</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Are you sure you want to cancel this booking for{" "}
-                        <span className="font-semibold">{selectedBooking?.service.name}</span>?
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
+    if (reasonType === "Other" && !customReason.trim()) {
+      toast.error("Please provide a reason.");
+      return;
+    }
 
-                {/* Reason Textarea */}
-                <div className="mt-4">
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">
-                        Reason for Cancellation <span className="text-red-500">*</span>
-                    </label>
+    handleCancelConfirm({
+      reasonType,
+      reason: reasonType === "Other" ? customReason : reasonType,
+    });
+  };
 
-                    <Textarea
-                        placeholder="Write your reason..."
-                        value={reason}
-                        onChange={(e) => {
-                            setReason(e.target.value);
-                            setError("");
-                        }}
-                        className="min-h-[90px] border-gray-300"
-                    />
+  const onClose = (state: boolean) => {
+    if (!state && !isLoading) {
+      setReasonType("");
+      setCustomReason("");
+      setOpen(false);
+    }
+  };
 
-                    {error && (
-                        <p className="text-red-600 text-xs mt-1">{error}</p>
-                    )}
-                </div>
+  return (
+    <AlertDialog open={open} onOpenChange={onClose}>
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-red-600">
+            {isConfirmed ? "Request Cancellation" : "Cancel Booking"}
+          </AlertDialogTitle>
 
-                <AlertDialogFooter>
-                    <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+          <AlertDialogDescription>
+            {isConfirmed
+              ? "Your request will be reviewed by the provider. Refund will be processed after approval or automatically after 7 days."
+              : "This booking will be cancelled immediately."}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
-                    <AlertDialogAction
-                        onClick={onConfirm}
-                        className="bg-red-600 hover:bg-red-700"
-                    >
-                        Yes, Cancel Booking
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
+        <div className="space-y-3">
+          <Label>Reason for cancellation *</Label>
+
+          <RadioGroup
+            value={reasonType}
+            onValueChange={setReasonType}
+            disabled={isLoading}
+          >
+            {CANCELLATION_REASONS.map((r) => (
+              <div key={r} className="flex items-center space-x-2">
+                <RadioGroupItem value={r} id={r} />
+                <Label htmlFor={r}>{r}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+
+          {reasonType === "Other" && (
+            <Textarea
+              placeholder="Describe your reason"
+              value={customReason}
+              disabled={isLoading}
+              onChange={(e) => setCustomReason(e.target.value)}
+            />
+          )}
+        </div>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isLoading}>
+            Keep Booking
+          </AlertDialogCancel>
+
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            {isLoading
+              ? isConfirmed
+                ? "Requesting..."
+                : "Cancelling..."
+              : isConfirmed
+              ? "Request Cancellation"
+              : "Confirm Cancellation"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 }

@@ -3,19 +3,19 @@ import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request) {
   try {
-    const { bookingId } = await req.json();
+    const { bookingId, reason, reasonType } = await req.json();
 
-    if (!bookingId) {
+    if (!bookingId || !reason || !reasonType) {
       return NextResponse.json(
-        { error: "Booking ID is required" },
+        { error: "Invalid cancellation request" },
         { status: 400 }
       );
     }
 
-    const { ok, data } = await backend(`/api/v1/payment/booking/cancel`, {
+    const { ok, data } = await backend(`/api/v1/customer/bookings/cancel`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookingId }),
+      body: JSON.stringify({ bookingId, reason, reasonType }),
     });
 
     if (!ok) {
@@ -25,10 +25,7 @@ export async function PATCH(req: Request) {
       );
     }
 
-    return NextResponse.json(
-      { message: "Booking cancelled successfully", data },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },

@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ExploreHeader from "./explore/exploreHeroSection";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // Large Components
@@ -32,15 +31,17 @@ export default function CustomerBookingsPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Cancel dialog
+  // Cancel dialog states
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
-  // feedback dialog
+  // Feedback dialog
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [selectedBookingForFeedback, setSelectedBookingForFeedback] =
     useState<any>(null);
 
+  /* ---------------- URL SYNC ---------------- */
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -55,14 +56,12 @@ export default function CustomerBookingsPage() {
     router.replace(newUrl, { scroll: false });
   }, [searchQuery, statusFilter, sortBy, router]);
 
-  // Fetch bookings
+  /* ---------------- FETCH BOOKINGS ---------------- */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["customer-bookings"],
     queryFn: async () => {
       const res = await fetch("/api/customer/booking", { cache: "no-store" });
-
       if (!res.ok) throw new Error("Failed to fetch bookings");
-
       const result = await res.json();
       return result?.bookings || [];
     },
@@ -70,7 +69,7 @@ export default function CustomerBookingsPage() {
 
   const bookings = data?.bookings || [];
 
-  // Filtering & Sorting Logic
+  /* ---------------- FILTER & SORT ---------------- */
   const filteredBookings = useMemo(() => {
     if (!bookings) return [];
 
@@ -90,30 +89,23 @@ export default function CustomerBookingsPage() {
       return matchesSearch && matchesStatus;
     });
 
-    // Sorting
     filtered.sort((a: any, b: any) => {
       switch (sortBy) {
-        case "date-desc":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
         case "date-asc":
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case "price-high":
           return b.totalAmount - a.totalAmount;
         case "price-low":
           return a.totalAmount - b.totalAmount;
         default:
-          return 0;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
     });
 
     return filtered;
   }, [bookings, searchQuery, statusFilter, sortBy]);
 
-  // Format helpers
+  /* ---------------- HELPERS ---------------- */
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("en-US", {
       weekday: "long",
@@ -125,8 +117,7 @@ export default function CustomerBookingsPage() {
   const formatTime = (time: string) => {
     const [h, m] = time.split(":");
     const hour = parseInt(h);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    return `${hour % 12 || 12}:${m} ${ampm}`;
+    return `${hour % 12 || 12}:${m} ${hour >= 12 ? "PM" : "AM"}`;
   };
 
   const formatDateTime = (date: string) =>
@@ -138,23 +129,21 @@ export default function CustomerBookingsPage() {
       minute: "2-digit",
     });
 
-  // Cancel booking functions
+  /* ---------------- ACTION HANDLERS ---------------- */
   const handleCancelClick = (booking: any) => {
     setSelectedBooking(booking);
     setCancelDialogOpen(true);
   };
+
   const handleFeedBackClick = (booking: any) => {
     setSelectedBookingForFeedback(booking);
     setFeedbackOpen(true);
   };
 
-  const handleCancelConfirm = async () => {
-    if (!selectedBooking) return;
+  const handleCancelConfirm = async ({ reason, reasonType }: any) => {
+    if (!selectedBooking || isCancelling) return;
 
-    if (selectedBooking.bookingStatus.toLowerCase() !== "pending") {
-      toast.warning("Only pending bookings can be cancelled.");
-      return;
-    }
+    setIsCancelling(true);
 
     try {
       const res = await fetch("/api/customer/booking/cancel", {
@@ -162,38 +151,41 @@ export default function CustomerBookingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: selectedBooking.id,
+          reason,
+          reasonType,
         }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.msg || data.error || "Cancellation failed");
+        toast.error(data.error || "Unable to cancel booking.");
         return;
       }
 
-      toast.success("Booking cancelled successfully!");
+      toast.success(
+        selectedBooking.bookingStatus === "CONFIRMED"
+          ? "Cancellation request sent. Refund will be processed after approval."
+          : "Booking cancelled successfully."
+      );
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["customer-bookings"],
       });
 
       setCancelDialogOpen(false);
       setSelectedBooking(null);
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong while cancelling.");
+    } finally {
+      setIsCancelling(false);
     }
   };
 
-  // Invoice download
-  const handleDownloadInvoice = (booking: any) => {};
-
-  // Calling provider
   const handleCall = (phone: string) => {
     window.location.href = `tel:${phone}`;
   };
 
-  // Copy handler
   const handleCopy = async (id: string, value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedField(id);
@@ -217,7 +209,6 @@ export default function CustomerBookingsPage() {
 
   return (
     <>
-      {/* Page Header */}
       <ExploreHeader
         totalServices={0}
         filteredCount={0}
@@ -230,7 +221,6 @@ export default function CustomerBookingsPage() {
 
       <div className="min-h-screen bg-muted/50 py-14 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Search Bar */}
           <div className="flex justify-between pb-10 gap-2">
             <div className="relative w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -257,7 +247,6 @@ export default function CustomerBookingsPage() {
           </div>
 
           <div className="flex flex-wrap gap-6">
-            {/* Sidebar */}
             <div className="hidden lg:block">
               <FiltersPanel
                 mobileFiltersOpen={mobileFiltersOpen}
@@ -272,7 +261,6 @@ export default function CustomerBookingsPage() {
               />
             </div>
 
-            {/* BOOKING LIST */}
             <div className="flex-1">
               <BookingList
                 isLoading={isLoading}
@@ -285,7 +273,6 @@ export default function CustomerBookingsPage() {
                 formatDateTime={formatDateTime}
                 handleCancelClick={handleCancelClick}
                 handleFeedBackClick={handleFeedBackClick}
-                handleDownloadInvoice={handleDownloadInvoice}
                 handleCall={handleCall}
               />
             </div>
@@ -293,16 +280,15 @@ export default function CustomerBookingsPage() {
         </div>
       </div>
 
-      {/* Cancel Booking Dialog */}
       <CancelBookingDialog
         open={cancelDialogOpen}
         setOpen={setCancelDialogOpen}
         selectedBooking={selectedBooking}
         handleCancelConfirm={handleCancelConfirm}
+        isLoading={isCancelling}
       />
 
-      {/* handle Feedback Dialog */}
-      {selectedBookingForFeedback !== null && (
+      {selectedBookingForFeedback && (
         <FeedbackDialog
           open={feedbackOpen}
           close={() => {

@@ -13,6 +13,11 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
 
+// Require field symbol
+const RequireField = () =>{
+  return <span className="text-red-500 -ml-1">*</span>;
+}
+
 export default function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +68,7 @@ export default function ResetPasswordForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-5">
         <div className="grid gap-2">
-          <Label htmlFor="newPassword">New Password</Label>
+          <Label htmlFor="newPassword">New Password <RequireField /></Label>
           <Input
             id="newPassword"
             type={showPassword ? "text" : "password"}
@@ -76,7 +81,7 @@ export default function ResetPasswordForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Confirm Password <RequireField /></Label>
           <Input
             id="confirmPassword"
             type={showPassword ? "text" : "password"}

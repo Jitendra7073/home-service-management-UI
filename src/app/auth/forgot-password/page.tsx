@@ -21,6 +21,11 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 
+// Require field symbol
+const RequireField = () =>{
+  return <span className="text-red-500 -ml-1">*</span>;
+}
+
 export default function ForgotPassword() {
    const router = useRouter();
   const {
@@ -84,7 +89,7 @@ export default function ForgotPassword() {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-2">
-                    <Label>Email Address</Label>
+                    <Label>Email Address <RequireField /></Label>
                     <Input
                       type="text"
                       placeholder="Enter your email"

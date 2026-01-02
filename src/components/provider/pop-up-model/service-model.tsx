@@ -22,34 +22,33 @@ const ServiceAwarenessModal = () => {
     },
   });
 
-
   const serviceCount =
     typeof data?.count === "number"
       ? data.count
       : Array.isArray(data)
-        ? data?.length
-        : 0;
+      ? data?.length
+      : 0;
 
   if (isLoading || isDismissed || serviceCount > 0) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-[320px] rounded-lg border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer" onClick={() => setServiceModelOpen(true)}>
+    <div
+      className="fixed bottom-4 right-4 z-50 w-[320px] rounded-lg border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer"
+      onClick={() => setServiceModelOpen(true)}>
       {/* Close Button */}
       <button
         onClick={() => setIsDismissed(true)}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-      >
+        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
         <X className="w-4 h-4" />
       </button>
 
-      <h3 className="text-sm font-semibold text-gray-900">
-        Complete your business setup
-      </h3>
+      <h3 className="text-sm font-medium text-gray-900">Add a service</h3>
 
       <p className="mt-1 text-xs text-gray-600">
-        Add at least one service to start your Business.
+        You haven’t added any services yet. Adding one helps customers
+        understand what you offer.
       </p>
     </div>
   );

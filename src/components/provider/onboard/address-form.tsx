@@ -40,6 +40,10 @@ const AddressSchema = z.object({
 
 type AddressFormValues = z.infer<typeof AddressSchema>;
 
+// Require field symbol
+const RequireField = () =>{
+  return <span className="text-red-500 -ml-1">*</span>;
+}
 const AddressForm = ({ onNext }: { onNext: () => void }) => {
   const [loading, setLoading] = useState(false);
 
@@ -112,7 +116,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="street"
               render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel>Street Address</FormLabel>
+                  <FormLabel>Street Address <RequireField /></FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. MG Road, Near Park" {...field} />
                   </FormControl>
@@ -127,7 +131,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City</FormLabel>
+                  <FormLabel>City <RequireField /></FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="City" {...field} />
                   </FormControl>
@@ -142,7 +146,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>State</FormLabel>
+                  <FormLabel>State <RequireField /></FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="State / Province" {...field} />
                   </FormControl>
@@ -157,7 +161,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="postalCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Postal Code</FormLabel>
+                  <FormLabel>Postal Code <RequireField /></FormLabel>
                   <FormControl>
                     <Input type="text" placeholder="ZIP / Postal Code" {...field} />
                   </FormControl>
@@ -172,7 +176,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel>Country <RequireField /></FormLabel>
                   <FormControl>
                     <Input type="text" max={45} placeholder="India" {...field} />
                   </FormControl>
@@ -187,7 +191,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address Type</FormLabel>
+                  <FormLabel>Address Type <RequireField /></FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -214,7 +218,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               name="landmark"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Landmark (optional)</FormLabel>
+                  <FormLabel>Landmark</FormLabel>
                   <FormControl>
                     <Input placeholder="Near ABC Mall" {...field} />
                   </FormControl>

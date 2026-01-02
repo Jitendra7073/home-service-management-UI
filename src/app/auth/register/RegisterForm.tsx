@@ -20,10 +20,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { User, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+
+// Require field symbol
+const RequireField = () =>{
+  return <span className="text-red-500 -ml-1">*</span>;
+}
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -136,7 +140,7 @@ export default function RegisterForm() {
 
                 {/* Name */}
                 <div className="md:col-span-2">
-                  <Label className="pb-2">Full Name</Label>
+                  <Label className="pb-2">Full Name <RequireField /></Label>
                   <Input
                     type="text"
                     placeholder="John Doe"
@@ -151,7 +155,7 @@ export default function RegisterForm() {
 
                 {/* Email */}
                 <div>
-                  <Label className="pb-2">Email</Label>
+                  <Label className="pb-2">Email <RequireField /></Label>
                   <Input
                     type="text"
                     placeholder="example@gmail.com"
@@ -166,7 +170,7 @@ export default function RegisterForm() {
 
                 {/* Mobile */}
                 <div>
-                  <Label className="pb-2">Mobile</Label>
+                  <Label className="pb-2">Mobile <RequireField /></Label>
                   <Input
                     type="number"
                     placeholder="9876543210"
@@ -181,7 +185,7 @@ export default function RegisterForm() {
 
                 {/* Password */}
                 <div>
-                  <Label className="pb-2">Password</Label>
+                  <Label className="pb-2">Password <RequireField /></Label>
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"
@@ -196,7 +200,7 @@ export default function RegisterForm() {
 
                 {/* Confirm Password */}
                 <div>
-                  <Label className="pb-2">Confirm Password</Label>
+                  <Label className="pb-2">Confirm Password <RequireField /></Label>
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"

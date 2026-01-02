@@ -19,6 +19,11 @@ interface LoginValues {
   password: string;
 }
 
+// Require field symbol
+const RequireField = () => {
+  return <span className="text-red-500 -ml-1">*</span>;
+};
+
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -55,8 +60,6 @@ export default function LoginForm() {
         return;
       }
 
-      // Note: Tokens are now handled via httpOnly cookies
-      // No need to manually store tokens in localStorage
       toast.success("Login successful!");
       router.push("/customer");
     } catch (err: any) {
@@ -68,7 +71,9 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       {/* Email */}
       <div className="grid gap-2">
-        <Label>Email</Label>
+        <Label>
+          Email <RequireField />
+        </Label>
         <Input
           type="text"
           placeholder="Enter your email"
@@ -82,7 +87,9 @@ export default function LoginForm() {
       {/* Password */}
       <div className="grid gap-2">
         <div className="flex items-center">
-          <Label>Password</Label>
+          <Label>
+            Password <RequireField />
+          </Label>
           <Link
             href="/auth/forgot-password"
             className="ml-auto text-sm text-muted-foreground hover:underline">

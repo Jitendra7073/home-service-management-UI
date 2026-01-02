@@ -21,7 +21,7 @@ export default function CopyField({
             onClick={() => onCopy(id, value)}
         >
             <p className="text-xs font-mono text-gray-600 break-all">
-                {value.slice(0, 12)}...
+                {value && value.slice(0, 12)}...
             </p>
 
             {isCopied ? (

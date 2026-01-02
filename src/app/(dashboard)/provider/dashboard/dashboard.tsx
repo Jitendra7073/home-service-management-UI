@@ -9,9 +9,7 @@ import ServicesTable from "@/components/provider/dashboard/services-table";
 import Welcome from "@/components/provider/dashboard/welcome";
 import { useQuery } from "@tanstack/react-query";
 
-
 const DashboardComponents = () => {
-
   const { data, isLoading, isPending, isError, error } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
@@ -88,7 +86,10 @@ const DashboardComponents = () => {
           {["premimum", "pro"].some((keyword) =>
             plans?.name?.toLowerCase().includes(keyword)
           ) ? (
-            <BookingTable />
+            <section className="space-y-6">
+                <BookingTable />
+                <FeedbackTable />
+            </section>
           ) : (
             <ServicesTable />
           )}

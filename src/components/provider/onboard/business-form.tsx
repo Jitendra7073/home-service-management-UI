@@ -58,6 +58,12 @@ const BusinessSchema = z.object({
 
 type BusinessFormValues = z.infer<typeof BusinessSchema>;
 
+
+// Require field symbol
+const RequireField = () =>{
+  return <span className="text-red-500 -ml-1">*</span>;
+}
+
 export default function BusinessProfileForm({
   onNext,
 }: {
@@ -238,7 +244,7 @@ export default function BusinessProfileForm({
               render={({ field }) => (
                 <FormItem className="sm:col-span-2">
                   <FormLabel>
-                    Business Name <Required />
+                    Business Name <RequireField />
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -258,7 +264,7 @@ export default function BusinessProfileForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Category <Required />
+                    Category <RequireField />
                   </FormLabel>
 
                   <Select onValueChange={field.onChange}>
@@ -293,7 +299,7 @@ export default function BusinessProfileForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Contact Email <Required />
+                    Contact Email <RequireField />
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="example@gmail.com" {...field} />
@@ -310,7 +316,7 @@ export default function BusinessProfileForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Phone Number <Required />
+                    Phone Number <RequireField />
                   </FormLabel>
                   <FormControl>
                     <Input placeholder="+91 9876543210" {...field} />
@@ -429,7 +435,3 @@ export default function BusinessProfileForm({
     </div>
   );
 }
-
-const Required = () => {
-  return <span className="text-red-400 -ml-1">*</span>;
-};

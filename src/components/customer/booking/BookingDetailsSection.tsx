@@ -11,6 +11,7 @@ import {
   Smile,
   CheckCircle,
   CreditCard,
+  Cross,
 } from "lucide-react";
 import CopyField from "@/components/customer/booking/CopyField";
 import { PaymentStatusBadge } from "./StatusBadge";
@@ -61,8 +62,29 @@ export default function BookingDetailsSection({
     return () => clearInterval(interval);
   }, [isPendingPayment]);
 
-  const isExpired =
-    timeLeft.minutes * 60 + timeLeft.seconds <= 0;
+  const isExpired = timeLeft.minutes * 60 + timeLeft.seconds <= 0;
+
+  /* ------------------------- BOOKING ACTIONS ------------------------- */
+  const getBookingActions = (booking: any) => {
+    switch (booking.bookingStatus) {
+      case "PENDING":
+      case "PENDING_PAYMENT":
+      case "CONFIRMED":
+        return { canCancel: true, canCall: true, canGiveFeedback: false };
+
+      case "CANCEL_REQUESTED":
+        return { canCancel: false, canCall: true, canGiveFeedback: false };
+
+      case "CANCELLED":
+        return { canCancel: false, canCall: true, canGiveFeedback: false };
+
+      case "COMPLETED":
+        return { canCancel: false, canCall: false, canGiveFeedback: true };
+
+      default:
+        return { canCancel: false, canCall: false, canGiveFeedback: false };
+    }
+  };
 
   return (
     <div className="border-t border-gray-100 pt-4">
@@ -90,8 +112,7 @@ export default function BookingDetailsSection({
                   }}
                   disabled={isExpired}
                   className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4 disabled:bg-gray-600 disabled:cursor-not-allowed"
-                  size="sm"
-                >
+                  size="sm">
                   <CreditCard className="w-4 h-4" />
                   Pay Now
                 </Button>
@@ -239,50 +260,61 @@ export default function BookingDetailsSection({
           {/* ------------------------- FOOTER ------------------------- */}
           <div className="flex justify-between items-center py-2">
             <div className="flex flex-wrap gap-2 border-t border-gray-100">
-              {booking.bookingStatus === "PENDING" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCancelClick(booking)}
-                  className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50">
-                  <X className="w-4 h-4" />
-                  Cancel Booking
-                </Button>
-              )}
+              {(() => {
+                const actions = getBookingActions(booking);
 
-              {booking.bookingStatus !== "CANCELLED" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleCall(business?.phone)}
-                  className="flex items-center gap-2 border-gray-300">
-                  <Phone className="w-4 h-4" />
-                  Call Provider
-                </Button>
-              )}
+                return (
+                  <>
+                    {/* Cancel Booking */}
+                    {actions.canCancel && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCancelClick(booking)}
+                        className="flex items-center gap-2 border-red-300 text-red-700 hover:bg-red-50">
+                        <X className="w-4 h-4" />
+                        Cancel Booking
+                      </Button>
+                    )}
 
-              {booking.bookingStatus === "COMPLETED" && (
-                <Button
-                  variant={
-                    booking?.isFeedbackProvided ? "secondary" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => handleFeedBackClick(booking?.id)}
-                  disabled={booking?.isFeedbackProvided}
-                  className="flex items-center gap-2">
-                  {booking?.isFeedbackProvided ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                      Feedback Submitted
-                    </>
-                  ) : (
-                    <>
-                      <Smile className="w-4 h-4" />
-                      Give Feedback
-                    </>
-                  )}
-                </Button>
-              )}
+                    {/* Call Provider */}
+                    {actions.canCall && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleCall(business?.phone)}
+                        className="flex items-center gap-2 border-gray-300">
+                        <Phone className="w-4 h-4" />
+                        Call Provider
+                      </Button>
+                    )}
+
+                    {/* Feedback */}
+                    {actions.canGiveFeedback && (
+                      <Button
+                        variant={
+                          booking.isFeedbackProvided ? "secondary" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => handleFeedBackClick(booking.id)}
+                        disabled={booking.isFeedbackProvided}
+                        className="flex items-center gap-2">
+                        {booking.isFeedbackProvided ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            Feedback Submitted
+                          </>
+                        ) : (
+                          <>
+                            <Smile className="w-4 h-4" />
+                            Give Feedback
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </>
+                );
+              })()}
             </div>
 
             <PaymentStatusBadge status={booking.paymentStatus} />
