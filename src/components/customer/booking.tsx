@@ -163,11 +163,22 @@ export default function CustomerBookingsPage() {
         return;
       }
 
-      toast.success(
-        selectedBooking.bookingStatus === "CONFIRMED"
-          ? "Cancellation request sent. Refund will be processed after approval."
-          : "Booking cancelled successfully."
-      );
+      // Show detailed success message with refund info
+      const refundInfo = data.data;
+
+      if (refundInfo && refundInfo.refundAmount > 0) {
+        toast.success(
+          `Booking cancelled successfully! Refund of ₹${refundInfo.refundAmount} is being processed.${refundInfo.cancellationFee > 0
+            ? ` (Cancellation fee: ₹${refundInfo.cancellationFee})`
+            : ""
+          }`,
+          {
+            duration: 6000,
+          }
+        );
+      } else {
+        toast.success("Booking cancelled successfully!");
+      }
 
       await queryClient.invalidateQueries({
         queryKey: ["customer-bookings"],

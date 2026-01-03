@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { backend } from "@/lib/backend";
-import { headers } from "next/headers";
 
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { ok, status, data, headers } = await backend("/auth/register", {
+  const backendRes = await backend("/auth/register", {
     method: "POST",
     credentials: "include",
     headers: {
@@ -14,15 +13,17 @@ export async function POST(req: Request) {
     body: JSON.stringify(body),
   });
 
-  const response = NextResponse.json(data, {
-    status: status ?? (ok ? 200 : 400),
+  const response = NextResponse.json(backendRes.data, {
+    status: backendRes.status ?? (backendRes.ok ? 200 : 400),
   });
 
-  // Forward Set-Cookie headers from backend
-  const setCookies = headers.get("set-cookie");
-  if (setCookies) {
-    response.headers.set("set-cookie", setCookies);
+  // Forward all Set-Cookie headers from backend
+  if (backendRes.headers) {
+    const setCookieHeader = backendRes.headers.get("set-cookie");
+    if (setCookieHeader) {
+      response.headers.set("set-cookie", setCookieHeader);
+    }
   }
 
-  return NextResponse.json(data, { status });
+  return response;
 }

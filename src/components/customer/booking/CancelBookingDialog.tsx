@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -15,15 +14,42 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import {
+  Clock,
+  Wallet,
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
+
+/* ---------------- CONSTANTS ---------------- */
 
 const CANCELLATION_REASONS = [
   "Change of plans",
   "Booked by mistake",
   "Service no longer needed",
-  "Found a better option",
-  "Provider requested cancellation",
+  "Emergency",
   "Other",
 ];
+
+/* ---------------- HELPERS ---------------- */
+
+const formatDuration = (totalMinutes: number) => {
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+
+  const parts: string[] = [];
+
+  if (days > 0) parts.push(`${days} day${days > 1 ? "s" : ""}`);
+  if (hours > 0) parts.push(`${hours} hr${hours > 1 ? "s" : ""}`);
+  if (minutes > 0 && days === 0) parts.push(`${minutes} min`);
+
+  return parts.join(" ");
+};
+
+/* ---------------- COMPONENT ---------------- */
 
 export default function CancelBookingDialog({
   open,
@@ -32,16 +58,93 @@ export default function CancelBookingDialog({
   handleCancelConfirm,
   isLoading,
 }: any) {
+  console.log("CancelBookingDialog render", selectedBooking);
   const [reasonType, setReasonType] = useState("");
   const [customReason, setCustomReason] = useState("");
 
-  const isConfirmed = selectedBooking?.bookingStatus === "CONFIRMED";
+  if (!selectedBooking) return null;
 
+  /* ---------------- SERVICE START TIME ---------------- */
+  const serviceStart = useMemo(() => {
+    if (!selectedBooking.date || !selectedBooking.slot?.time) return null;
+
+    // Parse slot time (e.g., "10:30 AM" or "2:45 PM")
+    const [time, modifier] = selectedBooking.slot.time.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    // Convert to 24-hour format
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    // Create date object with booking date + slot time
+    const serviceDate = new Date(selectedBooking.date);
+    serviceDate.setHours(hours, minutes, 0, 0);
+
+    return serviceDate;
+  }, [selectedBooking]);
+
+  const minutesBeforeService = useMemo(() => {
+    if (!serviceStart) return 0;
+    return Math.max(
+      Math.floor((serviceStart.getTime() - Date.now()) / (1000 * 60)),
+      0
+    );
+  }, [serviceStart]);
+
+  const hoursBeforeService = useMemo(() => {
+    return Math.floor(minutesBeforeService / 60);
+  }, [minutesBeforeService]);
+
+  /* ---------------- CANCELLATION POLICY ---------------- */
+  const policy = useMemo(() => {
+    if (minutesBeforeService >= 1440) {
+      return {
+        percentage: 0,
+        label: "Free cancellation",
+        note: "Cancelled more than 24 hours before service.",
+      };
+    }
+
+    if (minutesBeforeService >= 720) {
+      return {
+        percentage: 10,
+        label: "Low cancellation charge",
+        note: "Cancelled 12–24 hours before service.",
+      };
+    }
+
+    if (minutesBeforeService >= 240) {
+      return {
+        percentage: 25,
+        label: "Moderate cancellation charge",
+        note: "Cancelled 4–12 hours before service.",
+      };
+    }
+
+    return {
+      percentage: 50,
+      label: "High cancellation charge",
+      note: "Cancelled less than 4 hours before service.",
+    };
+  }, [minutesBeforeService]);
+
+  /* ---------------- AMOUNT CALCULATION ---------------- */
+  const cancellationFee =
+    selectedBooking.paymentStatus === "PAID"
+      ? Math.round(
+        (selectedBooking.totalAmount * policy.percentage) / 100
+      )
+      : 0;
+
+  const refundAmount =
+    selectedBooking.paymentStatus === "PAID"
+      ? selectedBooking.totalAmount - cancellationFee
+      : 0;
+
+  /* ---------------- CONFIRM HANDLER ---------------- */
   const onConfirm = () => {
-    if (isLoading) return;
-
     if (!reasonType) {
-      toast.error("Please select a reason.");
+      toast.error("Please select a reason for cancellation.");
       return;
     }
 
@@ -56,72 +159,213 @@ export default function CancelBookingDialog({
     });
   };
 
-  const onClose = (state: boolean) => {
-    if (!state && !isLoading) {
-      setReasonType("");
-      setCustomReason("");
-      setOpen(false);
-    }
-  };
-
+  /* ---------------- UI ---------------- */
   return (
-    <AlertDialog open={open} onOpenChange={onClose}>
-      <AlertDialogContent className="sm:max-w-md">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-red-600">
-            {isConfirmed ? "Request Cancellation" : "Cancel Booking"}
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] rounded-xl overflow-hidden flex flex-col">
+        {/* Fixed Header */}
+        <AlertDialogHeader className="flex-shrink-0 pb-3">
+          <AlertDialogTitle className="text-red-600 flex items-center gap-2 text-lg">
+            <AlertTriangle className="w-5 h-5" />
+            Cancel Booking
           </AlertDialogTitle>
 
-          <AlertDialogDescription>
-            {isConfirmed
-              ? "Your request will be reviewed by the provider. Refund will be processed after approval or automatically after 7 days."
-              : "This booking will be cancelled immediately."}
-          </AlertDialogDescription>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">
+                {selectedBooking.service?.name}
+              </p>
+              {selectedBooking.business?.name && (
+                <p className="text-xs text-gray-500">
+                  Provider: {selectedBooking.business.name}
+                </p>
+              )}
+            </div>
+          </div>
         </AlertDialogHeader>
 
-        <div className="space-y-3">
-          <Label>Reason for cancellation *</Label>
-
-          <RadioGroup
-            value={reasonType}
-            onValueChange={setReasonType}
-            disabled={isLoading}
-          >
-            {CANCELLATION_REASONS.map((r) => (
-              <div key={r} className="flex items-center space-x-2">
-                <RadioGroupItem value={r} id={r} />
-                <Label htmlFor={r}>{r}</Label>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-1 space-y-4">
+          {/* Service Time Info */}
+          {serviceStart && (
+            <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
+              <div className="flex items-center gap-2 text-blue-900 font-semibold text-sm mb-2">
+                <Calendar className="w-4 h-4" />
+                Service Scheduled For
               </div>
-            ))}
-          </RadioGroup>
-
-          {reasonType === "Other" && (
-            <Textarea
-              placeholder="Describe your reason"
-              value={customReason}
-              disabled={isLoading}
-              onChange={(e) => setCustomReason(e.target.value)}
-            />
+              <p className="text-xs sm:text-sm text-blue-800">
+                {serviceStart.toLocaleString("en-IN", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                {" at "}
+                <span className="font-bold text-base">{selectedBooking.slot?.time}</span>
+              </p>
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-700 bg-blue-100 px-2 py-1.5 rounded-md mt-2">
+                <Clock className="w-4 h-4" />
+                <span className="font-medium">
+                  {hoursBeforeService > 0 && `${hoursBeforeService}h `}
+                  {minutesBeforeService % 60}m remaining
+                </span>
+              </div>
+            </div>
           )}
+
+          {/* Grid Layout: Policy & Payment Side by Side on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {/* Cancellation Policy Card */}
+            <div className={`rounded-lg border-2 p-3 ${policy.percentage === 0
+              ? "border-green-200 bg-green-50"
+              : policy.percentage <= 10
+                ? "border-yellow-200 bg-yellow-50"
+                : policy.percentage <= 25
+                  ? "border-orange-200 bg-orange-50"
+                  : "border-red-200 bg-red-50"
+              }`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className={`flex items-center gap-1.5 font-semibold text-sm ${policy.percentage === 0
+                  ? "text-green-800"
+                  : policy.percentage <= 10
+                    ? "text-yellow-800"
+                    : policy.percentage <= 25
+                      ? "text-orange-800"
+                      : "text-red-800"
+                  }`}>
+                  <Wallet className="w-4 h-4" />
+                  {policy.label}
+                </div>
+                <span className={`text-xl sm:text-2xl font-bold ${policy.percentage === 0
+                  ? "text-green-700"
+                  : policy.percentage <= 10
+                    ? "text-yellow-700"
+                    : policy.percentage <= 25
+                      ? "text-orange-700"
+                      : "text-red-700"
+                  }`}>
+                  {policy.percentage}%
+                </span>
+              </div>
+
+              <p className={`text-xs sm:text-sm font-medium ${policy.percentage === 0
+                ? "text-green-700"
+                : policy.percentage <= 10
+                  ? "text-yellow-700"
+                  : policy.percentage <= 25
+                    ? "text-orange-700"
+                    : "text-red-700"
+                }`}>
+                {policy.note}
+              </p>
+
+              {/* Compact Platform Policy Rules */}
+              <div className="border-t pt-2 mt-2">
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5">Platform Policy:</p>
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] sm:text-xs">
+                  <span className="text-gray-600">&gt;24h:</span>
+                  <span className="font-medium text-green-600">0%</span>
+                  <span className="text-gray-600">12-24h:</span>
+                  <span className="font-medium text-yellow-600">10%</span>
+                  <span className="text-gray-600">4-12h:</span>
+                  <span className="font-medium text-orange-600">25%</span>
+                  <span className="text-gray-600">&lt;4h:</span>
+                  <span className="font-medium text-red-600">50%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Summary Card */}
+            {selectedBooking.paymentStatus === "PAID" ? (
+              <div className="rounded-lg border-2 border-gray-300 bg-white p-3">
+                <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm mb-3">
+                  <Wallet className="w-4 h-4" />
+                  Refund Breakdown
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-xs sm:text-sm">
+                    <span className="text-gray-600">Amount Paid</span>
+                    <span className="font-semibold text-gray-900">₹{selectedBooking.totalAmount}</span>
+                  </div>
+
+                  {cancellationFee > 0 && (
+                    <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
+                      <span className="text-red-600 font-medium">
+                        Fee ({policy.percentage}%)
+                      </span>
+                      <span className="font-bold text-red-600">- ₹{cancellationFee}</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center bg-green-50 p-2 rounded-lg border-2 border-green-200">
+                    <span className="font-bold text-green-800 text-xs sm:text-sm">You'll Receive</span>
+                    <span className="font-bold text-green-700 text-lg sm:text-xl">₹{refundAmount}</span>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 p-2 rounded-lg mt-3">
+                  <p className="text-[10px] sm:text-xs text-blue-800 flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" />
+                    <span>
+                      Auto-refund in <strong>5-7 days</strong>. No approval needed.
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-blue-900 text-sm mb-1">No Payment</p>
+                    <p className="text-xs text-blue-700">
+                      Cancelled immediately with no charges.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Reason Selection - Compact */}
+          <div className="space-y-2">
+            <Label className="text-sm">
+              Reason for cancellation <span className="text-red-500">*</span>
+            </Label>
+
+            <RadioGroup value={reasonType} onValueChange={setReasonType} className="space-y-2">
+              {CANCELLATION_REASONS.map((r) => (
+                <div key={r} className="flex items-center space-x-2">
+                  <RadioGroupItem value={r} id={r} />
+                  <Label htmlFor={r} className="text-sm cursor-pointer">{r}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            {reasonType === "Other" && (
+              <Textarea
+                placeholder="Please describe your reason"
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                className="text-sm min-h-[60px]"
+              />
+            )}
+          </div>
         </div>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>
+        {/* Fixed Footer */}
+        <AlertDialogFooter className="flex-shrink-0 pt-4 mt-2 border-t gap-2">
+          <AlertDialogCancel disabled={isLoading} className="text-sm">
             Keep Booking
           </AlertDialogCancel>
 
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 hover:bg-red-700 text-sm"
           >
-            {isLoading
-              ? isConfirmed
-                ? "Requesting..."
-                : "Cancelling..."
-              : isConfirmed
-              ? "Request Cancellation"
-              : "Confirm Cancellation"}
+            {isLoading ? "Cancelling..." : "Confirm Cancellation"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

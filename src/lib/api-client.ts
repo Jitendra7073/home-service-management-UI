@@ -29,33 +29,46 @@ class ApiClient {
 
     // Note: Tokens are now handled via httpOnly cookies
     // No need to manually attach Authorization header
-    // Middleware will handle token refresh automatically
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      credentials: "include", // Sends cookies automatically
-    });
+    const makeRequest = async (): Promise<Response> => {
+      return await fetch(url, {
+        ...options,
+        headers,
+        credentials: "include", // Sends cookies automatically
+      });
+    };
 
-    if (response.status === 401) {
-      // Check if response contains refreshRequired flag
-      let refreshRequired = false;
+    let response = await makeRequest();
+
+    // If 401, try to refresh token once
+    if (response.status === 401 && !endpoint.includes("/auth/")) {
       try {
-        const text = await response.text();
-        if (text) {
-          const data = JSON.parse(text);
-          refreshRequired = data.refreshRequired || false;
-        }
-      } catch {
-        // If parsing fails, proceed with default behavior
-      }
+        // Attempt token refresh
+        const refreshResponse = await fetch("/api/auth/refresh-session", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      // Middleware handles token refresh automatically
-      // Just redirect to login on 401
-      if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
-        window.location.href = "/auth/login";
+        if (refreshResponse.ok) {
+          // Retry original request with new token
+          response = await makeRequest();
+        } else {
+          // Refresh failed, redirect to login
+          if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
+            window.location.href = "/auth/login";
+          }
+          throw new Error("Session expired. Please login again.");
+        }
+      } catch (error) {
+        // Refresh failed, redirect to login
+        if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
+          window.location.href = "/auth/login";
+        }
+        throw new Error("Session expired. Please login again.");
       }
-      throw new Error("Authentication failed");
     }
 
     const text = await response.text();

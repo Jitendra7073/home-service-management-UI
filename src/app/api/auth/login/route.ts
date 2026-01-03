@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { ok, status, data, headers } = await backend("/auth/login", {
+    const backendRes = await backend("/auth/login", {
       method: "POST",
       body: JSON.stringify(body),
       credentials: "include",
@@ -14,14 +14,16 @@ export async function POST(req: Request) {
       },
     });
 
-    const response = NextResponse.json(data, {
-      status: status ?? (ok ? 200 : 400),
+    const response = NextResponse.json(backendRes.data, {
+      status: backendRes.status ?? (backendRes.ok ? 200 : 400),
     });
 
     // Forward Set-Cookie headers from backend
-    const setCookies = headers.get("set-cookie");
-    if (setCookies) {
-      response.headers.set("set-cookie", setCookies);
+    if (backendRes.headers) {
+      const setCookieHeader = backendRes.headers.get("set-cookie");
+      if (setCookieHeader) {
+        response.headers.set("set-cookie", setCookieHeader);
+      }
     }
 
     return response;

@@ -61,7 +61,12 @@ export default function LoginForm() {
       }
 
       toast.success("Login successful!");
-      router.push("/customer");
+      // Redirect based on role returned from backend
+      const redirectPath = json?.role === "provider" ? "/provider/dashboard" : "/customer";
+      // Small delay to ensure cookies are set
+      setTimeout(() => {
+        router.push(redirectPath);
+      }, 500);
     } catch (err: any) {
       toast.error(err?.message || "Something went wrong");
     }

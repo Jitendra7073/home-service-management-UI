@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
 
 // Require field symbol
-const RequireField = () =>{
+const RequireField = () => {
   return <span className="text-red-500 -ml-1">*</span>;
 }
 
@@ -73,15 +73,21 @@ export default function RegisterForm() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Ensure cookies are included
       });
 
       const result = await res.json();
 
       if (res.ok) {
         toast.success(
-          result.message || "Registration successful! Please login."
+          result.message || "Registration successful! Auto-logging in..."
         );
-        router.push("/auth/login");
+        // Auto-redirect to dashboard based on role
+        const redirectPath = data.role === "provider" ? "/provider/dashboard" : "/customer";
+        // Small delay to ensure cookies are set
+        setTimeout(() => {
+          router.push(redirectPath);
+        }, 500);
         return;
       }
 
