@@ -67,6 +67,8 @@ export default function CustomerBookingsPage() {
     },
   });
 
+  console.log("Fetched bookings data:", data);
+
   const bookings = data?.bookings || [];
 
   /* ---------------- FILTER & SORT ---------------- */

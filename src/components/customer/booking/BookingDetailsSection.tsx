@@ -39,24 +39,19 @@ export default function BookingDetailsSection({
   const { data: cancellationData, isLoading: isCancellationLoading, error: cancellationError } = useQuery({
     queryKey: ["cancellation", booking.id],
     queryFn: async () => {
-      console.log("🔍 Fetching cancellation for booking:", booking.id);
 
       if (booking.bookingStatus !== "CANCELLED" && booking.bookingStatus !== "CANCEL_REQUESTED") {
-        console.log("⏭️ Skipping fetch - booking not cancelled");
         return null;
       }
 
       const res = await fetch(`/api/customer/booking/${booking.id}/cancellation`);
-      console.log("📡 API Response status:", res.status, res.ok);
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error("❌ API Error:", errorText);
         return null;
       }
 
       const data = await res.json();
-      console.log("✅ Cancellation data received:", data);
       return data;
     },
     enabled: booking.bookingStatus === "CANCELLED" || booking.bookingStatus === "CANCEL_REQUESTED",
@@ -65,18 +60,6 @@ export default function BookingDetailsSection({
   });
 
   const cancellation = cancellationData?.cancellation;
-
-  // Debug logging
-  console.log("📊 BookingDetailsSection Debug:", {
-    bookingId: booking.id,
-    bookingStatus: booking.bookingStatus,
-    isCancellationLoading,
-    cancellationError: cancellationError?.message,
-    cancellationDataFetched: !!cancellationData,
-    cancellationExists: !!cancellation,
-    cancellationData: cancellation,
-    fullResponse: cancellationData,
-  });
 
   const isPendingPayment =
     booking.paymentStatus === "PENDING" &&

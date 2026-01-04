@@ -26,15 +26,13 @@ export default function BookingAccordionItem({
   const businessPhone = booking.business?.phone || "N/A";
   const amount = booking.totalAmount || 0;
 
-  console.log(booking);
-
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
         value={booking.id}
         className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
-            <div className="relative flex items-center justify-between w-full pr-4">
+          <div className="relative flex items-center justify-between w-full pr-4">
             {/* LEFT SECTION */}
             <div className="flex items-start gap-4 flex-1">
               {/* Icon */}
@@ -81,7 +79,7 @@ export default function BookingAccordionItem({
             </div>
 
           </div>
-           
+
         </AccordionTrigger>
 
         {/* DETAILS SECTION */}

@@ -20,7 +20,6 @@ const OtherServicesGrid = ({
   if (otherServices.length === 0) return null;
 
   const router = useRouter();
-  console.log()
 
   const handleRedirecting = (service: any) => {
     router.push(
@@ -42,12 +41,12 @@ const OtherServicesGrid = ({
             onClick={() => handleRedirecting(s)}>
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-sm font-bold text-gray-900 line-clamp-2">
-              {s.name}
-            </h3>
-            <ChevronRight
-              className="w-4 h-4 text-blue-600 opacity-0
+                {s.name}
+              </h3>
+              <ChevronRight
+                className="w-4 h-4 text-blue-600 opacity-0
                            group-hover:opacity-100 transition-opacity"
-            />
+              />
             </div>
             <p className="text-xs text-gray-600 line-clamp-2 mb-4">
               {s.category.description}
@@ -59,19 +58,19 @@ const OtherServicesGrid = ({
               <div className="flex items-center gap-1 text-xs text-gray-800">
                 <Clock className="w-4 h-4" />
                 <span>{
-                        (s.durationInMinutes / 60)
-                          .toFixed(2)
-                          .split(".")[0]
-                      }{s.durationInMinutes < 60 ? "Min" : "Hrs"} {
-                        (s.durationInMinutes / 60)
-                          .toFixed(2)
-                          .split(".")[1] == "00"
-                          ? ""
-                          :(s.durationInMinutes / 60)
-                              .toFixed(2)
-                              .split(".")[1] + " Min"
-                      }
-                      </span>
+                  (s.durationInMinutes / 60)
+                    .toFixed(2)
+                    .split(".")[0]
+                }{s.durationInMinutes < 60 ? "Min" : "Hrs"} {
+                    (s.durationInMinutes / 60)
+                      .toFixed(2)
+                      .split(".")[1] == "00"
+                      ? ""
+                      : (s.durationInMinutes / 60)
+                        .toFixed(2)
+                        .split(".")[1] + " Min"
+                  }
+                </span>
               </div>
             </div>
           </div>

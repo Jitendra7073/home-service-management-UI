@@ -58,7 +58,6 @@ export default function CancelBookingDialog({
   handleCancelConfirm,
   isLoading,
 }: any) {
-  console.log("CancelBookingDialog render", selectedBooking);
   const [reasonType, setReasonType] = useState("");
   const [customReason, setCustomReason] = useState("");
 
