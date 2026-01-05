@@ -139,6 +139,21 @@ const Explore: React.FC = () => {
     return Array.from(cats);
   }, [providers]);
 
+  // Provider Cities
+  const providerCities = useMemo<string[]>(() => {
+    const cities = new Set<string>();
+
+    providers.forEach((provider) => {
+      provider.addresses?.forEach((address) => {
+        if (address.city) {
+          cities.add(address.city);
+        }
+      });
+    });
+
+    return Array.from(cities).sort();
+  }, [providers]);
+
   const updatePage = (newPage: number) => {
     setPage(newPage);
   };
@@ -180,9 +195,16 @@ const Explore: React.FC = () => {
           ? service.price >= priceRange[0] && service.price <= priceRange[1]
           : true;
 
-      return matchesSearch && matchesCategory && matchesPrice;
+      // City filter
+      const matchesCity = (() => {
+        if (!selectedState) return true;
+        const provider = providers.find((p) => p.id === service.providerId);
+        return provider?.addresses?.some((addr) => addr.city === selectedState) || false;
+      })();
+
+      return matchesSearch && matchesCategory && matchesPrice && matchesCity;
     });
-  }, [allServices, searchTerm, selectedCategories, priceRange]);
+  }, [allServices, searchTerm, selectedCategories, priceRange, selectedState, providers]);
 
   const totalPages = Math.ceil(filteredServices.length / limit);
 
@@ -192,6 +214,11 @@ const Explore: React.FC = () => {
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     );
+    setPage(1);
+  };
+
+  const handleCityChange = (city: string): void => {
+    setSelectedState(city);
     setPage(1);
   };
 
@@ -251,6 +278,9 @@ const Explore: React.FC = () => {
                 onClearFilters={clearFilters}
                 mobileFilterOpen={mobileFilterOpen}
                 setMobileFilterOpen={setMobileFilterOpen}
+                cities={providerCities}
+                selectedCity={selectedState}
+                onCityChange={handleCityChange}
               />
             </div>
           </div>
@@ -266,6 +296,9 @@ const Explore: React.FC = () => {
                 onClearFilters={clearFilters}
                 mobileFilterOpen={mobileFilterOpen}
                 setMobileFilterOpen={setMobileFilterOpen}
+                cities={providerCities}
+                selectedCity={selectedState}
+                onCityChange={handleCityChange}
               />
             </div>
             <div className="lg:col-span-3">

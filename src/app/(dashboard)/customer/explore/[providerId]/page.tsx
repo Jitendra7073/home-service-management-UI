@@ -258,7 +258,7 @@ export default function ServiceDetailPage() {
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
-                      label="Duration"
+                      label="Estimate Timeline"
                       value={`${
                         (service.durationInMinutes / 60)
                           .toFixed(2)
@@ -467,7 +467,7 @@ export default function ServiceDetailPage() {
                 <div className="space-y-3 pb-4 border-b">
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
-                    label="Duration"
+                    label="Estimate Timeline"
                     value={`${
                       (service.durationInMinutes / 60).toFixed(2).split(".")[0]
                     } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${

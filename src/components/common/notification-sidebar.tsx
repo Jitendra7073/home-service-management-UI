@@ -12,10 +12,8 @@ import { Button } from "@/components/ui/button";
 import {
   Bell,
   X,
-  CalendarClock,
-  CheckCircle,
-  AlertTriangle,
   RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -23,17 +21,30 @@ import Image from "next/image";
 
 const NOTIFICATION_QUERY_KEY = ["notifications"];
 
+/* Format time as relative (e.g., "2 minutes ago") */
+const getRelativeTime = (createdAt: string) => {
+  const now = new Date();
+  const notificationTime = new Date(createdAt);
+  const seconds = Math.floor((now.getTime() - notificationTime.getTime()) / 1000);
+
+  if (seconds < 60) return "just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return notificationTime.toLocaleDateString();
+};
+
 const NotificationSkeleton = () => {
   return [...Array(5)].map((_, index) => {
     return (
       <div
-        className="flex justify-between items-start mx-3 border py-5 rounded mb-4"
+        className="px-4 py-3 border-b last:border-b-0 animate-pulse"
         key={index}>
-        <div className="flex-1 space-y-2 mx-3">
-          <div className="h-5 bg-gray-200 rounded w-2/4 animate-pulse" />
-          <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse" />
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-2/3" />
+          <div className="h-3 bg-gray-200 rounded w-full" />
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
         </div>
-        <div className="h-5 bg-gray-200 rounded w-5 mr-2 animate-pulse"></div>
       </div>
     );
   });
@@ -98,17 +109,6 @@ const NotificationSideBar = () => {
     },
   });
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "success":
-        return <CheckCircle size={20} className="text-green-600" />;
-      case "warning":
-        return <AlertTriangle size={20} className="text-yellow-600" />;
-      default:
-        return <CalendarClock size={20} className="text-blue-600" />;
-    }
-  };
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -122,83 +122,89 @@ const NotificationSideBar = () => {
           )}
         </Button>
       </SheetTrigger>
+      <SheetTitle></SheetTitle>
+      <SheetDescription></SheetDescription>
 
-      <SheetContent side="right" className="w-[330px] p-0">
+      <SheetContent side="right" className="w-[380px] sm:w-[420px] p-0 bg-white">
         {/* Header */}
-
-        <SheetTitle>
-          <div className="flex items-center justify-between px-4 py-4 border-b">
-            <h2 className="text-xl font-semibold">Notifications</h2>
-          </div>
-        </SheetTitle>
-        <SheetDescription>
-          <Button variant="ghost" className="w-fit absolute bottom-2 right-3 text-blackcursor-pointer" onClick={()=> refetch()} disabled={isFetching || isLoading }>
-            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}/>
+        <div className="sticky top-0 z-10 bg-white px-4 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={isFetching || isLoading}
+            className="h-8 w-8">
+            <RefreshCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
           </Button>
-        </SheetDescription>
+        </div>
 
         {/* Body */}
-        <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
+        <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
           {isLoading ? (
             <NotificationSkeleton />
           ) : isError ? (
-            <p className="text-center py-6 text-red-500">
-              Failed to load notifications,
-              <br />
-              please refresh!
-            </p>
+            <div className="flex flex-col justify-center items-center py-12">
+              <div className="p-3 bg-red-100 rounded-full mb-3">
+                <AlertTriangle className="text-red-600" size={24} />
+              </div>
+              <p className="text-center text-sm text-gray-600">
+                Failed to load notifications
+              </p>
+              <p className="text-center text-xs text-gray-500 mt-1">
+                Please refresh and try again
+              </p>
+            </div>
           ) : unreadNotifications.length === 0 ? (
-            <div className="flex max-h-screen flex-col justify-center items-center">
-              <div className="w-[300px] h-[300px] opacity-60">
+            <div className="flex flex-col justify-center items-center py-16">
+              <div className="w-32 h-32 opacity-40 mb-4">
                 <Image
                   src="/images/no-notification.jpg"
-                  height={500}
-                  width={500}
+                  height={200}
+                  width={200}
                   alt="No new notification!"
+                  className="w-full h-full object-contain"
                 />
               </div>
-              <p className="text-center py-2 text-muted-foreground">
-                No new notifications
+              <p className="text-center text-sm font-medium text-gray-600">
+                All caught up!
+              </p>
+              <p className="text-center text-xs text-gray-500 mt-1">
+                No new notifications at the moment
               </p>
             </div>
           ) : (
-            <ul className="divide-y">
+            <div>
               {unreadNotifications.map((notify: any) => (
-                <li
+                <div
                   key={notify.id}
-                  className="flex justify-between items-start p-4 hover:bg-accent transition">
-                  {/* ICON + TEXT */}
-                  <div className="flex gap-3">
-                    <div className="p-2 rounded-md bg-muted">
-                      {getTypeIcon(notify.type)}
-                    </div>
-
-                    <div>
-                      <p className="font-medium text-sm">{notify.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {notify.message}
-                      </p>
-                      <span className="text-[11px] text-muted-foreground block mt-1">
-                        {notify.time}
-                      </span>
-                    </div>
+                  className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition flex justify-between items-start group">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm text-gray-900">
+                      {notify.title}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
+                      {notify.message}
+                    </p>
+                    <span className="text-xs text-gray-400 mt-1 block">
+                      {getRelativeTime(notify.createdAt)}
+                    </span>
                   </div>
 
-                  {/* MARK AS READ */}
                   <button
                     onClick={() => markAsReadMutation.mutate(notify.id)}
-                    className="text-muted-foreground hover:text-primary">
+                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 text-gray-400 hover:text-gray-600 shrink-0">
                     <X size={16} />
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
-          
         </div>
 
       </SheetContent>
-      
     </Sheet>
   );
 };

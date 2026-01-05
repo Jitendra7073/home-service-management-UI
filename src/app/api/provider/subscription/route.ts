@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { priceId } = await req.json();
+        const { priceId, isTrial } = await req.json();
 
         if (!priceId) {
             return NextResponse.json(
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ priceId }),
+                body: JSON.stringify({ priceId, isTrial: isTrial || false }),
             }
         );
 

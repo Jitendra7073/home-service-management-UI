@@ -323,7 +323,7 @@ export default function AddServiceModal() {
           </div>
 
           <div className="grid grid-col-1 md:grid-cols-2 gap-4">
-            <Field label="Estimated Duration" error={errors.durationInMinutes}>
+            <Field label="Estimated Timeline"  error={errors.durationInMinutes} required>
               <Input
                 type="number"
                 min={10}
@@ -383,7 +383,7 @@ function Field({
   error,
 }: {
   label: string;
-  required?: boolean;
+  required: boolean;
   children: React.ReactNode;
   error?: string;
 }) {

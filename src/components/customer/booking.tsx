@@ -61,15 +61,14 @@ export default function CustomerBookingsPage() {
     queryKey: ["customer-bookings"],
     queryFn: async () => {
       const res = await fetch("/api/customer/booking", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to fetch bookings");
       const result = await res.json();
+      console.log("Raw bookings fetch result:", result);
       return result?.bookings || [];
     },
   });
 
-  console.log("Fetched bookings data:", data);
-
   const bookings = data?.bookings || [];
+  console.log("Bookings data:", bookings);
 
   /* ---------------- FILTER & SORT ---------------- */
   const filteredBookings = useMemo(() => {

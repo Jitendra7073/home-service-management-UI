@@ -21,6 +21,48 @@ import PaymentTimer from "./PaymentTimer";
 import RefundStatusBadge from "./RefundStatusBadge";
 import { useQuery } from "@tanstack/react-query";
 
+const CancellationSkeleton = () => {
+  return (
+    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-lg shadow-sm animate-pulse">
+      <div className="flex items-start gap-3">
+        <div className="flex-1 space-y-4">
+          <div className="flex justify-start items-center gap-3">
+            {/* Icon skeleton */}
+            <div className="w-6 h-6 rounded-full bg-red-200 mt-1" />
+            {/* Title */}
+            <div className="h-4 w-40 bg-red-200 rounded" />
+          </div>
+
+          {/* Description */}
+          <div className="h-3 w-full bg-red-100 rounded" />
+          <div className="h-3 w-2/3 bg-red-100 rounded" />
+
+          {/* Amount card */}
+          <div className="bg-white rounded-lg p-3 border border-red-200 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                  <div className="h-4 w-24 bg-gray-300 rounded" />
+                </div>
+              ))}
+            </div>
+
+            {/* Refund status row */}
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div className="h-3 w-24 bg-gray-200 rounded" />
+              <div className="h-6 w-20 bg-gray-300 rounded-full" />
+            </div>
+          </div>
+
+          {/* Reason */}
+          <div className="h-3 w-1/2 bg-gray-200 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function BookingDetailsSection({
   booking,
   handleCopy,
@@ -36,15 +78,23 @@ export default function BookingDetailsSection({
   const slot = booking.slot;
 
   /* ------------------------- FETCH CANCELLATION DETAILS ------------------------- */
-  const { data: cancellationData, isLoading: isCancellationLoading, error: cancellationError } = useQuery({
+  const {
+    data: cancellationData,
+    isLoading: isCancellationLoading,
+    error: cancellationError,
+  } = useQuery({
     queryKey: ["cancellation", booking.id],
     queryFn: async () => {
-
-      if (booking.bookingStatus !== "CANCELLED" && booking.bookingStatus !== "CANCEL_REQUESTED") {
+      if (
+        booking.bookingStatus !== "CANCELLED" &&
+        booking.bookingStatus !== "CANCEL_REQUESTED"
+      ) {
         return null;
       }
 
-      const res = await fetch(`/api/customer/booking/${booking.id}/cancellation`);
+      const res = await fetch(
+        `/api/customer/booking/${booking.id}/cancellation`
+      );
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -54,9 +104,9 @@ export default function BookingDetailsSection({
       const data = await res.json();
       return data;
     },
-    enabled: booking.bookingStatus === "CANCELLED" || booking.bookingStatus === "CANCEL_REQUESTED",
-    staleTime: 30000, // Cache for 30 seconds
-    retry: 1,
+    enabled:
+      booking.bookingStatus === "CANCELLED" ||
+      booking.bookingStatus === "CANCEL_REQUESTED",
   });
 
   const cancellation = cancellationData?.cancellation;
@@ -120,54 +170,66 @@ export default function BookingDetailsSection({
     <div className="border-t border-gray-100 pt-4">
       {/* ------------------------- CANCELLATION ALERT (TOP) ------------------------- */}
       {booking.bookingStatus === "CANCELLED" && !cancellation && (
-        <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Info className="w-5 h-5 text-yellow-600" />
-            <p className="text-sm text-yellow-800">Loading cancellation details...</p>
-          </div>
-        </div>
+        <CancellationSkeleton />
       )}
 
       {booking.bookingStatus === "CANCELLED" && cancellation && (
-        <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 p-4 rounded-lg shadow-sm">
+        <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-lg ">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 text-red-600 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <h3 className="text-base font-bold text-red-900 mb-2">
-                Booking Cancelled
-              </h3>
+              <div className="flex justify-start gap-2 items-center mb-2 ">
+                <AlertTriangle className="w-6 h-6 text-red-600 mt-0.5" />
+                <h3 className="text-base font-bold text-red-900">
+                  Booking Cancelled
+                </h3>
+              </div>
               <p className="text-sm text-red-800 mb-3">
                 Your booking has been successfully cancelled.
-                {cancellation?.refundAmount > 0 && " Refund is being processed."}
+                {cancellation?.refundAmount > 0 &&
+                  " Refund is being processed."}
               </p>
 
               {cancellation && cancellation.refundAmount > 0 && (
                 <div className="bg-white rounded-lg p-3 border border-red-200">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Original Amount</p>
-                      <p className="font-semibold text-gray-900">₹{booking.totalAmount}</p>
+                      <p className="text-xs text-gray-500 mb-1">
+                        Original Amount
+                      </p>
+                      <p className="font-semibold text-gray-900">
+                        ₹{booking.totalAmount}
+                      </p>
                     </div>
                     {cancellation.refundAmount < booking.totalAmount && (
                       <div>
-                        <p className="text-xs text-gray-500 mb-1">Cancellation Fee</p>
+                        <p className="text-xs text-gray-500 mb-1">
+                          Cancellation Fee
+                        </p>
                         <p className="font-semibold text-red-600">
                           - ₹{booking.totalAmount - cancellation.refundAmount}
                         </p>
                       </div>
                     )}
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Refund Amount</p>
-                      <p className="font-semibold text-green-600">₹{cancellation.refundAmount}</p>
+                      <p className="text-xs text-gray-500 mb-1">
+                        Refund Amount
+                      </p>
+                      <p className="font-semibold text-green-600">
+                        ₹{cancellation.refundAmount}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-                    <span className="text-xs font-medium text-gray-700">Refund Status:</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      Refund Status:
+                    </span>
                     <RefundStatusBadge
                       refundStatus={cancellation.refundStatus}
                       refundAmount={cancellation.refundAmount}
-                      cancellationFee={booking.totalAmount - cancellation.refundAmount}
+                      cancellationFee={
+                        booking.totalAmount - cancellation.refundAmount
+                      }
                       originalAmount={booking.totalAmount}
                       refundedAt={cancellation.refundedAt}
                     />
@@ -176,14 +238,20 @@ export default function BookingDetailsSection({
                   {cancellation.refundStatus === "PENDING" && (
                     <div className="mt-3 flex items-start gap-2 text-xs text-yellow-700 bg-yellow-50 p-2 rounded border border-yellow-200">
                       <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <span>Refund initiated. Will be credited to your original payment method within 5-7 business days.</span>
+                      <span>
+                        Refund initiated. Will be credited to your original
+                        payment method within 5-7 business days.
+                      </span>
                     </div>
                   )}
 
                   {cancellation.refundStatus === "PROCESSING" && (
                     <div className="mt-3 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 p-2 rounded border border-blue-200">
                       <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <span>Your refund is being processed by our payment gateway. You'll receive it within 5-7 business days.</span>
+                      <span>
+                        Your refund is being processed by our payment gateway.
+                        You'll receive it within 5-7 business days.
+                      </span>
                     </div>
                   )}
 
@@ -191,11 +259,16 @@ export default function BookingDetailsSection({
                     <div className="mt-3 flex items-start gap-2 text-xs text-green-700 bg-green-50 p-2 rounded border border-green-200">
                       <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <span>
-                        Refund completed on {new Date(cancellation.refundedAt!).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}. Check your account statement.
+                        Refund completed on{" "}
+                        {new Date(cancellation.refundedAt!).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }
+                        )}
+                        . Check your account statement.
                       </span>
                     </div>
                   )}
@@ -203,7 +276,10 @@ export default function BookingDetailsSection({
                   {cancellation.refundStatus === "FAILED" && (
                     <div className="mt-3 flex items-start gap-2 text-xs text-red-700 bg-red-50 p-2 rounded border border-red-200">
                       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <span>Refund failed. Please contact support at support@homeservice.com</span>
+                      <span>
+                        Refund failed. Please contact support at
+                        support@homeservice.com
+                      </span>
                     </div>
                   )}
                 </div>
@@ -212,7 +288,9 @@ export default function BookingDetailsSection({
               {cancellation && cancellation.reason && (
                 <div className="mt-3 text-sm">
                   <span className="text-gray-600">Cancellation Reason: </span>
-                  <span className="font-medium text-gray-900">{cancellation.reason}</span>
+                  <span className="font-medium text-gray-900">
+                    {cancellation.reason}
+                  </span>
                 </div>
               )}
             </div>
@@ -240,7 +318,7 @@ export default function BookingDetailsSection({
                 <Button
                   onClick={() => {
                     if (isExpired) return;
-                    window.open(booking.paymentLink, "_blank");
+                    window.open(booking.paymentLinkInfo.url, "_blank");
                   }}
                   disabled={isExpired}
                   className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 px-4 disabled:bg-gray-600 disabled:cursor-not-allowed"
@@ -272,7 +350,9 @@ export default function BookingDetailsSection({
 
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Service Time</p>
-                    <p className="text-sm text-gray-700">{slot?.time || "N/A"}</p>
+                    <p className="text-sm text-gray-700">
+                      {slot?.time || "N/A"}
+                    </p>
                   </div>
 
                   <div>
@@ -434,7 +514,9 @@ export default function BookingDetailsSection({
                         {actions.canGiveFeedback && (
                           <Button
                             variant={
-                              booking.isFeedbackProvided ? "secondary" : "outline"
+                              booking.isFeedbackProvided
+                                ? "secondary"
+                                : "outline"
                             }
                             size="sm"
                             onClick={() => handleFeedBackClick(booking.id)}
@@ -462,7 +544,8 @@ export default function BookingDetailsSection({
               </div>
 
               <div className="px-4 py-1 rounded-sm bg-blue-50 border border-blue-200 text-[13px] text-blue-800 font-medium text-center">
-                We've already sent the invoice to your email following your payment.
+                We've already sent the invoice to your email following your
+                payment.
               </div>
             </div>
           )}

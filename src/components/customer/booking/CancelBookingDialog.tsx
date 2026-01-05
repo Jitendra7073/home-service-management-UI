@@ -172,7 +172,7 @@ export default function CancelBookingDialog({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
             <div>
               <p className="text-sm font-semibold text-gray-900">
-                {selectedBooking.service?.name}
+                Service: {selectedBooking.service?.name}
               </p>
               {selectedBooking.business?.name && (
                 <p className="text-xs text-gray-500">
@@ -185,7 +185,9 @@ export default function CancelBookingDialog({
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-1 space-y-4">
-          {/* Service Time Info */}
+          {/* Grid Layout: Policy & Payment Side by Side on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+           {/* Service Time Info */}
           {serviceStart && (
             <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
               <div className="flex items-center gap-2 text-blue-900 font-semibold text-sm mb-2">
@@ -211,10 +213,7 @@ export default function CancelBookingDialog({
               </div>
             </div>
           )}
-
-          {/* Grid Layout: Policy & Payment Side by Side on Desktop */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {/* Cancellation Policy Card */}
+           {/* Cancellation Policy Card */}
             <div className={`rounded-lg border-2 p-3 ${policy.percentage === 0
               ? "border-green-200 bg-green-50"
               : policy.percentage <= 10
@@ -258,23 +257,10 @@ export default function CancelBookingDialog({
                 {policy.note}
               </p>
 
-              {/* Compact Platform Policy Rules */}
-              <div className="border-t pt-2 mt-2">
-                <p className="text-[10px] sm:text-xs font-semibold text-gray-700 mb-1.5">Platform Policy:</p>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] sm:text-xs">
-                  <span className="text-gray-600">&gt;24h:</span>
-                  <span className="font-medium text-green-600">0%</span>
-                  <span className="text-gray-600">12-24h:</span>
-                  <span className="font-medium text-yellow-600">10%</span>
-                  <span className="text-gray-600">4-12h:</span>
-                  <span className="font-medium text-orange-600">25%</span>
-                  <span className="text-gray-600">&lt;4h:</span>
-                  <span className="font-medium text-red-600">50%</span>
-                </div>
-              </div>
+              
             </div>
-
-            {/* Payment Summary Card */}
+          </div>
+          {/* Payment Summary Card */}
             {selectedBooking.paymentStatus === "PAID" ? (
               <div className="rounded-lg border-2 border-gray-300 bg-white p-3">
                 <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm mb-3">
@@ -296,26 +282,19 @@ export default function CancelBookingDialog({
                       <span className="font-bold text-red-600">- ₹{cancellationFee}</span>
                     </div>
                   )}
-
-                  <div className="flex justify-between items-center bg-green-50 p-2 rounded-lg border-2 border-green-200">
-                    <span className="font-bold text-green-800 text-xs sm:text-sm">You'll Receive</span>
-                    <span className="font-bold text-green-700 text-lg sm:text-xl">₹{refundAmount}</span>
+                  
+                   <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
+                    <span className="text-gray-600">Total</span>
+                    <span className="font-semibold text-gray-900">₹{refundAmount}</span>
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 p-2 rounded-lg mt-3">
-                  <p className="text-[10px] sm:text-xs text-blue-800 flex items-start gap-1.5">
-                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" />
-                    <span>
-                      Auto-refund in <strong>5-7 days</strong>. No approval needed.
-                    </span>
-                  </p>
-                </div>
+               
               </div>
             ) : (
               <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-medium text-blue-900 text-sm mb-1">No Payment</p>
                     <p className="text-xs text-blue-700">
@@ -325,7 +304,6 @@ export default function CancelBookingDialog({
                 </div>
               </div>
             )}
-          </div>
 
           {/* Reason Selection - Compact */}
           <div className="space-y-2">

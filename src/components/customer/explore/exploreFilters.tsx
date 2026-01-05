@@ -38,6 +38,10 @@ interface FiltersProps {
 
   mobileFilterOpen: boolean;
   setMobileFilterOpen: (open: boolean) => void;
+
+  cities?: string[];
+  selectedCity?: string;
+  onCityChange?: (city: string) => void;
 }
 
 const Filters: React.FC<FiltersProps> = ({
@@ -49,6 +53,9 @@ const Filters: React.FC<FiltersProps> = ({
   onClearFilters,
   mobileFilterOpen,
   setMobileFilterOpen,
+  cities = [],
+  selectedCity = "",
+  onCityChange,
 }) => {
   const { data } = useQuery({
     queryKey: ["categories"],
@@ -73,7 +80,7 @@ const Filters: React.FC<FiltersProps> = ({
                 <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
               </div>
 
-              <div className="mb-8">
+              <div className="mb-4">
                 <div className="flex justify-between items-center mb-4">
                   <label className="text-sm font-medium text-gray-700 block">
                     Categories
@@ -134,9 +141,75 @@ const Filters: React.FC<FiltersProps> = ({
                 )}
               </div>
 
+              {onCityChange && (
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-gray-700 block mb-4">
+                    City
+                  </label>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        disabled={!cities || cities.length === 0}
+                        className="w-full justify-between text-gray-700 font-medium disabled:opacity-60 disabled:cursor-not-allowed">
+                        {selectedCity || "All Cities"}
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent className="w-56 max-h-64 overflow-y-auto">
+                      <DropdownMenuLabel>Select City</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+
+                      {/* If cities exist */}
+                      {cities && cities.length > 0 ? (
+                        <>
+                          <DropdownMenuCheckboxItem
+                            checked={!selectedCity}
+                            onCheckedChange={() => onCityChange("")}>
+                            All Cities
+                          </DropdownMenuCheckboxItem>
+
+                          <DropdownMenuSeparator />
+
+                          {cities.map((city) => (
+                            <DropdownMenuCheckboxItem
+                              key={city}
+                              checked={selectedCity === city}
+                              onCheckedChange={() => onCityChange(city)}>
+                              {city}
+                            </DropdownMenuCheckboxItem>
+                          ))}
+                        </>
+                      ) : (
+                        /* No cities available */
+                        <div className="px-3 py-4 text-xs text-gray-500 text-center">
+                          No cities available for the selected filters.
+                        </div>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Selected city chip */}
+                  {selectedCity && (
+                    <div className="mt-3">
+                      <span className="px-3 py-1 text-xs bg-gray-200 rounded-sm text-gray-700 inline-flex items-center gap-2">
+                        {selectedCity}
+                        <button
+                          onClick={() => onCityChange("")}
+                          className="text-gray-600 hover:text-gray-900">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Price Range Filter */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 block">
+              <div >
+                <label className="text-sm font-medium text-gray-700 block pb-2">
                   Price Range
                 </label>
                 <div className="space-y-4">
@@ -269,6 +342,61 @@ const Filters: React.FC<FiltersProps> = ({
                 ₹{priceRange[1].toLocaleString()}
               </p>
             </div>
+
+            {/* CITY FILTER */}
+            {cities && cities.length > 0 && onCityChange && (
+              <div>
+                <h3 className="font-bold text-gray-900 mb-3 text-sm uppercase">
+                  City
+                </h3>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between text-gray-700 font-medium">
+                      {selectedCity || "All Cities"}
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-64 max-h-72 overflow-y-auto">
+                    <DropdownMenuLabel>Select City</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuCheckboxItem
+                      checked={!selectedCity}
+                      onCheckedChange={() => onCityChange("")}>
+                      All Cities
+                    </DropdownMenuCheckboxItem>
+
+                    <DropdownMenuSeparator />
+
+                    {cities.map((city) => (
+                      <DropdownMenuCheckboxItem
+                        key={city}
+                        checked={selectedCity === city}
+                        onCheckedChange={() => onCityChange(city)}>
+                        {city}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {selectedCity && (
+                  <div className="mt-3">
+                    <span className="px-3 py-1 bg-gray-200 text-gray-900 text-xs rounded-sm inline-flex items-center gap-2">
+                      {selectedCity}
+                      <button
+                        onClick={() => onCityChange("")}
+                        className="text-gray-600 hover:text-gray-900">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </SheetContent>
       </Sheet>

@@ -10,7 +10,7 @@ export async function proxy(req: NextRequest) {
 
     const loginUrl = new URL("/auth/login", req.url);
     const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete("accessToken");
+    // response.cookies.delete("accessToken");
     return response;
   }
 }
