@@ -225,7 +225,7 @@ export default function ServiceDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
-        <div className="relative w-full overflow-hidden rounded-md aspect-[16/8] md:aspect-[19/7] shadow-sm">
+        <div className="relative w-full overflow-hidden rounded-md aspect-16/8 md:aspect-19/7 shadow-sm">
           <Image
             src={service.coverImage || "/images/default-service-banner.png"}
             alt={service.name || "Service Name"}

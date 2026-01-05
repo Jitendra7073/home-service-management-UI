@@ -68,7 +68,6 @@ export default function CustomerBookingsPage() {
   });
 
   const bookings = data?.bookings || [];
-  console.log("Bookings data:", bookings);
 
   /* ---------------- FILTER & SORT ---------------- */
   const filteredBookings = useMemo(() => {

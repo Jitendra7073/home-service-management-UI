@@ -1,29 +1,21 @@
 "use client";
 
-import React from "react";
+import * as React from "react";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 
-import { CheckCheck, Star } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { ArrowUpDown, Star, MessageSquare, RefreshCw } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -33,221 +25,179 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import TableSkeleton from "../tableSkeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-/* -------------------- TYPES -------------------- */
-
-export type Feedback = {
+type Feedback = {
   id: string;
   username: string;
+  servicename: string;
   rating: number;
   comment: string;
   createdAt: string;
-  approved: boolean;
 };
 
-/* -------------------- HELPERS -------------------- */
+const columns: ColumnDef<Feedback>[] = [
+  {
+    accessorKey: "username",
+    header: "Customer",
+    cell: ({ row }) => {
+      const name = row.getValue("username") as string;
+      const initials = name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
 
-const isWithin7Days = (date: string) =>
-  Date.now() - new Date(date).getTime() < 7 * 24 * 60 * 60 * 1000;
+      return (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <span className="font-medium">{name}</span>
+        </div>
+      );
+    },
+  },
+  { accessorKey: "servicename", header: "Service" },
+  {
+    accessorKey: "rating",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Rating <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const rating = row.getValue("rating") as number;
+      return (
+        <div className="flex items-center gap-1">
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <span className="font-semibold">{rating}</span>
+          <span className="text-gray-500 text-sm">/5</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "comment",
+    header: "Review",
+    cell: ({ row }) => {
+      const comment = row.getValue("comment") as string;
+      return (
+        <div className="max-w-md">
+          <p className="text-sm text-gray-600 line-clamp-2">{comment}</p>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <Button variant="ghost" onClick={() => column.toggleSorting()}>
+        Date <ArrowUpDown className="w-4 h-4 ml-2" />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt") as string);
+      return <span className="text-sm text-gray-500">{date.toLocaleDateString()}</span>;
+    },
+  },
+];
 
-const truncate = (text: string, len = 20) =>
-  text.length > len ? text.slice(0, len) + "…" : text;
-
-/* -------------------- COMPONENT -------------------- */
-
-export default function FeedbackTable() {
-  const queryClient = useQueryClient();
-
+export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-  // const [statusFilter, setStatusFilter] = React.useState<
-  //   "all" | "approved" | "pending"
-  // >("all");
 
-  const { data, isLoading, isPending } = useQuery({
-    queryKey: ["customer-feedback"],
+  const { data, isLoading, isFetching, refetch, error } = useQuery({
+    queryKey: ["provider-feedback"],
     queryFn: async () => {
-      const res = await fetch("/api/provider/feedback");
+      const res = await fetch("/api/provider/feedback", { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to fetch feedback");
       return res.json();
     },
+    retry: 2,
   });
 
-  const weeklyFeedback: Feedback[] = React.useMemo(
-    () =>
-      data?.feedbacks?.filter((f: Feedback) => isWithin7Days(f.createdAt)) ||
-      [],
-    [data?.feedbacks]
-  );
+  const feedbacks: Feedback[] = React.useMemo(() => {
+    if (!data?.feedbacks) return [];
 
-  // const approvedCount = weeklyFeedback.filter((f) => f.approved).length;
-  // const pendingCount = weeklyFeedback.filter((f) => !f.approved).length;
-
-  const filteredByStatus = React.useMemo(() => {
-    // if (statusFilter === "approved")
-    //   return weeklyFeedback.filter((f) => f.approved);
-    // if (statusFilter === "pending")
-    //   return weeklyFeedback.filter((f) => !f.approved);
-    return weeklyFeedback;
-  }, [weeklyFeedback]);
-
-  const sortedFeedback = React.useMemo(() => {
-    return [...filteredByStatus].sort(
-      (a, b) => Number(a.approved) - Number(b.approved)
-    );
-  }, [filteredByStatus]);
-
-  // const approveMutation = useMutation({
-  //   mutationFn: async (feedbackId: string) => {
-  //     const res = await fetch("/api/provider/feedback", {
-  //       method: "PATCH",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ feedbackId }),
-  //     });
-
-  //     const data = await res.json();
-  //     if (!res.ok) throw new Error(data?.message || "Approval failed");
-  //     return data;
-  //   },
-  //   onSuccess: () => {
-  //     toast.success("Feedback approved successfully");
-  //     queryClient.invalidateQueries({ queryKey: ["customer-feedback"] });
-  //   },
-  //   onError: (e: any) => toast.error(e.message),
-  // });
-
-  /* -------------------- COLUMNS -------------------- */
-
-  const columns: ColumnDef<Feedback>[] = [
-    { accessorKey: "username", header: "Customer" },
-
-    {
-      accessorKey: "rating",
-      header: "Rating",
-      cell: ({ row }) => (
-        <span className="flex items-center gap-1">
-          {row.getValue("rating")}
-          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-        </span>
-      ),
-    },
-
-    {
-      accessorKey: "comment",
-      header: "Feedback",
-      cell: ({ row }) => {
-        const feedback = row.original;
-        return (
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <p className="cursor-pointer text-sm">
-                {truncate(feedback.comment)}
-              </p>
-            </HoverCardTrigger>
-
-            <HoverCardContent className="w-72 space-y-3">
-              <p className="text-sm">
-                <strong>Comment:</strong> {feedback.comment}
-              </p>
-              
-            </HoverCardContent>
-          </HoverCard>
-        );
-      },
-    },
-
-    {
-      accessorKey: "createdAt",
-      header: "Date",
-      cell: ({ row }) =>
-        new Date(row.getValue("createdAt")).toLocaleDateString("en-IN"),
-    },
-  ];
-
-  /* -------------------- TABLE -------------------- */
+    return data.feedbacks.map((f: any) => ({
+      id: f.id,
+      username: f.username || "Anonymous",
+      servicename: f.servicename || "Unknown Service",
+      rating: f.rating || 0,
+      comment: f.comment || "",
+      createdAt: f.createdAt || new Date().toISOString(),
+    }));
+  }, [data]);
 
   const table = useReactTable({
-    data: sortedFeedback,
+    data: feedbacks,
     columns,
-    state: { globalFilter },
+    state: {
+      sorting,
+      globalFilter,
+      pagination: { pageIndex: 0, pageSize: NumberOfRows },
+    },
+    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: { pageSize: 5 },
-    },
   });
 
-  /* -------------------- RENDER -------------------- */
+  const avgRating = React.useMemo(() => {
+    if (feedbacks.length === 0) return 0;
+    const sum = feedbacks.reduce((acc, f) => acc + f.rating, 0);
+    return (sum / feedbacks.length).toFixed(1);
+  }, [feedbacks]);
 
-  if (isLoading || isPending) {
-    return <TableSkeleton rows={5} columns={5} />;
+  if (isLoading) {
+    return <TableSkeleton rows={10} columns={5} />;
   }
+
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex justify-between items-center flex-wrap gap-3">
-        <h2 className="font-semibold">Latest Customer Feedback</h2>
-
-        {/* <div className="flex gap-2 items-center">
-          <Badge className="bg-yellow-100 text-yellow-700">
-            Pending: {pendingCount}
-          </Badge>
-          <Badge className="bg-green-100 text-green-700">
-            Approved: {approvedCount}
-          </Badge>
-        </div> */}
-        <Input
-          placeholder="Search feedback..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="font-semibold text-lg flex items-center gap-2">
+            <MessageSquare className="h-5 w-5" />
+            Customer Feedback
+          </h3>
+          {feedbacks.length > 0 && (
+            <p className="text-sm text-gray-500 mt-1">
+              Average rating:{" "}
+              <span className="font-semibold text-yellow-600">{avgRating}</span>{" "}
+              ({feedbacks.length} reviews)
+            </p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search reviews..."
+            value={globalFilter}
+            onChange={(e) => {
+              setGlobalFilter(e.target.value);
+              table.setPageIndex(0);
+            }}
+            className="max-w-sm"
+          />
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            title="Refresh feedback">
+            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
       </div>
 
-      {/* Filters */}
-      {/* <div className="flex gap-3 flex-wrap">
-        <Input
-          placeholder="Search feedback..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
-        />
-
-        <Select
-          value={statusFilter}
-          onValueChange={(v) =>
-            setStatusFilter(v as "all" | "approved" | "pending")
-          }>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-          </SelectContent>
-        </Select>
-      </div> */}
-
-      {/* Table */}
-      <div className="border rounded-md">
+      <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((g) => (
@@ -262,36 +212,62 @@ export default function FeedbackTable() {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="text-center py-10">
+                  <div className="flex flex-col items-center gap-2">
+                    <MessageSquare className="h-12 w-12 text-gray-300" />
+                    <div className="text-gray-500 font-medium">No feedback yet</div>
+                    <p className="text-sm text-gray-400">
+                      Customer reviews will appear here once you receive feedback
+                    </p>
+                  </div>
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
-      </div>
+      {table.getRowModel().rows.length > NumberOfRows && (
+        <div className="flex items-center justify-between px-2">
+          <div className="text-sm text-gray-500">
+            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1} to{" "}
+            {Math.min(
+              (table.getState().pagination.pageIndex + 1) * NumberOfRows,
+              table.getRowModel().rows.length
+            )}{" "}
+            of {table.getRowModel().rows.length} feedbacks
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}>
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}>
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

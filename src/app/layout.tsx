@@ -1,6 +1,7 @@
 import { Toaster } from "sonner";
 import "./globals.css";
 import AuthProvider from "@/components/common/AuthProvider";
+// import NotificationPopupContainer from "@/components/common/notification-popup-container";
 // import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
@@ -19,7 +20,9 @@ export default function RootLayout({
         > */}
           <AuthProvider>
             <Toaster position="top-right" richColors />
+            {/* <NotificationPopupContainer /> */}
             {children}
+            {/* <div id="notification-root" /> */}
           </AuthProvider>
         {/* </ThemeProvider> */}
       </body>

@@ -14,7 +14,6 @@ export default function FirebaseForegroundListener() {
       if (!messaging) return;
 
       unsubscribe = onMessage(messaging, (payload) => {
-
         const title =
           payload.notification?.title ||
           payload.data?.title ||
@@ -25,24 +24,59 @@ export default function FirebaseForegroundListener() {
           payload.data?.body ||
           "";
 
-        // Show an in-app alert-style toast for active users.
-        // This works even if browser notification permission is denied.
+        const notificationData = {
+          id: payload.data?.notificationId || payload.messageId || Date.now().toString(),
+          title,
+          body,
+          type: payload.data?.type || "NOTIFICATION",
+          clickAction: payload.data?.click_action || payload.data?.clickAction,
+          timestamp: Date.now(),
+        };
+
+        // Show the new popup notification
+        if (typeof window !== "undefined" && (window as any).showNotificationPopup) {
+          (window as any).showNotificationPopup(notificationData);
+        }
+
+        // Also show a small toast for quick awareness
         if (typeof document !== "undefined" && document.visibilityState === "visible") {
           toast(title, {
             description: body,
-            action: payload.data?.click_action
+            duration: 3000,
+            action: notificationData.clickAction
               ? {
-                label: "Open",
+                label: "View",
                 onClick: () => {
-                  window.open(payload.data?.click_action, "_blank");
+                  if (notificationData.clickAction?.startsWith("/")) {
+                    window.location.href = notificationData.clickAction;
+                  } else {
+                    window.open(notificationData.clickAction, "_blank");
+                  }
                 },
               }
               : undefined,
           });
         }
 
+        // Show browser notification if permission is granted
         if (Notification.permission === "granted") {
-          new Notification(title, { body });
+          const browserNotification = new Notification(title, {
+            body,
+            data: notificationData,
+          });
+
+          // Handle click on browser notification
+          browserNotification.onclick = () => {
+            window.focus();
+            if (notificationData.clickAction) {
+              if (notificationData.clickAction.startsWith("/")) {
+                window.location.href = notificationData.clickAction;
+              } else {
+                window.open(notificationData.clickAction, "_blank");
+              }
+            }
+            browserNotification.close();
+          };
         }
       });
     };
