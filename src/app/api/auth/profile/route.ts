@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { backend } from "@/lib/backend";
 
 export async function GET(req: Request) {
-  const token = (req as any).cookies?.get?.("token")?.value;
+  const token = (req as any).cookies?.get?.("accessToken")?.value;
 
   if (!token) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

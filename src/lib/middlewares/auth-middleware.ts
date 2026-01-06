@@ -6,6 +6,8 @@ import {
   hasRouteAccess,
   getRoleBasedRedirect,
   isProviderOnboardingRoute,
+  isRestrictedRoute,
+  isPendingApprovalRoute,
 } from "./middleware-helpers";
 
 import { providerOnboardingMiddleware } from "./provider-onboard-checks";
@@ -93,13 +95,43 @@ const authMiddleware = async (req: any) => {
       }
 
       // Redirect based on role
+      if (user.role === "admin") {
+        const res = NextResponse.redirect(new URL("/admin", req.url));
+        attachSetCookieHeader(res, refreshedSetCookie);
+        return res;
+      }
+
       if (user.role === "customer") {
+        // Check if customer is restricted
+        if (user.isRestricted) {
+          const res = NextResponse.redirect(new URL("/restricted", req.url));
+          attachSetCookieHeader(res, refreshedSetCookie);
+          return res;
+        }
         const res = NextResponse.redirect(new URL("/customer", req.url));
         attachSetCookieHeader(res, refreshedSetCookie);
         return res;
       }
 
       if (user.role === "provider") {
+        // Check if provider is restricted
+        if (user.isRestricted) {
+          const res = NextResponse.redirect(new URL("/restricted", req.url));
+          attachSetCookieHeader(res, refreshedSetCookie);
+          return res;
+        }
+
+        // Check if provider has pending business approval
+        const hasPendingBusiness = user.businesses?.some(
+          (b: any) => !b.isApproved && !b.isRejected
+        );
+
+        if (hasPendingBusiness && !isPendingApprovalRoute(pathname)) {
+          const res = NextResponse.redirect(new URL("/provider/pending-approval", req.url));
+          attachSetCookieHeader(res, refreshedSetCookie);
+          return res;
+        }
+
         // Check provider onboarding status
         const onboardRedirect = await providerOnboardingMiddleware(
           req,
@@ -212,8 +244,29 @@ const authMiddleware = async (req: any) => {
         return res;
       }
 
+      // ============ RESTRICTED USER CHECK ============
+      if (user.isRestricted && !isRestrictedRoute(pathname)) {
+        // Redirect to restricted page
+        const res = NextResponse.redirect(new URL("/restricted", req.url));
+        attachSetCookieHeader(res, refreshedSetCookie);
+        return res;
+      }
+
+      // ============ PROVIDER PENDING APPROVAL CHECK ============
+      if (user.role === "provider" && !isPendingApprovalRoute(pathname) && !isProviderOnboardingRoute(pathname)) {
+        const hasPendingBusiness = user.businesses?.some(
+          (b: any) => !b.isApproved && !b.isRejected
+        );
+
+        if (hasPendingBusiness) {
+          const res = NextResponse.redirect(new URL("/provider/pending-approval", req.url));
+          attachSetCookieHeader(res, refreshedSetCookie);
+          return res;
+        }
+      }
+
       // ============ PROVIDER ONBOARDING CHECK ============
-      if (user.role === "provider" && !isProviderOnboardingRoute(pathname)) {
+      if (user.role === "provider" && !isProviderOnboardingRoute(pathname) && !isPendingApprovalRoute(pathname)) {
         const onboardRedirect = await providerOnboardingMiddleware(
           req,
           user.role,
