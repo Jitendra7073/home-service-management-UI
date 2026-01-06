@@ -6,8 +6,9 @@ import { backend } from "@/lib/backend";
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { businessId: string } }
+  props: { params: Promise<{ businessId: string }> }
 ) {
+  const params = await props.params;
   try {
     const backendRes = await backend(
       `/api/v1/admin/businesses/${params.businessId}`,
@@ -35,8 +36,9 @@ export async function GET(
  */
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { businessId: string } }
+  props: { params: Promise<{ businessId: string }> }
 ) {
+  const params = await props.params;
   try {
     const body = await req.json();
     const { action, reason } = body;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { backend } from "@/lib/backend";
 
 /**
- * GET /api/admin/businesses - Fetch all businesses with filters
+ * GET /api/admin/services - Fetch all services with filters
  */
 export async function GET(req: NextRequest) {
   try {
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     });
 
     const { ok, data } = await backend(
-      `/api/v1/admin/businesses?${queryString.toString()}`,
+      `/api/v1/admin/services?${queryString.toString()}`,
       {
         method: "GET",
       }
@@ -23,21 +23,21 @@ export async function GET(req: NextRequest) {
 
     if (!ok) {
       return NextResponse.json(
-        { success: false, message: data?.message || "Failed to fetch businesses" },
+        { success: false, message: data?.message || "Failed to fetch services" },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { success: true, ...data },
+      { success: true, data: data.data || data },
       { status: 200 }
     );
   } catch (err: any) {
-    console.error("[API/admin/businesses] Error:", err);
+    console.error("[API/admin/services] Error:", err);
     return NextResponse.json(
       {
         success: false,
-        message: err.message || "Failed to fetch businesses",
+        message: err.message || "Failed to fetch services",
       },
       { status: 500 }
     );

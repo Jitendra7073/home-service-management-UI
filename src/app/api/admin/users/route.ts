@@ -11,21 +11,29 @@ export async function GET(req: NextRequest) {
       if (value) queryString.append(key, value);
     });
 
-    const backendRes = await backend(
+    const { ok, data } = await backend(
       `/api/v1/admin/users?${queryString.toString()}`,
       {
         method: "GET",
       }
     );
 
-    return NextResponse.json(backendRes.data, {
-      status: backendRes.status ?? 200,
-    });
+    if (!ok) {
+      return NextResponse.json(
+        { success: false, message: data?.message || "Failed to fetch users" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, ...data },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error("[API/admin/users] Error:", err);
     return NextResponse.json(
       {
-        ok: false,
+        success: false,
         message: err.message || "Failed to fetch users",
       },
       { status: 500 }

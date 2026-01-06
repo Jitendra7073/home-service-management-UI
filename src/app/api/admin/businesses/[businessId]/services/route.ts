@@ -6,8 +6,9 @@ import { backend } from "@/lib/backend";
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { businessId: string } }
+  props: { params: Promise<{ businessId: string }> }
 ) {
+  const params = await props.params;
   try {
     const { searchParams } = new URL(req.url);
     const queryParams = Object.fromEntries(searchParams.entries());

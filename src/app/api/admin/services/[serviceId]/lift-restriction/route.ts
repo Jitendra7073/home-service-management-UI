@@ -3,15 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { serviceId: string } }
+  props: { params: Promise<{ serviceId: string }> }
 ) {
+  const params = await props.params;
   try {
     const body = await req.json();
     const { reason } = body;
 
     let endpoint = `/api/v1/admin/services/${params.serviceId}/lift-restriction`;
 
-    const {data} = await backend(endpoint, {
+    const { data } = await backend(endpoint, {
       method: "PATCH",
       body: JSON.stringify({ reason }),
       headers: {

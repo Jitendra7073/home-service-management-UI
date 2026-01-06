@@ -3,8 +3,9 @@ import { backend } from "@/lib/backend";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { serviceId: string } }
+  props: { params: Promise<{ serviceId: string }> }
 ) {
+  const params = await props.params;
   try {
     const backendRes = await backend(
       `/api/v1/admin/services/${params.serviceId}`,
