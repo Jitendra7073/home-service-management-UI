@@ -99,13 +99,6 @@ const authMiddleware = async (req: any) => {
         return res;
       }
 
-      // Redirect based on role
-      if (user.role === "admin") {
-        const res = NextResponse.redirect(new URL("/admin", req.url));
-        attachSetCookieHeader(res, refreshedSetCookie);
-        return res;
-      }
-
       if (user.role === "provider") {
         // Check provider onboarding status
         const onboardRedirect = await providerOnboardingMiddleware(

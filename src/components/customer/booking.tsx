@@ -57,10 +57,18 @@ export default function CustomerBookingsPage() {
   }, [searchQuery, statusFilter, sortBy, router]);
 
   /* ---------------- FETCH BOOKINGS ---------------- */
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["customer-bookings"],
     queryFn: async () => {
       const res = await fetch("/api/customer/booking", { cache: "no-store" });
+      if (!res.ok) {
+        let errMsg = "Failed to fetch bookings";
+        try {
+           const errJson = await res.json();
+           errMsg = errJson.error || errMsg;
+        } catch {}
+        throw new Error(errMsg);
+      }
       const result = await res.json();
       return result?.bookings || [];
     },

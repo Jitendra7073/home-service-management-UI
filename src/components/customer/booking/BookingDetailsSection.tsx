@@ -19,6 +19,49 @@ import CopyField from "@/components/customer/booking/CopyField";
 import { PaymentStatusBadge } from "./StatusBadge";
 import PaymentTimer from "./PaymentTimer";
 import RefundStatusBadge from "./RefundStatusBadge";
+import { useQuery } from "@tanstack/react-query";
+
+const CancellationSkeleton = () => {
+  return (
+    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-lg shadow-sm animate-pulse">
+      <div className="flex items-start gap-3">
+        <div className="flex-1 space-y-4">
+          <div className="flex justify-start items-center gap-3">
+            {/* Icon skeleton */}
+            <div className="w-6 h-6 rounded-full bg-red-200 mt-1" />
+            {/* Title */}
+            <div className="h-4 w-40 bg-red-200 rounded" />
+          </div>
+
+          {/* Description */}
+          <div className="h-3 w-full bg-red-100 rounded" />
+          <div className="h-3 w-2/3 bg-red-100 rounded" />
+
+          {/* Amount card */}
+          <div className="bg-white rounded-lg p-3 border border-red-200 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-3 w-20 bg-gray-200 rounded" />
+                  <div className="h-4 w-24 bg-gray-300 rounded" />
+                </div>
+              ))}
+            </div>
+
+            {/* Refund status row */}
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div className="h-3 w-24 bg-gray-200 rounded" />
+              <div className="h-6 w-20 bg-gray-300 rounded-full" />
+            </div>
+          </div>
+
+          {/* Reason */}
+          <div className="h-3 w-1/2 bg-gray-200 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function BookingDetailsSection({
   booking,
@@ -34,8 +77,39 @@ export default function BookingDetailsSection({
   const service = booking.service;
   const slot = booking.slot;
 
-  // Cancellation details are now included in the booking data
-  const cancellation = booking.cancellation;
+  /* ------------------------- FETCH CANCELLATION DETAILS ------------------------- */
+  const {
+    data: cancellationData,
+    isLoading: isCancellationLoading,
+    error: cancellationError,
+  } = useQuery({
+    queryKey: ["cancellation", booking.id],
+    queryFn: async () => {
+      if (
+        booking.bookingStatus !== "CANCELLED" &&
+        booking.bookingStatus !== "CANCEL_REQUESTED"
+      ) {
+        return null;
+      }
+
+      const res = await fetch(
+        `/api/customer/booking/${booking.id}/cancellation`
+      );
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        return null;
+      }
+
+      const data = await res.json();
+      return data;
+    },
+    enabled:
+      booking.bookingStatus === "CANCELLED" ||
+      booking.bookingStatus === "CANCEL_REQUESTED",
+  });
+
+  const cancellation = cancellationData?.cancellation;
 
   const isPendingPayment =
     booking.paymentStatus === "PENDING" &&
@@ -95,6 +169,10 @@ export default function BookingDetailsSection({
   return (
     <div className="border-t border-gray-100 pt-4">
       {/* ------------------------- CANCELLATION ALERT (TOP) ------------------------- */}
+      {booking.bookingStatus === "CANCELLED" && !cancellation && (
+        <CancellationSkeleton />
+      )}
+
       {booking.bookingStatus === "CANCELLED" && cancellation && (
         <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-lg ">
           <div className="flex items-start gap-3">
