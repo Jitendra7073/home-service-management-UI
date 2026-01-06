@@ -103,8 +103,6 @@ class ApiClient {
       ...((options.headers as Record<string, string>) || {}),
     };
 
-    // Note: Tokens are now handled via httpOnly cookies
-    // No need to manually attach Authorization header
 
     const makeRequest = async (): Promise<Response> => {
       return await fetch(url, {
@@ -116,18 +114,13 @@ class ApiClient {
 
     let response = await makeRequest();
 
-    // If 401, try to refresh token once
     if (response.status === 401 && !endpoint.includes("/auth/")) {
-      console.log("Access token expired, attempting refresh...");
 
       const refreshSuccess = await this.refreshAccessToken();
 
       if (refreshSuccess) {
-        console.log("Token refreshed successfully, retrying original request");
-        // Retry original request with new token
         response = await makeRequest();
       } else {
-        // Refresh failed and user was redirected
         throw new Error("Session expired. Please login again.");
       }
     }

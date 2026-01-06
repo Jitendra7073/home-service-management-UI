@@ -31,12 +31,6 @@ export function useTokenRefresh() {
               'Content-Type': 'application/json',
             },
           });
-
-          if (response.ok) {
-            console.log('Token proactively refreshed successfully');
-          } else {
-            console.log('Proactive refresh failed, will retry on next API call');
-          }
         } catch (error) {
           console.error('Proactive token refresh error:', error);
           // Don't show error to user or redirect - let API calls handle that

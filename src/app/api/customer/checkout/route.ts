@@ -30,8 +30,7 @@ export async function POST(req: NextRequest) {
 
     if (!ok) {
       return NextResponse.json(
-        { msg: data?.msg || "Failed to create checkout session" },
-        { status }
+        { message: data },
       );
     }
 
