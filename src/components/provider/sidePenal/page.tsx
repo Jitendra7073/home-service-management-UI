@@ -21,11 +21,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { useQuery } from "@tanstack/react-query";
-import { useSetAtom } from "jotai";
-import { profileUpgradedTag } from "@/global-states/state";
-import NotificationSideBar from "@/components/common/notification-sidebar";
 import Image from "next/image";
 
 // Sidebar links
@@ -99,22 +97,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return data;
   };
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
-      <SidebarHeader className="mb-5 mt-3 hover:bg-transparent">
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader className="h-16 border-b border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link href="/provider/dashboard" className="flex justify-center items-center relative">
-                <Image
-                  src="/HSM-logo.png"
-                  alt="ServiceHub Logo"
-                  width={140}
-                  height={70}
-                  className="object-contain"
-                />
-                <span className="absolute bottom-0 right-3 text-xs font-semibold text-slate-600">(Provider)</span>
+            <SidebarMenuButton size="lg" asChild className="hover:bg-transparent data-[state=open]:hover:bg-transparent">
+              <Link href="/provider/dashboard" className="flex items-center gap-2">
+                 <div className="flex justify-center items-center gap-0 relative">
+                  <div className="flex aspect-squar items-center justify-center rounded-lg ">
+                    <Image
+                      src="/HSM-logo.png"
+                      alt="ServiceHub Logo"
+                      width={140}
+                      height={70}
+                      className="object-contain"
+                    />
+                </div>
+                  <span className="absolute bottom-14 -right-10 truncate text-xs font-semibold">(Provider)</span>
+                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -132,6 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           subscriptionStatus={subscriptionStatus}
         />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }

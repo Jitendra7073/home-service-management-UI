@@ -71,6 +71,12 @@ interface BookingData {
   paymentStatus: PaymentStatus;
   createdAt: string;
   updatedAt: string;
+  totalAmount?: number;
+  cancellation?: {
+    refundAmount: number;
+    refundStatus: string;
+    reason?: string;
+  };
 }
 
 /* ---------------- STATUS STYLES ---------------- */
@@ -231,8 +237,60 @@ export default function BookingDetailsDashboard({
             </Card>
           </div>
 
+        </div>
+            
           {/* RIGHT */}
           <div className="space-y-4">
+             {/* INVOICE SUMMARY */}
+             <Card className="px-6">
+              <CardHeader className="p-0">
+                <CardTitle className="flex items-center gap-2">
+                  <Banknote className="w-5 h-5 text-blue-600" />
+                  Invoice Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 space-y-3">
+                 <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Service Price</span>
+                    <span className="font-medium">₹{booking.service.price.toLocaleString()}</span>
+                 </div>
+                 {/* Assuming totalAmount might differ from price due to quantity or taxes */}
+                 <Separator />
+                 <div className="flex justify-between text-base font-bold">
+                    <span>Total Amount</span>
+                    <span>₹{booking.totalAmount?.toLocaleString() ?? booking.service.price.toLocaleString()}</span>
+                 </div>
+              </CardContent>
+            </Card>
+
+            {/* REFUND INFO (If Cancelled) */}
+            {booking.cancellation && (
+               <Card className="px-6 border-red-200 bg-red-50">
+                  <CardHeader className="p-0">
+                    <CardTitle className="flex items-center gap-2 text-red-700">
+                      <Banknote className="w-5 h-5" />
+                      Refund Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-red-800">Refund Amount</span>
+                        <span className="font-bold text-red-900">₹{booking.cancellation.refundAmount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-red-800">Status</span>
+                        <span className="capitalize text-red-900">{booking.cancellation.refundStatus}</span>
+                      </div>
+                      {booking.cancellation.reason && (
+                         <div className="pt-2">
+                            <p className="text-xs text-red-600 font-semibold">Reason:</p>
+                            <p className="text-red-800 italic">{booking.cancellation.reason}</p>
+                         </div>
+                      )}
+                  </CardContent>
+               </Card>
+            )}
+
             {/* SLOT */}
             <Card className="px-6">
               <CardHeader className="p-0">
@@ -286,7 +344,6 @@ export default function BookingDetailsDashboard({
           </div>
         </div>
       </div>
-    </div>
   );
 }
 

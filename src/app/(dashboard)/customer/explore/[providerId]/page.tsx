@@ -451,8 +451,8 @@ export default function ServiceDetailPage() {
             )}
 
             {/* FEEDBACKS */}
-            {service?.feedback.length > 0 && (
-              <Feedback feedback={service?.feedback} />
+            {service?.feedback?.length > 0 && (
+              <Feedback feedback={service.feedback} />
             )}
           </div>
 

@@ -161,7 +161,7 @@ export default function CancelBookingDialog({
   /* ---------------- UI ---------------- */
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] rounded-xl overflow-hidden flex flex-col">
+      <AlertDialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] rounded-md overflow-hidden flex flex-col">
         {/* Fixed Header */}
         <AlertDialogHeader className="flex-shrink-0 pb-3">
           <AlertDialogTitle className="text-red-600 flex items-center gap-2 text-lg">
@@ -189,7 +189,7 @@ export default function CancelBookingDialog({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
            {/* Service Time Info */}
           {serviceStart && (
-            <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
+            <div className="rounded-md border-2 border-blue-200 bg-blue-50 p-3">
               <div className="flex items-center gap-2 text-blue-900 font-semibold text-sm mb-2">
                 <Calendar className="w-4 h-4" />
                 Service Scheduled For
@@ -214,7 +214,7 @@ export default function CancelBookingDialog({
             </div>
           )}
            {/* Cancellation Policy Card */}
-            <div className={`rounded-lg border-2 p-3 ${policy.percentage === 0
+            <div className={`rounded-md border-2 p-3 ${policy.percentage === 0
               ? "border-green-200 bg-green-50"
               : policy.percentage <= 10
                 ? "border-yellow-200 bg-yellow-50"
@@ -262,7 +262,7 @@ export default function CancelBookingDialog({
           </div>
           {/* Payment Summary Card */}
             {selectedBooking.paymentStatus === "PAID" ? (
-              <div className="rounded-lg border-2 border-gray-300 bg-white p-3">
+              <div className="rounded-md border-2 border-gray-300 bg-white p-3">
                 <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm mb-3">
                   <Wallet className="w-4 h-4" />
                   Refund Breakdown
@@ -292,7 +292,7 @@ export default function CancelBookingDialog({
                
               </div>
             ) : (
-              <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-3">
+              <div className="rounded-md border-2 border-blue-200 bg-blue-50 p-3">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
                   <div>

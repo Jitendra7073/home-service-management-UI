@@ -11,7 +11,7 @@ const ManageBusinessSkeleton = () => {
       <Skeleton className="h-9 w-80" />
 
       {/* ---------------- Business Details Section ---------------- */}
-      <Card className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
+      <Card className="bg-white sm:p-6 sm:border rounded-md space-y-4">
         <div className="flex justify-between items-center">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-9 w-24 rounded-md" />
@@ -28,14 +28,14 @@ const ManageBusinessSkeleton = () => {
       </Card>
 
       {/* ---------------- Time Slots Section ---------------- */}
-      <Card className="bg-white sm:p-6 sm:border rounded-lg space-y-4">
+      <Card className="bg-white sm:p-6 sm:border rounded-md space-y-4">
         <Skeleton className="h-6 w-40" />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="rounded-lg border p-4 space-y-3"
+              className="rounded-md border p-4 space-y-3"
             >
               <Skeleton className="h-5 w-24" />
               <Skeleton className="h-4 w-full" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,116 +12,128 @@ import {
 import { BlockDialog } from "@/components/admin/block-dialog";
 import { ServiceCard } from "@/components/admin/service-card";
 import { EmptyState } from "@/components/admin/empty-state";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { List, Search } from "lucide-react";
 import {
   useAdminServices,
   useRestrictService,
   useLiftServiceRestriction,
 } from "@/hooks/use-admin-queries";
 import {
-  List,
-  Search,
-  Loader2,
-} from "lucide-react";
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 export function ServiceManagement() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [categoryFilter, setCategoryFilter] = useState<string>(
+    searchParams.get("category") || "all"
+  );
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
+  const [page, setPage] = useState(1);
 
-  // Build params for API call
-  const params: { limit: number; categoryId?: string } = { limit: 100 };
+  // Sync URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentQ = params.get("q") || "";
+    const currentCategory = params.get("category") || "all";
 
-  if (categoryFilter !== "all") {
-    params.categoryId = categoryFilter;
-  }
+    if (currentQ === searchQuery && currentCategory === categoryFilter) {
+      return;
+    }
 
-  // Fetch services using custom hook
-  const { data: response, isLoading, error, isError } = useAdminServices(params);
+    if (searchQuery) params.set("q", searchQuery);
+    else params.delete("q");
 
-  const services = response?.data || [];
+    if (categoryFilter !== "all") params.set("category", categoryFilter);
+    else params.delete("category");
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchQuery, categoryFilter, pathname, router, searchParams]);
+
+  // Reset page
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, categoryFilter]);
+
+  // Query
+  const {
+    data: servicesData,
+    isLoading,
+    error,
+  } = useAdminServices({
+    category: categoryFilter === "all" ? undefined : categoryFilter,
+    search: searchQuery,
+    page,
+    limit: 10,
+  });
+
+  const services = servicesData?.data || [];
+  const pagination = servicesData?.pagination;
 
   // Mutations
-  const restrictServiceMutation = useRestrictService();
-  const liftServiceRestrictionMutation = useLiftServiceRestriction();
+  const { mutate: restrictService, isPending: isRestrictPending } =
+    useRestrictService();
+  const { mutate: liftRestriction, isPending: isLiftPending } =
+    useLiftServiceRestriction();
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleBlockService = async (reason: string) => {
     if (!selectedService) return;
-
-    await restrictServiceMutation.mutateAsync({
-      serviceId: selectedService._id,
+    restrictService({
+      serviceId: selectedService.id || selectedService._id,
       reason,
     });
-
     setBlockDialogOpen(false);
-    setSelectedService(null);
   };
 
   const handleUnblockService = async (serviceId: string) => {
-    await liftServiceRestrictionMutation.mutateAsync(serviceId);
-  };
-
-  const getFilteredServices = () => {
-    let filtered = services;
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (service: any) =>
-          service.name?.toLowerCase().includes(query) ||
-          service.description?.toLowerCase().includes(query) ||
-          service.business?.businessName?.toLowerCase().includes(query) ||
-          service.category?.name?.toLowerCase().includes(query)
-      );
-    }
-
-    return filtered;
+    liftRestriction(serviceId);
   };
 
   const categories = Array.from(
     new Set(services.map((s: any) => s.category?.name).filter(Boolean))
-  ).sort();
+  ).sort() as string[];
 
-  const businesses = Array.from(
-    new Set(services.map((s: any) => s.business?.businessName).filter(Boolean))
-  ).sort();
-
-  const isMutationPending =
-    restrictServiceMutation.isPending ||
-    liftServiceRestrictionMutation.isPending;
+  const isMutationPending = isRestrictPending || isLiftPending;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Services Management</h1>
-          <p className="text-muted-foreground">
-            Manage all services across the platform
-          </p>
-        </div>
-      </div>
-
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Filters */}
       <div className="flex flex-col gap-4 md:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name, description, business, or category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10"
           />
         </div>
 
         <div className="flex gap-2">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="h-10 w-[180px]">
               <SelectValue placeholder="Filter by category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category: any) => (
+              {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
                 </SelectItem>
@@ -133,16 +145,26 @@ export function ServiceManagement() {
 
       {/* Services Grid */}
       {isLoading ? (
-        <div className="flex min-h-[400px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="flex flex-col space-y-3">
+              <Skeleton className="h-[200px] w-full rounded-md" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+              </div>
+            </div>
+          ))}
         </div>
-      ) : isError ? (
+      ) : error ? (
         <EmptyState
           icon={List}
           title="Error loading services"
-          description={error?.message || "Something went wrong. Please try again."}
+          description={
+            error?.message || "Something went wrong. Please try again."
+          }
         />
-      ) : getFilteredServices().length === 0 ? (
+      ) : services.length === 0 ? (
         <EmptyState
           icon={List}
           title="No services found"
@@ -153,41 +175,108 @@ export function ServiceManagement() {
           }
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {getFilteredServices().map((service: any) => (
-            <ServiceCard
-              key={service._id}
-              id={service._id}
-              name={service.name}
-              description={service.description || ""}
-              duration={service.durationInMinutes || service.duration || 0}
-              price={service.price}
-              currency={service.currency || "INR"}
-              businessName={
-                service.business?.businessName || service.business?.name || "Unknown"
-              }
-              categoryName={service.category?.name || "Uncategorized"}
-              isRestricted={service.isRestricted || false}
-              restrictionReason={service.restrictionReason}
-              isActive={service.isActive ?? true}
-              onViewDetails={() => { }}
-              onBlock={
-                !service.isRestricted
-                  ? () => {
-                    setSelectedService(service);
-                    setBlockDialogOpen(true);
-                  }
-                  : undefined
-              }
-              onUnblock={
-                service.isRestricted
-                  ? () => handleUnblockService(service._id)
-                  : undefined
-              }
-              isActionPending={isMutationPending}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service: any) => (
+              <ServiceCard
+                key={service.id || service._id}
+                id={service.id || service._id}
+                name={service.name}
+                description={service.description || ""}
+                duration={service.durationInMinutes || service.duration || 0}
+                price={service.price}
+                currency={service.currency || "INR"}
+                businessName={
+                  service.businessProfile?.businessName ||
+                  service.business?.name ||
+                  "Unknown"
+                }
+                categoryName={service.category?.name || "Uncategorized"}
+                isRestricted={service.isRestricted || false}
+                restrictionReason={service.restrictionReason}
+                isActive={service.isActive ?? true}
+                onViewDetails={() =>
+                  router.push(`/admin/services/${service.id || service._id}`)
+                }
+                onBlock={
+                  !service.isRestricted
+                    ? () => {
+                        setSelectedService(service);
+                        setBlockDialogOpen(true);
+                      }
+                    : undefined
+                }
+                onUnblock={
+                  service.isRestricted
+                    ? () => handleUnblockService(service.id || service._id)
+                    : undefined
+                }
+                isActionPending={isMutationPending}
+              />
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => handlePageChange(page - 1)}
+                      className={
+                        page <= 1
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+
+                  {Array.from(
+                    { length: pagination.totalPages },
+                    (_, i) => i + 1
+                  ).map((p) => {
+                    if (
+                      pagination.totalPages > 10 &&
+                      Math.abs(page - p) > 2 &&
+                      p !== 1 &&
+                      p !== pagination.totalPages
+                    ) {
+                      if (Math.abs(page - p) === 3)
+                        return (
+                          <PaginationItem key={p}>
+                            <span className="px-4">...</span>
+                          </PaginationItem>
+                        );
+                      return null;
+                    }
+                    return (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={page === p}
+                          onClick={() => handlePageChange(p)}
+                          className="cursor-pointer">
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => handlePageChange(page + 1)}
+                      className={
+                        page >= pagination.totalPages
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
       )}
 
       {/* Block Service Dialog */}
@@ -197,7 +286,9 @@ export function ServiceManagement() {
         onConfirm={handleBlockService}
         title="Restrict Service"
         entityName={selectedService?.name || ""}
-        description={`You are about to restrict ${selectedService?.name || ""}. This will hide the service from customers.`}
+        description={`You are about to restrict ${
+          selectedService?.name || ""
+        }. This will hide the service from customers.`}
       />
     </div>
   );

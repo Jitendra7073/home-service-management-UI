@@ -66,7 +66,7 @@ const CategoryList = ({ isVisible, search }: any) => {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="group relative h-40 rounded-2xl overflow-hidden bg-gray-200 animate-pulse"
+                className="group relative h-40 rounded-md overflow-hidden bg-gray-200 animate-pulse"
               />
             ))}
           </div>
@@ -106,7 +106,7 @@ const CategoryList = ({ isVisible, search }: any) => {
         {/* SEARCH ENABLED IF search={true} */}
         {search && (
           <div className="relative group pb-10">
-            <div className="flex items-center border bg-white rounded-xl px-4 sm:px-6 py-3 sm:py-4 gap-3">
+            <div className="flex items-center border bg-white rounded-md px-4 sm:px-6 py-3 sm:py-4 gap-3">
               <Search className="w-5 h-5 text-gray-400" />
               <input
                 type="text"

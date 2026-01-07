@@ -186,7 +186,7 @@ function MobileNavItem({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-muted"
+      className="flex items-center gap-3 px-3 py-3 rounded-md hover:bg-muted"
     >
       <Icon className="h-5 w-5 text-primary" />
       <span className="text-base font-medium">{label}</span>
@@ -202,7 +202,7 @@ function PromoCard({
   image: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-lg border">
+    <div className="relative overflow-hidden rounded-md border">
       <Image
         src={image}
         alt={title}

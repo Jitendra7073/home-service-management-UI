@@ -12,7 +12,6 @@ interface BusinessCardProps {
   ownerEmail: string;
   email?: string;
   phone?: string;
-  address: string;
   isApproved: boolean;
   isRejected: boolean;
   isRestricted: boolean;
@@ -22,7 +21,7 @@ interface BusinessCardProps {
   onReject?: () => void;
   onBlock?: () => void;
   onUnblock?: () => void;
-  isActionPending?: boolean;
+  actionLoading?: string | null;
 }
 
 export function BusinessCard({
@@ -34,7 +33,6 @@ export function BusinessCard({
   ownerEmail,
   email,
   phone,
-  address,
   isApproved,
   isRejected,
   isRestricted,
@@ -44,7 +42,7 @@ export function BusinessCard({
   onReject,
   onBlock,
   onUnblock,
-  isActionPending = false,
+  actionLoading = null,
 }: BusinessCardProps) {
   const getStatusBadge = () => {
     if (isRestricted) {
@@ -83,19 +81,19 @@ export function BusinessCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardHeader className="pb-4">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow gap-0 p-0">
+      <CardHeader className="bg-gray-800 p-5 text-white gap-0">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="mb-2 text-xl">{name}</CardTitle>
+            <CardTitle className="mb-3 text-xl">{name}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               {getStatusBadge()}
-              <Badge variant="outline">{category}</Badge>
+              <Badge variant="outline" className="text-gray-400 border-gray-400">{category}</Badge>
             </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 pb-4">
+      <CardContent className="space-y-3 p-5">
         <p className="line-clamp-2 text-sm text-muted-foreground">
           {description}
         </p>
@@ -117,14 +115,10 @@ export function BusinessCard({
               <span>{phone}</span>
             </div>
           )}
-          <div className="flex items-start gap-2 text-muted-foreground">
-            <MapPin className="h-4 w-4 flex-shrink-0" />
-            <span className="line-clamp-1">{address}</span>
-          </div>
         </div>
 
         {isRestricted && restrictionReason && (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3">
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3">
             <p className="mb-1 text-xs font-semibold text-destructive">
               Restriction Reason
             </p>
@@ -132,11 +126,11 @@ export function BusinessCard({
           </div>
         )}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex w-auto gap-2 pt-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 gap-2"
+            className="flex-1 w-[300px] gap-2 cursor-pointer"
             onClick={onViewDetails}
           >
             <Eye className="h-4 w-4" />
@@ -150,9 +144,13 @@ export function BusinessCard({
                 size="sm"
                 className="gap-2 bg-emerald-600 hover:bg-emerald-700"
                 onClick={onApprove}
-                disabled={isActionPending}
+                disabled={!!actionLoading}
               >
-                <CheckCircle className="h-4 w-4" />
+                {actionLoading === "approve" ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                    <CheckCircle className="h-4 w-4" />
+                )}
                 Approve
               </Button>
               <Button
@@ -160,9 +158,13 @@ export function BusinessCard({
                 size="sm"
                 className="gap-2"
                 onClick={onReject}
-                disabled={isActionPending}
+                disabled={!!actionLoading}
               >
-                <XCircle className="h-4 w-4" />
+                {actionLoading === "reject" ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                    <XCircle className="h-4 w-4" />
+                )}
                 Reject
               </Button>
             </>
@@ -172,9 +174,13 @@ export function BusinessCard({
               size="sm"
               className="gap-2"
               onClick={onUnblock}
-              disabled={isActionPending}
+              disabled={!!actionLoading}
             >
-              <CheckCircle className="h-4 w-4" />
+              {actionLoading === "unblock" ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                  <CheckCircle className="h-4 w-4" />
+              )}
               Unblock
             </Button>
           ) : onBlock ? (
@@ -183,9 +189,13 @@ export function BusinessCard({
               size="sm"
               className="gap-2"
               onClick={onBlock}
-              disabled={isActionPending}
+              disabled={!!actionLoading}
             >
-              <Ban className="h-4 w-4" />
+              {actionLoading === "block" ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                  <Ban className="h-4 w-4" />
+              )}
               Block
             </Button>
           ) : null}

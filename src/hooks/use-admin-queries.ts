@@ -10,11 +10,13 @@ import { toast } from "sonner";
 // ============= QUERY KEYS =============
 export const adminQueryKeys = {
   dashboard: ["admin", "dashboard"] as const,
+  analytics: ["admin", "dashboard", "analytics"] as const,
   users: (filters?: any) => ["admin", "users", filters] as const,
   user: (userId: string) => ["admin", "user", userId] as const,
   businesses: (filters?: any) => ["admin", "businesses", filters] as const,
   business: (businessId: string) => ["admin", "business", businessId] as const,
-  businessServices: (businessId: string) => ["admin", "business", businessId, "services"] as const,
+  businessServices: (businessId: string) =>
+    ["admin", "business", businessId, "services"] as const,
   services: (filters?: any) => ["admin", "services", filters] as const,
   service: (serviceId: string) => ["admin", "service", serviceId] as const,
 };
@@ -61,22 +63,43 @@ export function useAdminDashboardStats() {
   });
 }
 
+/**
+ * Fetch admin dashboard analytics (graphs)
+ */
+export function useAdminDashboardAnalytics() {
+  return useQuery({
+    queryKey: adminQueryKeys.analytics,
+    queryFn: async () => {
+      const res = await fetch("/api/admin/dashboard/analytics");
+      if (!res.ok) throw new Error("Failed to fetch dashboard analytics");
+      const data = await res.json();
+      return data;
+    },
+    ...ADMIN_CACHE_CONFIG.DASHBOARD,
+  });
+}
+
 // ============= USER MANAGEMENT HOOKS =============
 
 /**
  * Fetch all users with pagination and filters
  */
-export function useAdminUsers(params: {
-  role?: string;
-  page?: number;
-  limit?: number;
-  isRestricted?: boolean;
-} = {}) {
+export function useAdminUsers(
+  params: {
+    role?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+    isRestricted?: boolean;
+  } = {}
+) {
   const queryString = new URLSearchParams();
   if (params.role) queryString.append("role", params.role);
+  if (params.search) queryString.append("search", params.search);
   if (params.page) queryString.append("page", params.page.toString());
   if (params.limit) queryString.append("limit", params.limit.toString());
-  if (params.isRestricted !== undefined) queryString.append("isRestricted", params.isRestricted.toString());
+  if (params.isRestricted !== undefined)
+    queryString.append("isRestricted", params.isRestricted.toString());
 
   return useQuery({
     queryKey: adminQueryKeys.users(params),
@@ -113,7 +136,13 @@ export function useRestrictUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, reason }: { userId: string; reason: string }) => {
+    mutationFn: async ({
+      userId,
+      reason,
+    }: {
+      userId: string;
+      reason: string;
+    }) => {
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -163,26 +192,28 @@ export function useLiftUserRestriction() {
 /**
  * Fetch all businesses with pagination and filters
  */
-export function useAdminBusinesses(params: {
-  isApproved?: boolean;
-  isRejected?: boolean;
-  isRestricted?: boolean;
-  categoryId?: string;
-  page?: number;
-  limit?: number;
-} = {}) {
+export function useAdminBusinesses(
+  params: {
+    status?: string;
+    search?: string;
+    category?: string;
+    page?: number;
+    limit?: number;
+  } = {}
+) {
   const queryString = new URLSearchParams();
-  if (params.isApproved !== undefined) queryString.append("isApproved", params.isApproved.toString());
-  if (params.isRejected !== undefined) queryString.append("isRejected", params.isRejected.toString());
-  if (params.isRestricted !== undefined) queryString.append("isRestricted", params.isRestricted.toString());
-  if (params.categoryId) queryString.append("categoryId", params.categoryId);
+  if (params.status) queryString.append("status", params.status);
+  if (params.search) queryString.append("search", params.search);
+  if (params.category) queryString.append("category", params.category);
   if (params.page) queryString.append("page", params.page.toString());
   if (params.limit) queryString.append("limit", params.limit.toString());
 
   return useQuery({
     queryKey: adminQueryKeys.businesses(params),
     queryFn: async () => {
-      const res = await fetch(`/api/admin/businesses?${queryString.toString()}`);
+      const res = await fetch(
+        `/api/admin/businesses?${queryString.toString()}`
+      );
       if (!res.ok) throw new Error("Failed to fetch businesses");
       const data = await res.json();
       return data;
@@ -256,7 +287,13 @@ export function useRejectBusiness() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ businessId, reason }: { businessId: string; reason?: string }) => {
+    mutationFn: async ({
+      businessId,
+      reason,
+    }: {
+      businessId: string;
+      reason?: string;
+    }) => {
       const res = await fetch(`/api/admin/businesses/${businessId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -282,7 +319,13 @@ export function useRestrictBusiness() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ businessId, reason }: { businessId: string; reason: string }) => {
+    mutationFn: async ({
+      businessId,
+      reason,
+    }: {
+      businessId: string;
+      reason: string;
+    }) => {
       const res = await fetch(`/api/admin/businesses/${businessId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -332,19 +375,25 @@ export function useLiftBusinessRestriction() {
 /**
  * Fetch all services with filters
  */
-export function useAdminServices(params: {
-  isRestricted?: boolean;
-  isActive?: boolean;
-  businessId?: string;
-  categoryId?: string;
-  page?: number;
-  limit?: number;
-} = {}) {
+export function useAdminServices(
+  params: {
+    isRestricted?: boolean;
+    isActive?: boolean;
+    businessId?: string;
+    category?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  } = {}
+) {
   const queryString = new URLSearchParams();
-  if (params.isRestricted !== undefined) queryString.append("isRestricted", params.isRestricted.toString());
-  if (params.isActive !== undefined) queryString.append("isActive", params.isActive.toString());
+  if (params.isRestricted !== undefined)
+    queryString.append("isRestricted", params.isRestricted.toString());
+  if (params.isActive !== undefined)
+    queryString.append("isActive", params.isActive.toString());
   if (params.businessId) queryString.append("businessId", params.businessId);
-  if (params.categoryId) queryString.append("categoryId", params.categoryId);
+  if (params.category) queryString.append("category", params.category);
+  if (params.search) queryString.append("search", params.search);
   if (params.page) queryString.append("page", params.page.toString());
   if (params.limit) queryString.append("limit", params.limit.toString());
 
@@ -367,7 +416,13 @@ export function useRestrictService() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ serviceId, reason }: { serviceId: string; reason: string }) => {
+    mutationFn: async ({
+      serviceId,
+      reason,
+    }: {
+      serviceId: string;
+      reason: string;
+    }) => {
       const res = await fetch(`/api/admin/services/${serviceId}/restrict`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -395,9 +450,12 @@ export function useLiftServiceRestriction() {
 
   return useMutation({
     mutationFn: async (serviceId: string) => {
-      const res = await fetch(`/api/admin/services/${serviceId}/lift-restriction`, {
-        method: "PATCH",
-      });
+      const res = await fetch(
+        `/api/admin/services/${serviceId}/lift-restriction`,
+        {
+          method: "PATCH",
+        }
+      );
       if (!res.ok) throw new Error("Failed to lift restriction");
       return res.json();
     },

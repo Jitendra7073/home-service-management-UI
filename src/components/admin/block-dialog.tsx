@@ -76,11 +76,12 @@ export function BlockDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
+          <Button variant="outline" className="cursor-pointer" onClick={handleCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
             variant="destructive"
+            className="cursor-pointer disabled:cursor-not-allowed"
             onClick={handleConfirm}
             disabled={isSubmitting || !reason.trim()}
           >

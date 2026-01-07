@@ -13,7 +13,7 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     "Receive customer bookings",
     "Basic business analytics",
     "Standard support",
-    "30 days free trial included",
+    "7 days free trial included",
   ],
   PRO: [
     "Publish business profile",
@@ -84,7 +84,7 @@ function PricingCard({
 
   return (
     <div
-      className={`relative flex flex-col rounded-3xl border p-7 transition-all ${
+      className={`relative flex flex-col rounded-md border p-7 transition-all ${
         isActive || (isPremium && isTrialEligible)
           ? "border-blue-500 bg-blue-50 shadow-lg"
           : "border-gray-200 bg-white hover:shadow-lg"
@@ -129,7 +129,7 @@ function PricingCard({
 
         {isPremium && isTrialEligible && !isInTrial && (
           <p className="text-xs text-gray-600">
-            Free for 30 days • Cancel anytime
+            Free for 7 days • Cancel anytime
           </p>
         )}
       </div>

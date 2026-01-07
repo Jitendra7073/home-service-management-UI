@@ -47,12 +47,12 @@ export function NavUser({
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
+              <Avatar className="h-8 w-8 rounded-md grayscale">
                 <AvatarImage
                   src="https://cdn.vectorstock.com/i/500p/29/52/faceless-male-avatar-in-hoodie-vector-56412952.jpg"
                   alt={user.name}
                 />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-md">
                   {user.name ? user.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>
@@ -71,7 +71,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-md"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
@@ -87,12 +87,12 @@ export function NavUser({
                 {subscriptionStatus}
               </Badge>
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-md">
                   <AvatarImage
                     src="https://cdn.vectorstock.com/i/500p/29/52/faceless-male-avatar-in-hoodie-vector-56412952.jpg"
                     alt={user.name}
                   />
-                  <AvatarFallback className="rounded-lg">
+                  <AvatarFallback className="rounded-md">
                     {user.name ? user.name.charAt(0) : "U"}
                   </AvatarFallback>
                 </Avatar>

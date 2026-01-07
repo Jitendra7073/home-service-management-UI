@@ -11,7 +11,7 @@ const ServiceSkeleton = () => {
       <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-8 md:space-y-14">
 
         {/* ---------- Header Skeleton ---------- */}
-        <section className="w-full rounded-2xl border bg-gray-50 px-6 py-6 sm:px-8 sm:py-7">
+        <section className="w-full rounded-md border bg-gray-50 px-6 py-6 sm:px-8 sm:py-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Title */}
             <div className="space-y-2">

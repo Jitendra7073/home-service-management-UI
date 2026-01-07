@@ -1,6 +1,6 @@
 const Welcome = ({username,isLoading, isPending}:any) => {
   return (
-    <section className="w-full rounded-2xl border bg-gray-50 px-6 py-6 sm:px-8 sm:py-8">
+    <section className="w-full rounded-md border bg-gray-50 px-6 py-6 sm:px-8 sm:py-8">
       <div className="space-y-2">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900">
           Welcome back,

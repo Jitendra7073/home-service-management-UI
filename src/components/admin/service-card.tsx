@@ -39,10 +39,10 @@ export function ServiceCard({
   isActionPending = false,
 }: ServiceCardProps) {
   return (
-    <Card className={`overflow-hidden hover:shadow-md transition-shadow ${isRestricted ? "border-destructive/50" : ""} ${!isActive ? "opacity-60" : ""}`}>
-      <CardHeader className="pb-3">
+    <Card className={`overflow-hidden p-0 w-fit max-w-[500px] gap-0 border-0 hover:shadow-md transition-shadow ${isRestricted ? "border-1 border-destructive/50" : ""} ${!isActive ? "opacity-60" : ""}`}>
+      <CardHeader className="bg-gray-800 p-5 text-white gap-0">
         <div className="flex items-start justify-between">
-          <CardTitle className="text-base line-clamp-1">{name}</CardTitle>
+          <CardTitle className="text-lg font-semibold capitalize">{name}</CardTitle>
           <div className="flex gap-1">
             {isRestricted && (
               <Badge variant="destructive" className="gap-1">
@@ -58,9 +58,9 @@ export function ServiceCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="line-clamp-2 text-sm text-muted-foreground">
-          {description}
+      <CardContent className="space-y-3 p-5">
+        <p className="text-sm text-muted-foreground">
+          <i>{description && description.charAt(0).toUpperCase() + description.slice(1)}</i>
         </p>
 
         <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
@@ -69,7 +69,6 @@ export function ServiceCard({
             <span>{duration} mins</span>
           </div>
           <div className="flex items-center gap-1">
-            <DollarSign className="h-4 w-4" />
             <span>
               {currency === "INR" ? "₹" : "$"}{price}
             </span>
@@ -93,11 +92,11 @@ export function ServiceCard({
           </div>
         )}
 
-        <div className="flex gap-2 pt-2">
+        <div className="flex w-fit gap-2 pt-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 gap-2"
+            className="flex-1 w-[300px] gap-2 cursor-pointer"
             onClick={onViewDetails}
           >
             <Eye className="h-4 w-4" />
@@ -107,7 +106,7 @@ export function ServiceCard({
             <Button
               variant="default"
               size="sm"
-              className="gap-2"
+              className="gap-2 cursor-pointer"
               onClick={onUnblock}
               disabled={isActionPending}
             >
@@ -118,7 +117,7 @@ export function ServiceCard({
             <Button
               variant="destructive"
               size="sm"
-              className="gap-2"
+              className="gap-2 cursor-pointer"
               onClick={onBlock}
               disabled={isActionPending}
             >

@@ -36,9 +36,9 @@ import { useRouter } from "next/navigation";
 // Skeleton Loader
 const ProfileSkeleton = () => (
   <div className="space-y-4">
-    <div className="h-32 bg-gray-200 rounded-lg animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-lg animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-lg animate-pulse" />
+    <div className="h-32 bg-gray-200 rounded-md animate-pulse" />
+    <div className="h-48 bg-gray-200 rounded-md animate-pulse" />
+    <div className="h-48 bg-gray-200 rounded-md animate-pulse" />
   </div>
 );
 
@@ -161,7 +161,7 @@ const CustomerProfilePage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-14 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* PROFILE HEADER CARD */}
-          <Card className="shadow-md mb-6 rounded-lg overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md mb-6 rounded-md overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-0">
               <div/>
 
@@ -221,10 +221,10 @@ const CustomerProfilePage = () => {
           </Card>
 
           {/* PERSONAL INFO CARD */}
-          <Card className="shadow-md rounded-lg border-gray-200">
+          <Card className="shadow-md rounded-md border-gray-200">
             <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-lg sm:text-xl">Personal Information</span>
@@ -248,7 +248,7 @@ const CustomerProfilePage = () => {
                   <Mail className="w-4 h-4 text-gray-500" />
                   Email Address
                 </Label>
-                <div className="mt-2 p-3 bg-gray-100 rounded-lg border border-gray-200">
+                <div className="mt-2 p-3 bg-gray-100 rounded-md border border-gray-200">
                   <p className="text-sm sm:text-base text-gray-900 break-all">
                     {user.email}
                   </p>

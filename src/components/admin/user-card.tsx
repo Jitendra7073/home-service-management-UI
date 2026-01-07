@@ -48,18 +48,18 @@ export function UserCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <CardHeader className="pb-4">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow gap-0 p-0">
+      <CardHeader className="bg-gray-800 p-5 text-white gap-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
-              <AvatarFallback>
+              <AvatarFallback className="bg-gray-500">
                 {name.split(" ").map((n) => n[0]).join("")}
               </AvatarFallback>
             </Avatar>
             <div>
               <CardTitle className="text-lg">{name}</CardTitle>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-gray-400">
                 {getRoleIcon()}
                 <span className="capitalize">{role}</span>
               </div>
@@ -73,7 +73,7 @@ export function UserCard({
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 pb-4">
+      <CardContent className="space-y-3 p-5">
         <div className="space-y-1 text-sm">
           <p className="text-muted-foreground">Email</p>
           <p className="font-medium">{email}</p>
@@ -85,7 +85,7 @@ export function UserCard({
           </div>
         )}
         {isRestricted && restrictionReason && (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3">
+          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3">
             <p className="mb-1 text-xs font-semibold text-destructive">
               Restriction Reason
             </p>

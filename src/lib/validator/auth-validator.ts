@@ -41,50 +41,48 @@ const email = yup
     return true;
   });
 
-const password = yup
-  .string()
-  .required("Password is required")
-  .test("password-strength", function (value) {
-    if (!value) return false;
+const password = yup.string().required("Password is required");
+// .test("password-strength", function (value) {
+//   if (!value) return false;
 
-    if (value.length < 8) {
-      return this.createError({
-        message: "Password must be at least 8 characters long",
-      });
-    }
+//   if (value.length < 6) {
+//     return this.createError({
+//       message: "Password must be at least 6 characters long",
+//     });
+//   }
 
-    if (!/[A-Z]/.test(value)) {
-      return this.createError({
-        message: "Password must contain at least one uppercase letter",
-      });
-    }
+//   if (!/[A-Z]/.test(value)) {
+//     return this.createError({
+//       message: "Password must contain at least one uppercase letter",
+//     });
+//   }
 
-    if (!/[a-z]/.test(value)) {
-      return this.createError({
-        message: "Password must contain at least one lowercase letter",
-      });
-    }
+//   if (!/[a-z]/.test(value)) {
+//     return this.createError({
+//       message: "Password must contain at least one lowercase letter",
+//     });
+//   }
 
-    if (!/[0-9]/.test(value)) {
-      return this.createError({
-        message: "Password must contain at least one number",
-      });
-    }
+//   if (!/[0-9]/.test(value)) {
+//     return this.createError({
+//       message: "Password must contain at least one number",
+//     });
+//   }
 
-    if (!/[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\\/]/.test(value)) {
-      return this.createError({
-        message: "Password must contain at least one special character",
-      });
-    }
+//   if (!/[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\\/]/.test(value)) {
+//     return this.createError({
+//       message: "Password must contain at least one special character",
+//     });
+//   }
 
-    if (/\s/.test(value)) {
-      return this.createError({
-        message: "Password must not contain spaces",
-      });
-    }
+//   if (/\s/.test(value)) {
+//     return this.createError({
+//       message: "Password must not contain spaces",
+//     });
+//   }
 
-    return true;
-  });
+//   return true;
+// });
 
 export const registrationSchema = yup.object().shape({
   role: yup.string().oneOf(["customer", "provider"]).required(),
@@ -108,7 +106,7 @@ export const loginSchema = yup.object({
 
 export const forgotPasswordSchema = yup.object({
   email: email,
-}); 
+});
 
 export const resetPasswordSchema = yup.object({
   newPassword: password,

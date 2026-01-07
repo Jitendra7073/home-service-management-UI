@@ -77,7 +77,7 @@ export default function PendingApprovalPage() {
               {businesses.map((business) => (
                 <div
                   key={business._id}
-                  className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4"
+                  className="flex items-center gap-3 rounded-md border border-gray-200 bg-gray-50 p-4"
                 >
                   <Building2 className="h-5 w-5 text-muted-foreground" />
                   <div className="flex-1 text-left">
@@ -105,7 +105,7 @@ export default function PendingApprovalPage() {
             </p>
           </div>
 
-          <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4 max-w-md">
+          <div className="mt-8 rounded-md border border-blue-200 bg-blue-50 p-4 max-w-md">
             <p className="text-sm text-blue-900">
               <span className="font-semibold">What happens next?</span>
             </p>

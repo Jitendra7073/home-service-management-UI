@@ -310,14 +310,14 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="font-semibold text-lg">
+        <h3 className="font-semibold text-lg flex items-center gap-2">
           Booking List{" "}
           {bookings.length > 0 && (
             <span className="text-sm font-normal text-gray-500 ml-2">
               ({bookings.length} total)
             </span>
           )}
-        </h2>
+        </h3>
         <div className="flex gap-2">
           <Input
             placeholder="Search by customer, service, or status..."

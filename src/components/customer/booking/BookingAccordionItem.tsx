@@ -30,13 +30,13 @@ export default function BookingAccordionItem({
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem
         value={booking.id}
-        className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        className="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         <AccordionTrigger className="px-5 py-4 hover:bg-gray-50">
           <div className="relative flex items-center justify-between w-full pr-4">
             {/* LEFT SECTION */}
             <div className="flex items-start gap-4 flex-1">
               {/* Icon */}
-              <div className="hidden md:flex w-12 h-12 rounded-lg bg-gray-700  items-center justify-center">
+              <div className="hidden md:flex w-12 h-12 rounded-md bg-gray-700  items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
 

@@ -228,7 +228,7 @@ export default function ServicesTable({
   return (
     <div className="w-full space-y-4 mb-10">
       <div className="flex justify-between items-center">
-        <h2 className="font-semibold">All Services</h2>
+        <h3 className="font-semibold text-lg flex items-center gap-2">All Services</h3>
 
        <div className="flex gap-2">
          <Input
@@ -242,6 +242,8 @@ export default function ServicesTable({
         />
         {!isLoading && (
           <Button
+          variant="outline"
+            size="icon"
             className="bg-transparent text-black hover:bg-gray-100"
             onClick={() => refetch()}
             disabled={isFetching}>

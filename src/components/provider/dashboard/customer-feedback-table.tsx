@@ -53,10 +53,6 @@ const columns: ColumnDef<Feedback>[] = [
 
       return (
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
           <span className="font-medium">{name}</span>
         </div>
       );
@@ -165,7 +161,6 @@ export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       <div className="flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-lg flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
             Customer Feedback
           </h3>
           {feedbacks.length > 0 && (
@@ -225,13 +220,9 @@ export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: num
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center py-10">
-                  <div className="flex flex-col items-center gap-2">
-                    <MessageSquare className="h-12 w-12 text-gray-300" />
-                    <div className="text-gray-500 font-medium">No feedback yet</div>
                     <p className="text-sm text-gray-400">
                       Customer reviews will appear here once you receive feedback
                     </p>
-                  </div>
                 </TableCell>
               </TableRow>
             )}

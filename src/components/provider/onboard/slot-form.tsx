@@ -166,7 +166,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-lg shadow-md border overflow-hidden">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-md shadow-md border overflow-hidden">
       {/* HEADER */}
       <div className="relative w-full h-36 sm:h-44 md:h-70">
         <img src={headerImage} className="w-full h-full object-contain" />

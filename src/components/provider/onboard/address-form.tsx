@@ -91,7 +91,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
   const mapImg = `/images/p/world.png`;
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-lg md:shadow-md overflow-hidden sm:border">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-md md:shadow-md overflow-hidden sm:border">
       {/* MAP HEADER */}
       <div className="relative w-full h-70">
         <img

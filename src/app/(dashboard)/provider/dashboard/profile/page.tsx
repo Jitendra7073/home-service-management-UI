@@ -151,7 +151,7 @@ const CustomerProfilePage = () => {
       <div className="min-h-screen  py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           {/* PROFILE HEADER CARD */}
-          <Card className="shadow-md mb-6 rounded-lg overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md mb-6 rounded-md overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-0">
               <div className="h-24 sm:h-32 bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800" />
 
@@ -211,10 +211,10 @@ const CustomerProfilePage = () => {
           </Card>
 
           {/* PERSONAL INFO CARD */}
-          <Card className="shadow-md rounded-lg border-gray-200 hover:shadow-lg transition-shadow mb-6">
+          <Card className="shadow-md rounded-md border-gray-200 hover:shadow-lg transition-shadow mb-6">
             <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-lg sm:text-xl">Personal Information</span>
@@ -238,7 +238,7 @@ const CustomerProfilePage = () => {
                   <Mail className="w-4 h-4 text-gray-500" />
                   Email Address
                 </Label>
-                <div className="mt-2 p-3 bg-gray-100 rounded-lg border border-gray-200">
+                <div className="mt-2 p-3 bg-gray-100 rounded-md border border-gray-200">
                   <p className="text-sm sm:text-base text-gray-900 break-all">
                     {user.email}
                   </p>
@@ -270,10 +270,10 @@ const CustomerProfilePage = () => {
           </Card>
 
           {/* ADDRESS INFO CARD */}
-          <Card className="shadow-md rounded-lg border-gray-200 hover:shadow-lg transition-shadow mb-6">
+          <Card className="shadow-md rounded-md border-gray-200 hover:shadow-lg transition-shadow mb-6">
             <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4 flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-lg sm:text-xl">Addresses</span>
@@ -283,7 +283,7 @@ const CustomerProfilePage = () => {
             <CardContent className="p-4 sm:p-6">
               {user?.addresses && user.addresses.length > 0 && (
                 <div className="space-y-4">
-                  <div className="p-4 sm:p-6 rounded-lg border-2 border-border hover:border-border/80 transition-all bg-gradient-to-br from-muted/50 to-card">
+                  <div className="p-4 sm:p-6 rounded-md border-2 border-border hover:border-border/80 transition-all bg-gradient-to-br from-muted/50 to-card">
                     {/* Address Details */}
                     <div className="space-y-3">
                       {/* Street Address */}

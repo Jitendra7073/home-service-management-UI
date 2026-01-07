@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUserDetails, useUnblockUser } from "@/lib/hooks/useAdminApi";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft,
   User,
@@ -16,20 +16,48 @@ import {
   MapPin,
   Ban,
   Shield,
-  Loader2,
   Building2,
 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function UserDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const userId = params.userId as string;
+  const queryClient = useQueryClient();
 
-  // Fetch user details using custom hook
-  const { data: user, isLoading, error } = useUserDetails(userId);
+  // Fetch user details
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      
+      const res = await fetch(`/api/admin/users/${userId}`);
+      if (!res.ok) {
+         throw new Error("Failed to fetch user details");
+      }
+      const result = await res.json();
+      return result.data;
+    },
+    retry: 1
+  });
+
+  console.log("user", user);
 
   // Mutation for unblocking user
-  const unblockUserMutation = useUnblockUser();
+  const unblockUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+       const res = await fetch(`/api/admin/users/${userId}/lift-restriction`, {
+         method: "PATCH"
+       });
+       if (!res.ok) throw new Error("Failed to unblock user");
+       return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", userId] });
+      // Also invalidate list
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    }
+  });
 
   const handleUnblockUser = async () => {
     try {
@@ -42,8 +70,52 @@ export default function UserDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="space-y-6 max-w-7xl mx-auto">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10 rounded-md" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-8 w-[250px]" />
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Profile Card Skeleton */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <Skeleton className="h-6 w-[150px]" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex justify-center">
+                <Skeleton className="h-32 w-32 rounded-full" />
+              </div>
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="space-y-1">
+                    <Skeleton className="h-4 w-[100px]" />
+                    <Skeleton className="h-5 w-[200px]" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Activity Summary Skeleton */}
+          <Card className="md:col-span-2 lg:col-span-2">
+            <CardHeader>
+              <Skeleton className="h-6 w-[150px]" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6 md:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-[100px]" />
+                    <Skeleton className="h-6 w-[120px]" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -59,11 +131,34 @@ export default function UserDetailsPage() {
     );
   }
 
-  const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
-  const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
+  // Handle data mapping based on API response structure
+  const fullName = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+  const initials = fullName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+    
   const memberDays = Math.floor(
     (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)
   );
+
+  // Get primary address
+  const primaryAddress = user.addresses && user.addresses.length > 0 
+    ? user.addresses[0] 
+    : null;
+
+  const formatAddress = (addr: any) => {
+    if (!addr) return "No address provided";
+    
+    // Check if it's just a string or an object
+    if (typeof addr === 'string') return addr;
+    
+    return [addr.street, addr.city, addr.state, addr.postalCode, addr.country]
+      .filter(Boolean)
+      .join(", ");
+  };
 
   const getRoleIcon = () => {
     switch (user.role) {
@@ -73,6 +168,8 @@ export default function UserDetailsPage() {
         return <Building2 className="h-3 w-3" />;
       case "admin":
         return <Shield className="h-3 w-3" />;
+      default:
+        return <User className="h-3 w-3" />;
     }
   };
 
@@ -155,12 +252,12 @@ export default function UserDetailsPage() {
                 </div>
               )}
 
-              {user.address && (
+              {primaryAddress && (
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Address</p>
                   <div className="flex items-start gap-2">
                     <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                    <p className="font-medium">{user.address}</p>
+                    <p className="font-medium">{formatAddress(primaryAddress)}</p>
                   </div>
                 </div>
               )}
@@ -185,7 +282,7 @@ export default function UserDetailsPage() {
               <CardTitle className="text-destructive">Restriction Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
                 <p className="mb-2 text-sm font-semibold text-destructive">Reason for Restriction</p>
                 <p className="text-destructive">{user.restrictionReason}</p>
               </div>
@@ -200,15 +297,63 @@ export default function UserDetailsPage() {
         )}
 
         {/* Provider Businesses */}
-        {user.role === "provider" && user.businesses && user.businesses.length > 0 && (
+        {user.role === "provider" && user.businessProfile && (
+           <Card className="md:col-span-2 lg:col-span-2">
+             <CardHeader>
+               <CardTitle>Business Profile</CardTitle>
+             </CardHeader>
+             <CardContent>
+               <Card key={user.businessProfile.id}>
+                 <CardHeader className="pb-3">
+                   <div className="flex items-start justify-between">
+                     <CardTitle className="text-base">
+                       {user.businessProfile.businessName}
+                     </CardTitle>
+                     <div className="flex gap-1">
+                       {user.businessProfile.isRestricted && (
+                         <Badge variant="destructive" className="gap-1">
+                           <Ban className="h-3 w-3" />
+                           Blocked
+                         </Badge>
+                       )}
+                       {!user.businessProfile.isApproved && (
+                         <Badge variant="outline" className="border-yellow-600 text-yellow-700">
+                           Pending
+                         </Badge>
+                       )}
+                       {user.businessProfile.isApproved && !user.businessProfile.isRestricted && (
+                         <Badge variant="default" className="bg-emerald-600">
+                           Approved
+                         </Badge>
+                       )}
+                     </div>
+                   </div>
+                 </CardHeader>
+                 <CardContent>
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     className="w-full gap-2"
+                     onClick={() => router.push(`/admin/businesses/${user.businessProfile?.id}`)}
+                   >
+                     View Business Details
+                   </Button>
+                 </CardContent>
+               </Card>
+             </CardContent>
+           </Card>
+        )}
+        
+        {/* Legacy Business Array Support (if API returns array) */}
+        {user.role === "provider" && user.businesses && user.businesses.length > 0 && !user.businessProfile && (
           <Card className="md:col-span-2 lg:col-span-2">
             <CardHeader>
               <CardTitle>Businesses ({user.businesses.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                {user.businesses.map((business) => (
-                  <Card key={business._id}>
+                {user.businesses.map((business: any) => (
+                  <Card key={business._id || business.id}>
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-base">
@@ -239,7 +384,7 @@ export default function UserDetailsPage() {
                         variant="outline"
                         size="sm"
                         className="w-full gap-2"
-                        onClick={() => router.push(`/admin/businesses/${business._id}`)}
+                        onClick={() => router.push(`/admin/businesses/${business._id || business.id}`)}
                       >
                         View Business Details
                       </Button>

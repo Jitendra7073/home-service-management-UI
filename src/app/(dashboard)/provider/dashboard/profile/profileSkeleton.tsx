@@ -9,7 +9,7 @@ const ProfileSkeleton = () => {
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* ===== PROFILE HEADER ===== */}
-        <Card className="shadow-md rounded-lg overflow-hidden">
+        <Card className="shadow-md rounded-md overflow-hidden">
           <CardContent className="p-0">
             {/* Cover */}
             <div className="h-24 sm:h-32 bg-gray-300" />
@@ -44,10 +44,10 @@ const ProfileSkeleton = () => {
         </Card>
 
         {/* ===== PERSONAL INFO ===== */}
-        <Card className="shadow-md rounded-lg">
+        <Card className="shadow-md rounded-md">
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="h-8 w-8 rounded-md" />
               <Skeleton className="h-6 w-48" />
             </div>
           </CardHeader>
@@ -60,7 +60,7 @@ const ProfileSkeleton = () => {
 
             <div>
               <Skeleton className="h-4 w-36" />
-              <Skeleton className="h-10 w-full mt-2 rounded-lg" />
+              <Skeleton className="h-10 w-full mt-2 rounded-md" />
             </div>
 
             <div>
@@ -76,10 +76,10 @@ const ProfileSkeleton = () => {
         </Card>
 
         {/* ===== ADDRESS INFO ===== */}
-        <Card className="shadow-md rounded-lg">
+        <Card className="shadow-md rounded-md">
           <CardHeader className="bg-gray-50 border-b">
             <div className="flex items-center gap-2">
-              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="h-8 w-8 rounded-md" />
               <Skeleton className="h-6 w-32" />
             </div>
           </CardHeader>

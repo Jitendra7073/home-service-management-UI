@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
               {/* LOGO */}
               <Link
                 href="/customer"
-                className="bg-white h-20 w-40 flex items-center justify-center rounded-lg">
+                className="bg-white h-20 w-40 flex items-center justify-center rounded-md">
                 <Image
                   src="/HSM-logo.png"
                   alt="ServiceHub Logo"

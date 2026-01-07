@@ -62,7 +62,7 @@ export default function CancellationStatusAlert({
 
     if (compact) {
         return (
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${statusConfig.bgColor} ${statusConfig.borderColor} border`}>
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-md ${statusConfig.bgColor} ${statusConfig.borderColor} border`}>
                 <Icon className={`w-4 h-4 ${statusConfig.color}`} />
                 <div className="flex-1">
                     <p className={`text-xs font-semibold ${statusConfig.color}`}>
@@ -80,7 +80,7 @@ export default function CancellationStatusAlert({
     }
 
     return (
-        <div className={`p-3 rounded-lg ${statusConfig.bgColor} ${statusConfig.borderColor} border`}>
+        <div className={`p-3 rounded-md ${statusConfig.bgColor} ${statusConfig.borderColor} border`}>
             <div className="flex items-start gap-3">
                 <Icon className={`w-5 h-5 ${statusConfig.color} mt-0.5 flex-shrink-0`} />
                 <div className="flex-1">

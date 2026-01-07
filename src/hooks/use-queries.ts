@@ -144,7 +144,7 @@ export function useUserProfile() {
     return useQuery({
         queryKey: queryKeys.common.profile,
         queryFn: async () => {
-            const res = await fetch("/api/v1/common/profile");
+            const res = await fetch("/api/common/profile");
             if (!res.ok) throw new Error("Failed to fetch profile");
             return res.json();
         },

@@ -58,7 +58,7 @@ const NotificationPopup = ({
       animate={{ opacity: 1, x: 0, y: 0 }}
       exit={{ opacity: 0, x: 400, transition: { duration: 0.2 } }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="relative mb-3 overflow-hidden rounded-lg shadow-2xl"
+      className="relative mb-3 overflow-hidden rounded-md shadow-2xl"
     >
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200">
@@ -73,7 +73,7 @@ const NotificationPopup = ({
       {/* Notification Card */}
       <div
         onClick={handleClick}
-        className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all min-w-[380px] max-w-[420px]"
+        className="bg-white border border-gray-200 rounded-md p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all min-w-[380px] max-w-[420px]"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3">

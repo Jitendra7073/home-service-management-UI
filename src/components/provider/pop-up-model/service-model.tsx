@@ -35,7 +35,7 @@ const ServiceAwarenessModal = () => {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 w-[320px] rounded-lg border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer"
+      className="fixed bottom-4 right-4 z-50 w-[320px] rounded-md border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer"
       onClick={() => setServiceModelOpen(true)}>
       {/* Close Button */}
       <button

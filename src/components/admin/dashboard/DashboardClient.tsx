@@ -4,6 +4,7 @@ import { useAdminDashboardStats } from "@/hooks/use-admin-queries";
 import { StatsGrid } from "@/components/admin/dashboard/stats-grid";
 import { QuickActions } from "@/components/admin/dashboard/quick-actions";
 import { AlertsSection } from "@/components/admin/dashboard/alerts-section";
+import { AdminAnalyticsCharts } from "@/components/admin/dashboard/AdminAnalyticsCharts";
 
 export function DashboardClient() {
     const { data: response, isLoading, error } = useAdminDashboardStats();
@@ -15,15 +16,7 @@ export function DashboardClient() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
-                <p className="text-muted-foreground">
-                    Welcome to your admin dashboard. Here's what's happening on the platform.
-                </p>
-            </div>
-
+        <div className="space-y-6 max-w-7xl mx-auto">
             {/* Stats Grid */}
             {error ? (
                 <div className="p-4 border border-red-200 rounded-md bg-red-50 text-red-800">
@@ -33,6 +26,9 @@ export function DashboardClient() {
             ) : (
                 <StatsGrid stats={stats || null} isLoading={isLoading} />
             )}
+
+            {/* Analytics Charts */}
+            <AdminAnalyticsCharts />
 
             {/* Quick Actions */}
             <QuickActions />

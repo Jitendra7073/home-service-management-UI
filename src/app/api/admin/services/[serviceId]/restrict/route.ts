@@ -1,32 +1,20 @@
-import { backend } from "@/lib/backend";
 import { NextRequest, NextResponse } from "next/server";
+import { backend } from "@/lib/backend";
 
-export async function PATCH(
-  req: NextRequest,
-  props: { params: Promise<{ serviceId: string }> }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ serviceId: string }> }) {
   const params = await props.params;
   try {
     const body = await req.json();
-    const { reason } = body;
-
-    let endpoint = `/api/v1/admin/services/${params.serviceId}/restrict`;
-
-    const { data } = await backend(endpoint, {
+    const backendRes = await backend(`/api/v1/admin/services/${params.serviceId}/restrict`, {
       method: "PATCH",
-      body: JSON.stringify({ reason }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json(backendRes.data, { status: backendRes.status ?? 200 });
   } catch (err: any) {
     return NextResponse.json(
-      {
-        ok: false,
-        message: err.message || "Failed to update service",
-      },
+      { ok: false, message: err.message || "Failed to restrict service" },
       { status: 500 }
     );
   }

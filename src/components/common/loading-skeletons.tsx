@@ -184,7 +184,7 @@ export function ServiceListSkeleton({
       {Array.from({ length: count }).map((_, i) => (
         <Card key={i} className="p-4">
           <div className="flex items-center gap-4">
-            <Skeleton className="h-16 w-16 rounded-lg" />
+            <Skeleton className="h-16 w-16 rounded-md" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-5 w-48" />
               <Skeleton className="h-4 w-64" />

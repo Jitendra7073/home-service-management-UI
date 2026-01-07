@@ -21,7 +21,7 @@ export default async function ResetPasswordPage() {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-muted px-4">
-      <div className="w-full max-w-3xl md:max-w-4xl rounded-xl bg-card shadow-lg border overflow-hidden grid grid-cols-1 md:grid-cols-2">
+      <div className="w-full max-w-3xl md:max-w-4xl rounded-md bg-card shadow-lg border overflow-hidden grid grid-cols-1 md:grid-cols-2">
         <div className="p-8 flex items-center justify-center">
           <Card className="w-full border-0 shadow-none">
             <CardHeader className="px-0">

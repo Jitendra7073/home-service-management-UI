@@ -62,10 +62,9 @@ const DashboardComponents = () => {
             size="sm"
             onClick={handleGlobalRefresh}
             disabled={isRefreshing || isLoading}
-            className="gap-2 shrink-0"
+            className="absolute  top-4 right-17 gap-2  border-none shadow-none"
             title="Refresh all dashboard data">
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            {isRefreshing ? "Refreshing..." : "Refresh"}
           </Button>
         </div>
 
@@ -122,7 +121,6 @@ const DashboardComponents = () => {
           ) ? (
             <section className="space-y-6">
                 <BookingTable />
-                <FeedbackTable />
             </section>
           ) : (
             <ServicesTable />

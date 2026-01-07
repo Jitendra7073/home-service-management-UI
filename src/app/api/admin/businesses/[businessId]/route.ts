@@ -50,6 +50,8 @@ export async function PATCH(
       endpoint += "/restrict";
     } else if (action === "lift-restriction") {
       endpoint += "/lift-restriction";
+    } else if (action === "reject") {
+      endpoint += "/reject";
     }
 
     const backendRes = await backend(endpoint, {

@@ -23,7 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const CancellationSkeleton = () => {
   return (
-    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-lg shadow-sm animate-pulse">
+    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-md shadow-sm animate-pulse">
       <div className="flex items-start gap-3">
         <div className="flex-1 space-y-4">
           <div className="flex justify-start items-center gap-3">
@@ -38,7 +38,7 @@ const CancellationSkeleton = () => {
           <div className="h-3 w-2/3 bg-red-100 rounded" />
 
           {/* Amount card */}
-          <div className="bg-white rounded-lg p-3 border border-red-200 space-y-3">
+          <div className="bg-white rounded-md p-3 border border-red-200 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-2">
@@ -174,7 +174,7 @@ export default function BookingDetailsSection({
       )}
 
       {booking.bookingStatus === "CANCELLED" && cancellation && (
-        <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-lg ">
+        <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-md ">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <div className="flex justify-start gap-2 items-center mb-2 ">
@@ -190,7 +190,7 @@ export default function BookingDetailsSection({
               </p>
 
               {cancellation && cancellation.refundAmount > 0 && (
-                <div className="bg-white rounded-lg p-3 border border-red-200">
+                <div className="bg-white rounded-md p-3 border border-red-200">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div>
                       <p className="text-xs text-gray-500 mb-1">
@@ -301,7 +301,7 @@ export default function BookingDetailsSection({
       {/* ------------------------- PENDING PAYMENT ------------------------- */}
       {isPendingPayment ? (
         <div className="w-full">
-          <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-md">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h5 className="font-semibold text-yellow-800 mb-1">

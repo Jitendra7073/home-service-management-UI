@@ -31,7 +31,9 @@ import {
   Image as ImageIcon,
   Clock,
   DollarSign,
+  XCircle,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface BusinessData {
   _id: string;
@@ -96,7 +98,9 @@ export default function BusinessDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [blockReason, setBlockReason] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
@@ -112,12 +116,31 @@ export default function BusinessDetailsPage() {
         credentials: "include",
       });
 
-      const data: BusinessResponse = await res.json();
-
-      if (data.ok && data.business) {
-        setBusiness(data.business);
+      const json = await res.json();
+      
+      // Handle the nested structure { success: true, data: { ... } }
+      // The API returns 'data' which contains the business object
+      if ((json.success || json.ok) && json.data) {
+        const businessData = json.data;
+        // Map API response to match interface if needed
+        const mappedBusiness: BusinessData = {
+            ...businessData,
+            _id: businessData.id || businessData._id,
+            owner: businessData.user ? {
+                ...businessData.user,
+                _id: businessData.user.id || businessData.user._id,
+                firstName: businessData.user.name?.split(" ")[0] || "",
+                lastName: businessData.user.name?.split(" ").slice(1).join(" ") || "",
+            } : { _id: "", firstName: "Unknown", lastName: "", email: "" },
+            // Address logic might need adjustment if address is an object or string in API
+            // The provided JSON doesn't show address field, let's check user addresses
+            address: businessData.address || "No address provided",
+            email: businessData.contactEmail,
+            phone: businessData.phoneNumber
+        };
+        setBusiness(mappedBusiness);
       } else {
-        toast.error(data.message || "Failed to fetch business details");
+        toast.error(json.message || "Failed to fetch business details");
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to fetch business details");
@@ -134,17 +157,79 @@ export default function BusinessDetailsPage() {
         credentials: "include",
       });
 
-      const data: ServicesResponse = await res.json();
+      const json = await res.json();
 
-      if (data.ok && data.services) {
-        setServices(data.services);
+      if ((json.success || json.ok) && json.data) {
+        setServices(json.data);
       } else {
-        toast.error(data.message || "Failed to fetch services");
+        // If services empty or error
+        if (json.data === undefined) {
+             toast.error(json.message || "Failed to fetch services");
+        } else {
+             setServices([]);
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to fetch services");
     } finally {
       setServicesLoading(false);
+    }
+  };
+
+  const handleApproveBusiness = async () => {
+    try {
+      setActionLoading(true);
+      const res = await fetch(`/api/admin/businesses/${businessId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve" }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        toast.success("Business approved successfully");
+        fetchBusinessDetails();
+      } else {
+        toast.error(data.message || "Failed to approve business");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to approve business");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRejectBusiness = async () => {
+    if (!rejectReason.trim()) {
+      toast.error("Please provide a reason for rejection");
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      const res = await fetch(`/api/admin/businesses/${businessId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject", reason: rejectReason }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        toast.success("Business rejected successfully");
+        setRejectDialogOpen(false);
+        setRejectReason("");
+        fetchBusinessDetails();
+      } else {
+        toast.error(data.message || "Failed to reject business");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reject business");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -251,8 +336,56 @@ export default function BusinessDetailsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[600px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-1">
+            <Card>
+              <CardHeader><Skeleton className="h-6 w-40" /></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader><Skeleton className="h-6 w-40" /></CardHeader>
+              <CardContent className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader><Skeleton className="h-6 w-32" /></CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Skeleton className="h-40 rounded-md" />
+                  <Skeleton className="h-40 rounded-md" />
+                  <Skeleton className="h-40 rounded-md" />
+                  <Skeleton className="h-40 rounded-md" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     );
   }
@@ -300,9 +433,40 @@ export default function BusinessDetailsPage() {
                 Approved
               </Badge>
             )}
+            {business.isRejected && (
+              <Badge variant="destructive" className="gap-1">
+                <XCircle className="h-3 w-3" />
+                Rejected
+              </Badge>
+            )}
           </div>
           <p className="text-muted-foreground">{business.category.name}</p>
         </div>
+        
+        {/* Actions */}
+        {!business.isApproved && !business.isRejected && !business.isRestricted && (
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="gap-2 border-destructive text-destructive"
+              onClick={() => setRejectDialogOpen(true)}
+              disabled={actionLoading}
+            >
+              <XCircle className="h-4 w-4" />
+              Reject
+            </Button>
+            <Button
+              variant="default"
+              className="gap-2 bg-green-600 hover:bg-green-700"
+              onClick={handleApproveBusiness}
+              disabled={actionLoading}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+              Approve
+            </Button>
+          </div>
+        )}
+
         {business.isRestricted ? (
           <Button
             variant="default"
@@ -310,19 +474,21 @@ export default function BusinessDetailsPage() {
             onClick={handleUnblockBusiness}
             disabled={actionLoading}
           >
-            <CheckCircle className="h-4 w-4" />
+            {actionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
             Unblock Business
           </Button>
         ) : (
-          <Button
-            variant="destructive"
-            className="gap-2"
-            onClick={() => setBlockDialogOpen(true)}
-            disabled={actionLoading}
-          >
-            <Ban className="h-4 w-4" />
-            Block Business
-          </Button>
+          business.isApproved && (
+            <Button
+              variant="destructive"
+              className="gap-2"
+              onClick={() => setBlockDialogOpen(true)}
+              disabled={actionLoading}
+            >
+              <Ban className="h-4 w-4" />
+              Block Business
+            </Button>
+          )
         )}
       </div>
 
@@ -400,6 +566,12 @@ export default function BusinessDetailsPage() {
               </CardContent>
             </Card>
           )}
+
+          {business.isRejected && !business.isRestricted && (
+             // Show rejection reason (API might not return it in the main object, assuming restrictionReason or similar field if supported)
+             // If not supported yet, skipping for now, or could re-purpose restrictionReason if the backend uses it.
+             null
+          )}
         </div>
 
         {/* Services */}
@@ -410,8 +582,9 @@ export default function BusinessDetailsPage() {
             </CardHeader>
             <CardContent>
               {servicesLoading ? (
-                <div className="flex min-h-[200px] items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                 <div className="grid gap-4 md:grid-cols-2">
+                  <Skeleton className="h-40 rounded-md" />
+                  <Skeleton className="h-40 rounded-md" />
                 </div>
               ) : services.length === 0 ? (
                 <div className="flex min-h-[200px] flex-col items-center justify-center p-6">
@@ -420,8 +593,8 @@ export default function BusinessDetailsPage() {
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {services.map((service) => (
-                    <Card key={service._id} className={service.isRestricted ? "border-destructive" : ""}>
+                  {services.map((service : any) => (
+                    <Card key={service.id || service._id} className={service.isRestricted ? "border-destructive" : ""}>
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-base">{service.name}</CardTitle>
@@ -440,7 +613,7 @@ export default function BusinessDetailsPage() {
                         <div className="flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span>{service.duration} mins</span>
+                            <span>{service.duration || service.durationInMinutes} mins</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -458,7 +631,7 @@ export default function BusinessDetailsPage() {
                             variant="outline"
                             size="sm"
                             className="flex-1 gap-2"
-                            onClick={() => router.push(`/admin/services/${service._id}`)}
+                            onClick={() => router.push(`/admin/services/${service.id || service._id}`)}
                           >
                             <Eye className="h-4 w-4" />
                             View Details
@@ -468,13 +641,13 @@ export default function BusinessDetailsPage() {
                               variant="default"
                               size="sm"
                               className="gap-2"
-                              onClick={() => handleUnblockService(service._id)}
+                              onClick={() => handleUnblockService(service.id || service._id)}
                             >
                               <CheckCircle className="h-4 w-4" />
                               Unblock
                             </Button>
                           ) : (
-                            <ServiceBlockButton onBlock={(reason) => handleBlockService(service._id, reason)} />
+                            <ServiceBlockButton onBlock={(reason) => handleBlockService(service.id || service._id, reason)} />
                           )}
                         </div>
                       </CardContent>
@@ -541,6 +714,61 @@ export default function BusinessDetailsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Reject Business Dialog */}
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reject Business Application</DialogTitle>
+            <DialogDescription>
+              You are about to reject the application for <span className="font-semibold">{business.name}</span>.
+              Please provide a reason for the rejection.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reject-reason">
+                Reason for rejection <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="reject-reason"
+                placeholder="Provide a reason for rejection..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRejectDialogOpen(false);
+                setRejectReason("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRejectBusiness}
+              disabled={actionLoading || !rejectReason.trim()}
+            >
+              {actionLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Rejecting...
+                </>
+              ) : (
+                <>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Reject Business
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -595,11 +823,12 @@ function ServiceBlockButton({ onBlock }: { onBlock: (reason: string) => void }) 
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" className="cursor-pointer" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button
             variant="destructive"
+             className="cursor-pointer"
             onClick={handleBlock}
             disabled={loading || !reason.trim()}
           >

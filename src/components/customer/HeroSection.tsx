@@ -75,7 +75,7 @@ const HeroSection = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 md:pt-4">
               {features.map((feature, idx) => (
                 <div key={idx} className="flex items-center gap-3 ">
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-md">
                     <feature.icon className="w-5 h-5 text-blue-600" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">
@@ -89,7 +89,7 @@ const HeroSection = () => {
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
                 href={`/customer/explore`}
-                className="flex items-center gap-2 px-8 py-3  bg-gray-800 text-white rounded-xl font-semibold hover:shadow-2xl transition-all ">
+                className="flex items-center gap-2 px-8 py-3  bg-gray-800 text-white rounded-md font-semibold hover:shadow-2xl transition-all ">
                 Book a Service
                 <ArrowRight className="w-5 h-5" />
               </Link>
