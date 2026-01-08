@@ -1,8 +1,9 @@
 import CategoryManagement from "@/components/admin/CategoryManagement";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Category Management | Admin Dashboard",
-  description: "Manage business categories",
+export const metadata: Metadata = {
+  title: "Categories | Fixora",
+  description: "Manage All Categories in Fixora.",
 };
 
 export default function CategoryPage() {
