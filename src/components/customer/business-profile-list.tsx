@@ -4,6 +4,7 @@ import { ArrowRight, ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Type
 interface Category {
@@ -11,8 +12,8 @@ interface Category {
   name: string;
   description: string;
   color: string;
-  totalProvidersCount:number;
-  activeProvidersCount:number;
+  totalProvidersCount: number;
+  activeProvidersCount: number;
 }
 
 const CategoryList = ({ isVisible, search }: any) => {
@@ -66,8 +67,30 @@ const CategoryList = ({ isVisible, search }: any) => {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="group relative h-40 rounded-md overflow-hidden bg-gray-200 animate-pulse"
-              />
+                className="group relative bg-white rounded-md overflow-hidden border border-gray-100 p-6 space-y-4">
+                {/* Title Skeleton */}
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-7 w-1/2 rounded-md" />
+                </div>
+
+                {/* Description Skeleton */}
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full rounded-md" />
+                  <Skeleton className="h-4 w-3/4 rounded-md" />
+                </div>
+
+                {/* Stats Skeleton */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-2">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="w-2.5 h-2.5 rounded-full" />
+                    <Skeleton className="h-4 w-24 rounded-md" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="w-2.5 h-2.5 rounded-full" />
+                    <Skeleton className="h-4 w-24 rounded-md" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -156,7 +179,9 @@ const CategoryList = ({ isVisible, search }: any) => {
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
                       <span className="text-sm text-gray-700">
-                        Total Providers
+                        {category.totalProvidersCount > 1
+                          ? "Total Businesses"
+                          : "Total Business"}
                         <span className="ml-1 font-semibold text-gray-900">
                           {category.totalProvidersCount ?? 0}
                         </span>

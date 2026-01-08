@@ -98,12 +98,20 @@ const columns: ColumnDef<Feedback>[] = [
     ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt") as string);
-      return <span className="text-sm text-gray-500">{date.toLocaleDateString()}</span>;
+      return (
+        <span className="text-sm text-gray-500">
+          {date.toLocaleDateString()}
+        </span>
+      );
     },
   },
 ];
 
-export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
+export default function FeedbackTable({
+  NumberOfRows = 5,
+}: {
+  NumberOfRows?: number;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
 
@@ -187,7 +195,9 @@ export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: num
             onClick={() => refetch()}
             disabled={isFetching}
             title="Refresh feedback">
-            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
           </Button>
         </div>
       </div>
@@ -212,17 +222,22 @@ export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: num
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center py-10">
-                    <p className="text-sm text-gray-400">
-                      Customer reviews will appear here once you receive feedback
-                    </p>
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-10">
+                  <p className="text-sm text-gray-400">
+                    Customer reviews will appear here
+                  </p>
                 </TableCell>
               </TableRow>
             )}
@@ -234,7 +249,8 @@ export default function FeedbackTable({ NumberOfRows = 5 }: { NumberOfRows?: num
       {table.getRowModel().rows.length > NumberOfRows && (
         <div className="flex items-center justify-between px-2">
           <div className="text-sm text-gray-500">
-            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1} to{" "}
+            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1}{" "}
+            to{" "}
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * NumberOfRows,
               table.getRowModel().rows.length

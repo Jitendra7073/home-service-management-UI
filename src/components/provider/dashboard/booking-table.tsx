@@ -44,7 +44,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
 import TableSkeleton from "../tableSkeleton";
-import { BookingStatusBadge, PaymentStatusBadge } from "@/components/customer/booking/StatusBadge";
+import {
+  BookingStatusBadge,
+  PaymentStatusBadge,
+} from "@/components/customer/booking/StatusBadge";
 import { BookingStatus, getAllowedTransitions } from "@/types/booking.types";
 
 type Booking = {
@@ -375,16 +378,9 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
                   colSpan={columns.length}
                   className="text-center py-10">
                   <div className="flex flex-col items-center gap-2">
-                    <div className="text-gray-500 font-medium">
-                      No bookings found
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => refetch()}
-                      className="text-xs">
-                      Refresh to check for new bookings
-                    </Button>
+                    <p className="text-sm text-gray-400">
+                      New Booking will appear here
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -397,7 +393,8 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
       {table.getRowModel().rows.length > NumberOfRows && (
         <div className="flex items-center justify-between px-2">
           <div className="text-sm text-gray-500">
-            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1} to{" "}
+            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1}{" "}
+            to{" "}
             {Math.min(
               (table.getState().pagination.pageIndex + 1) * NumberOfRows,
               table.getRowModel().rows.length

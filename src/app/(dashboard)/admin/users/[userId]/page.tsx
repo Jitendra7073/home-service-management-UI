@@ -1,6 +1,9 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,36 +30,37 @@ export default function UserDetailsPage() {
   const queryClient = useQueryClient();
 
   // Fetch user details
-  const { data: user, isLoading, error } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
-      
       const res = await fetch(`/api/admin/users/${userId}`);
       if (!res.ok) {
-         throw new Error("Failed to fetch user details");
+        throw new Error("Failed to fetch user details");
       }
       const result = await res.json();
       return result.data;
     },
-    retry: 1
+    retry: 1,
   });
-
-  console.log("user", user);
 
   // Mutation for unblocking user
   const unblockUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-       const res = await fetch(`/api/admin/users/${userId}/lift-restriction`, {
-         method: "PATCH"
-       });
-       if (!res.ok) throw new Error("Failed to unblock user");
-       return res.json();
+      const res = await fetch(`/api/admin/users/${userId}/lift-restriction`, {
+        method: "PATCH",
+      });
+      if (!res.ok) throw new Error("Failed to unblock user");
+      return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
       // Also invalidate list
       queryClient.invalidateQueries({ queryKey: ["users"] });
-    }
+    },
   });
 
   const handleUnblockUser = async () => {
@@ -132,29 +136,29 @@ export default function UserDetailsPage() {
   }
 
   // Handle data mapping based on API response structure
-  const fullName = user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
+  const fullName =
+    user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim();
   const initials = fullName
     .split(" ")
     .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
-    
+
   const memberDays = Math.floor(
     (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)
   );
 
   // Get primary address
-  const primaryAddress = user.addresses && user.addresses.length > 0 
-    ? user.addresses[0] 
-    : null;
+  const primaryAddress =
+    user.addresses && user.addresses.length > 0 ? user.addresses[0] : null;
 
   const formatAddress = (addr: any) => {
     if (!addr) return "No address provided";
-    
+
     // Check if it's just a string or an object
-    if (typeof addr === 'string') return addr;
-    
+    if (typeof addr === "string") return addr;
+
     return [addr.street, addr.city, addr.state, addr.postalCode, addr.country]
       .filter(Boolean)
       .join(", ");
@@ -174,14 +178,10 @@ export default function UserDetailsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-        >
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
@@ -204,15 +204,19 @@ export default function UserDetailsPage() {
             variant="default"
             className="gap-2"
             onClick={handleUnblockUser}
-            disabled={unblockUserMutation.isPending}
-          >
+            disabled={unblockUserMutation.isPending}>
             <Shield className="h-4 w-4" />
             Unblock User
           </Button>
         )}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={`${
+          user.role === "provider"
+            ? "grid gap-6 md:grid-cols-2 lg:grid-cols-2"
+            : "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+        }`}>
         {/* Profile Card */}
         <Card className="lg:col-span-1">
           <CardHeader>
@@ -222,9 +226,7 @@ export default function UserDetailsPage() {
             <div className="flex justify-center">
               <Avatar className="h-32 w-32">
                 <AvatarImage src={user.profileImage} />
-                <AvatarFallback className="text-3xl">
-                  {initials}
-                </AvatarFallback>
+                <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
               </Avatar>
             </div>
 
@@ -257,7 +259,9 @@ export default function UserDetailsPage() {
                   <p className="text-sm text-muted-foreground">Address</p>
                   <div className="flex items-start gap-2">
                     <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                    <p className="font-medium">{formatAddress(primaryAddress)}</p>
+                    <p className="font-medium">
+                      {formatAddress(primaryAddress)}
+                    </p>
                   </div>
                 </div>
               )}
@@ -279,17 +283,22 @@ export default function UserDetailsPage() {
         {user.isRestricted && user.restrictionReason && (
           <Card className="border-destructive md:col-span-2 lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-destructive">Restriction Details</CardTitle>
+              <CardTitle className="text-destructive">
+                Restriction Details
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
-                <p className="mb-2 text-sm font-semibold text-destructive">Reason for Restriction</p>
+                <p className="mb-2 text-sm font-semibold text-destructive">
+                  Reason for Restriction
+                </p>
                 <p className="text-destructive">{user.restrictionReason}</p>
               </div>
               <div className="mt-4 text-sm text-muted-foreground">
                 <p>
                   This user is currently restricted from accessing the platform.
-                  To lift the restriction, click the "Unblock User" button above.
+                  To lift the restriction, click the "Unblock User" button
+                  above.
                 </p>
               </div>
             </CardContent>
@@ -298,123 +307,151 @@ export default function UserDetailsPage() {
 
         {/* Provider Businesses */}
         {user.role === "provider" && user.businessProfile && (
-           <Card className="md:col-span-2 lg:col-span-2">
-             <CardHeader>
-               <CardTitle>Business Profile</CardTitle>
-             </CardHeader>
-             <CardContent>
-               <Card key={user.businessProfile.id}>
-                 <CardHeader className="pb-3">
-                   <div className="flex items-start justify-between">
-                     <CardTitle className="text-base">
-                       {user.businessProfile.businessName}
-                     </CardTitle>
-                     <div className="flex gap-1">
-                       {user.businessProfile.isRestricted && (
-                         <Badge variant="destructive" className="gap-1">
-                           <Ban className="h-3 w-3" />
-                           Blocked
-                         </Badge>
-                       )}
-                       {!user.businessProfile.isApproved && (
-                         <Badge variant="outline" className="border-yellow-600 text-yellow-700">
-                           Pending
-                         </Badge>
-                       )}
-                       {user.businessProfile.isApproved && !user.businessProfile.isRestricted && (
-                         <Badge variant="default" className="bg-emerald-600">
-                           Approved
-                         </Badge>
-                       )}
-                     </div>
-                   </div>
-                 </CardHeader>
-                 <CardContent>
-                   <Button
-                     variant="outline"
-                     size="sm"
-                     className="w-full gap-2"
-                     onClick={() => router.push(`/admin/businesses/${user.businessProfile?.id}`)}
-                   >
-                     View Business Details
-                   </Button>
-                 </CardContent>
-               </Card>
-             </CardContent>
-           </Card>
-        )}
-        
-        {/* Legacy Business Array Support (if API returns array) */}
-        {user.role === "provider" && user.businesses && user.businesses.length > 0 && !user.businessProfile && (
           <Card className="md:col-span-2 lg:col-span-2">
             <CardHeader>
-              <CardTitle>Businesses ({user.businesses.length})</CardTitle>
+              <CardTitle>Business Profile</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                {user.businesses.map((business: any) => (
-                  <Card key={business._id || business.id}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-base">
-                          {business.name || business.businessName}
-                        </CardTitle>
-                        <div className="flex gap-1">
-                          {business.isRestricted && (
-                            <Badge variant="destructive" className="gap-1">
-                              <Ban className="h-3 w-3" />
-                              Blocked
-                            </Badge>
-                          )}
-                          {!business.isApproved && (
-                            <Badge variant="outline" className="border-yellow-600 text-yellow-700">
-                              Pending
-                            </Badge>
-                          )}
-                          {business.isApproved && !business.isRestricted && (
-                            <Badge variant="default" className="bg-emerald-600">
-                              Approved
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full gap-2"
-                        onClick={() => router.push(`/admin/businesses/${business._id || business.id}`)}
-                      >
-                        View Business Details
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <Card key={user.businessProfile.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-base">
+                      {user.businessProfile.businessName}
+                    </CardTitle>
+                    <div className="flex gap-1">
+                      {user.businessProfile.isRestricted && (
+                        <Badge variant="destructive" className="gap-1">
+                          <Ban className="h-3 w-3" />
+                          Blocked
+                        </Badge>
+                      )}
+                      {!user.businessProfile.isApproved && (
+                        <Badge
+                          variant="outline"
+                          className="border-yellow-600 text-yellow-700">
+                          Pending
+                        </Badge>
+                      )}
+                      {user.businessProfile.isApproved &&
+                        !user.businessProfile.isRestricted && (
+                          <Badge variant="default" className="bg-emerald-600">
+                            Approved
+                          </Badge>
+                        )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2"
+                    onClick={() =>
+                      router.push(
+                        `/admin/businesses/${user.businessProfile?.id}`
+                      )
+                    }>
+                    View Business Details
+                  </Button>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
         )}
 
+        {/* Legacy Business Array Support (if API returns array) */}
+        {user.role === "provider" &&
+          user.businesses &&
+          user.businesses.length > 0 &&
+          !user.businessProfile && (
+            <Card className="md:col-span-2 lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Businesses ({user.businesses.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {user.businesses.map((business: any) => (
+                    <Card key={business._id || business.id}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <CardTitle className="text-base">
+                            {business.name || business.businessName}
+                          </CardTitle>
+                          <div className="flex gap-1">
+                            {business.isRestricted && (
+                              <Badge variant="destructive" className="gap-1">
+                                <Ban className="h-3 w-3" />
+                                Blocked
+                              </Badge>
+                            )}
+                            {!business.isApproved && (
+                              <Badge
+                                variant="outline"
+                                className="border-yellow-600 text-yellow-700">
+                                Pending
+                              </Badge>
+                            )}
+                            {business.isApproved && !business.isRestricted && (
+                              <Badge
+                                variant="default"
+                                className="bg-emerald-600">
+                                Approved
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-2"
+                          onClick={() =>
+                            router.push(
+                              `/admin/businesses/${business._id || business.id}`
+                            )
+                          }>
+                          View Business Details
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
         {/* Activity Summary */}
-        <Card className="md:col-span-2 lg:col-span-3">
+        <Card
+          className={`${
+            user.role === "provider" ? "md:col-span-2 lg:col-span-2" : ""
+          }`}>
           <CardHeader>
             <CardTitle>Account Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 md:grid-cols-3">
+            <div
+              className={`${
+                user.role === "provider"
+                  ? "grid gap-6 md:grid-cols-3"
+                  : "grid gap-6 md:grid-cols-2"
+              }`}>
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Account Status</p>
                 <div className="flex items-center gap-2">
                   {user.isRestricted ? (
                     <>
                       <Ban className="h-5 w-5 text-destructive" />
-                      <span className="font-medium text-destructive">Restricted</span>
+                      <span className="font-medium text-destructive">
+                        Restricted
+                      </span>
                     </>
                   ) : (
                     <>
                       <Shield className="h-5 w-5 text-emerald-600" />
-                      <span className="font-medium text-emerald-600">Active</span>
+                      <span className="font-medium text-emerald-600">
+                        Active
+                      </span>
                     </>
                   )}
                 </div>

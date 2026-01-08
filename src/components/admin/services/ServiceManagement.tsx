@@ -18,6 +18,7 @@ import {
   useAdminServices,
   useRestrictService,
   useLiftServiceRestriction,
+  useBusinessCategories,
 } from "@/hooks/use-admin-queries";
 import {
   Pagination,
@@ -68,19 +69,39 @@ export function ServiceManagement() {
   }, [searchQuery, categoryFilter]);
 
   // Query
-  const {
-    data: servicesData,
-    isLoading,
-    error,
-  } = useAdminServices({
-    category: categoryFilter === "all" ? undefined : categoryFilter,
-    search: searchQuery,
-    page,
-    limit: 10,
+  const { data: servicesData, isLoading, error } = useAdminServices();
+
+  const allServices = servicesData?.data || [];
+
+  // Client-side Filtering
+  const filteredServices = allServices.filter((service: any) => {
+    // Category Filter
+    if (categoryFilter !== "all" && service.category?.name !== categoryFilter) {
+      return false;
+    }
+
+    // Search Filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchName = service.name?.toLowerCase().includes(q);
+      const matchDesc = service.description?.toLowerCase().includes(q);
+      const matchBusiness = service.businessProfile?.businessName
+        ?.toLowerCase()
+        .includes(q);
+      return matchName || matchDesc || matchBusiness;
+    }
+    return true;
   });
 
-  const services = servicesData?.data || [];
-  const pagination = servicesData?.pagination;
+  // Client-side Pagination
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const paginatedServices = filteredServices.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+  const services = paginatedServices; // For rendering compatibility
 
   // Mutations
   const { mutate: restrictService, isPending: isRestrictPending } =
@@ -106,8 +127,10 @@ export function ServiceManagement() {
     liftRestriction(serviceId);
   };
 
-  const categories = Array.from(
-    new Set(services.map((s: any) => s.category?.name).filter(Boolean))
+  // Fetch Categories for Filtering
+  const { data: categoriesData } = useBusinessCategories();
+  const categories = (
+    categoriesData?.categories?.map((c: any) => c.name) || []
   ).sort() as string[];
 
   const isMutationPending = isRestrictPending || isLiftPending;
@@ -217,7 +240,7 @@ export function ServiceManagement() {
           </div>
 
           {/* Pagination Controls */}
-          {pagination && pagination.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="mt-8">
               <Pagination>
                 <PaginationContent>
@@ -232,41 +255,40 @@ export function ServiceManagement() {
                     />
                   </PaginationItem>
 
-                  {Array.from(
-                    { length: pagination.totalPages },
-                    (_, i) => i + 1
-                  ).map((p) => {
-                    if (
-                      pagination.totalPages > 10 &&
-                      Math.abs(page - p) > 2 &&
-                      p !== 1 &&
-                      p !== pagination.totalPages
-                    ) {
-                      if (Math.abs(page - p) === 3)
-                        return (
-                          <PaginationItem key={p}>
-                            <span className="px-4">...</span>
-                          </PaginationItem>
-                        );
-                      return null;
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (p) => {
+                      if (
+                        totalPages > 10 &&
+                        Math.abs(page - p) > 2 &&
+                        p !== 1 &&
+                        p !== totalPages
+                      ) {
+                        if (Math.abs(page - p) === 3)
+                          return (
+                            <PaginationItem key={p}>
+                              <span className="px-4">...</span>
+                            </PaginationItem>
+                          );
+                        return null;
+                      }
+                      return (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={page === p}
+                            onClick={() => handlePageChange(p)}
+                            className="cursor-pointer">
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
                     }
-                    return (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          isActive={page === p}
-                          onClick={() => handlePageChange(p)}
-                          className="cursor-pointer">
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
+                  )}
 
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(page + 1)}
                       className={
-                        page >= pagination.totalPages
+                        page >= totalPages
                           ? "pointer-events-none opacity-50"
                           : "cursor-pointer"
                       }

@@ -1,13 +1,7 @@
-/**
- * Admin React Query Hooks
- * Provides cached API queries with automatic cache management
- * Follows the same pattern as customer/provider hooks
- */
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-// ============= QUERY KEYS =============
+// --------------------- QUERY KEYS ---------------------
 export const adminQueryKeys = {
   dashboard: ["admin", "dashboard"] as const,
   analytics: ["admin", "dashboard", "analytics"] as const,
@@ -19,9 +13,10 @@ export const adminQueryKeys = {
     ["admin", "business", businessId, "services"] as const,
   services: (filters?: any) => ["admin", "services", filters] as const,
   service: (serviceId: string) => ["admin", "service", serviceId] as const,
+  categories: (limit: number) => ["admin", "categories", limit] as const,
 };
 
-// ============= QUERY CACHE CONFIG =============
+// --------------------- QUERY CACHE CONFIG ---------------------
 export const ADMIN_CACHE_CONFIG = {
   DASHBOARD: {
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -43,13 +38,15 @@ export const ADMIN_CACHE_CONFIG = {
     gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
   },
+  CATEGORIES: {
+    staleTime: 60 * 60 * 1000, // 1 hour
+    gcTime: 2 * 60 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  },
 };
 
-// ============= DASHBOARD HOOKS =============
+// --------------------- DASHBOARD HOOKS ---------------------
 
-/**
- * Fetch admin dashboard statistics
- */
 export function useAdminDashboardStats() {
   return useQuery({
     queryKey: adminQueryKeys.dashboard,
@@ -63,9 +60,6 @@ export function useAdminDashboardStats() {
   });
 }
 
-/**
- * Fetch admin dashboard analytics (graphs)
- */
 export function useAdminDashboardAnalytics() {
   return useQuery({
     queryKey: adminQueryKeys.analytics,
@@ -79,32 +73,14 @@ export function useAdminDashboardAnalytics() {
   });
 }
 
-// ============= USER MANAGEMENT HOOKS =============
+// --------------------- USER MANAGEMENT HOOKS ---------------------
 
-/**
- * Fetch all users with pagination and filters
- */
-export function useAdminUsers(
-  params: {
-    role?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-    isRestricted?: boolean;
-  } = {}
-) {
-  const queryString = new URLSearchParams();
-  if (params.role) queryString.append("role", params.role);
-  if (params.search) queryString.append("search", params.search);
-  if (params.page) queryString.append("page", params.page.toString());
-  if (params.limit) queryString.append("limit", params.limit.toString());
-  if (params.isRestricted !== undefined)
-    queryString.append("isRestricted", params.isRestricted.toString());
-
+export function useAdminUsers() {
   return useQuery({
-    queryKey: adminQueryKeys.users(params),
+    queryKey: ["admin", "users", "all"],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/users?${queryString.toString()}`);
+      // Fetching with a high limit to simulate "all" for client-side filtering
+      const res = await fetch(`/api/admin/users?limit=1000`);
       if (!res.ok) throw new Error("Failed to fetch users");
       const data = await res.json();
       return data;
@@ -113,9 +89,6 @@ export function useAdminUsers(
   });
 }
 
-/**
- * Fetch user details by ID
- */
 export function useAdminUserDetails(userId: string) {
   return useQuery({
     queryKey: adminQueryKeys.user(userId),
@@ -129,9 +102,6 @@ export function useAdminUserDetails(userId: string) {
   });
 }
 
-/**
- * Restrict user mutation
- */
 export function useRestrictUser() {
   const queryClient = useQueryClient();
 
@@ -161,9 +131,6 @@ export function useRestrictUser() {
   });
 }
 
-/**
- * Lift user restriction mutation
- */
 export function useLiftUserRestriction() {
   const queryClient = useQueryClient();
 
@@ -187,33 +154,13 @@ export function useLiftUserRestriction() {
   });
 }
 
-// ============= BUSINESS MANAGEMENT HOOKS =============
+// --------------------- BUSINESS MANAGEMENT HOOKS ---------------------
 
-/**
- * Fetch all businesses with pagination and filters
- */
-export function useAdminBusinesses(
-  params: {
-    status?: string;
-    search?: string;
-    category?: string;
-    page?: number;
-    limit?: number;
-  } = {}
-) {
-  const queryString = new URLSearchParams();
-  if (params.status) queryString.append("status", params.status);
-  if (params.search) queryString.append("search", params.search);
-  if (params.category) queryString.append("category", params.category);
-  if (params.page) queryString.append("page", params.page.toString());
-  if (params.limit) queryString.append("limit", params.limit.toString());
-
+export function useAdminBusinesses() {
   return useQuery({
-    queryKey: adminQueryKeys.businesses(params),
+    queryKey: ["admin", "businesses", "all"],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/admin/businesses?${queryString.toString()}`
-      );
+      const res = await fetch(`/api/admin/businesses?limit=1000`);
       if (!res.ok) throw new Error("Failed to fetch businesses");
       const data = await res.json();
       return data;
@@ -222,9 +169,6 @@ export function useAdminBusinesses(
   });
 }
 
-/**
- * Fetch business details by ID
- */
 export function useAdminBusinessDetails(businessId: string) {
   return useQuery({
     queryKey: adminQueryKeys.business(businessId),
@@ -238,9 +182,6 @@ export function useAdminBusinessDetails(businessId: string) {
   });
 }
 
-/**
- * Fetch business services
- */
 export function useAdminBusinessServices(businessId: string) {
   return useQuery({
     queryKey: adminQueryKeys.businessServices(businessId),
@@ -254,9 +195,6 @@ export function useAdminBusinessServices(businessId: string) {
   });
 }
 
-/**
- * Approve business mutation
- */
 export function useApproveBusiness() {
   const queryClient = useQueryClient();
 
@@ -280,9 +218,6 @@ export function useApproveBusiness() {
   });
 }
 
-/**
- * Reject business mutation
- */
 export function useRejectBusiness() {
   const queryClient = useQueryClient();
 
@@ -312,9 +247,6 @@ export function useRejectBusiness() {
   });
 }
 
-/**
- * Restrict business mutation
- */
 export function useRestrictBusiness() {
   const queryClient = useQueryClient();
 
@@ -344,9 +276,6 @@ export function useRestrictBusiness() {
   });
 }
 
-/**
- * Lift business restriction mutation
- */
 export function useLiftBusinessRestriction() {
   const queryClient = useQueryClient();
 
@@ -370,37 +299,13 @@ export function useLiftBusinessRestriction() {
   });
 }
 
-// ============= SERVICE MANAGEMENT HOOKS =============
+// --------------------- SERVICE MANAGEMENT HOOKS ---------------------
 
-/**
- * Fetch all services with filters
- */
-export function useAdminServices(
-  params: {
-    isRestricted?: boolean;
-    isActive?: boolean;
-    businessId?: string;
-    category?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-  } = {}
-) {
-  const queryString = new URLSearchParams();
-  if (params.isRestricted !== undefined)
-    queryString.append("isRestricted", params.isRestricted.toString());
-  if (params.isActive !== undefined)
-    queryString.append("isActive", params.isActive.toString());
-  if (params.businessId) queryString.append("businessId", params.businessId);
-  if (params.category) queryString.append("category", params.category);
-  if (params.search) queryString.append("search", params.search);
-  if (params.page) queryString.append("page", params.page.toString());
-  if (params.limit) queryString.append("limit", params.limit.toString());
-
+export function useAdminServices() {
   return useQuery({
-    queryKey: adminQueryKeys.services(params),
+    queryKey: ["admin", "services", "all"],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/services?${queryString.toString()}`);
+      const res = await fetch(`/api/admin/services?limit=1000`);
       if (!res.ok) throw new Error("Failed to fetch services");
       const data = await res.json();
       return data;
@@ -409,9 +314,6 @@ export function useAdminServices(
   });
 }
 
-/**
- * Restrict service mutation
- */
 export function useRestrictService() {
   const queryClient = useQueryClient();
 
@@ -442,9 +344,6 @@ export function useRestrictService() {
   });
 }
 
-/**
- * Lift service restriction mutation
- */
 export function useLiftServiceRestriction() {
   const queryClient = useQueryClient();
 
@@ -467,5 +366,18 @@ export function useLiftServiceRestriction() {
     onError: (error: any) => {
       toast.error(error.message || "Failed to lift restriction");
     },
+  });
+}
+
+export function useBusinessCategories(limit = 100) {
+  return useQuery({
+    queryKey: adminQueryKeys.categories(limit),
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/categories?limit=${limit}`);
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      const data = await res.json();
+      return data;
+    },
+    ...ADMIN_CACHE_CONFIG.CATEGORIES,
   });
 }

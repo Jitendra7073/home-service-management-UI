@@ -63,19 +63,36 @@ export function UserManagement() {
   }, [activeTab, searchQuery]);
 
   // Hook for fetching users
-  const {
-    data: usersData,
-    isLoading,
-    error,
-  } = useAdminUsers({
-    role: activeTab,
-    search: searchQuery,
-    page,
-    limit: 10,
+  const { data: usersData, isLoading, error } = useAdminUsers();
+
+  const allUsers = usersData?.data || [];
+
+  // Client-side Filtering
+  const filteredUsers = allUsers.filter((user: any) => {
+    // Role Filter
+    if (activeTab !== "admin" && user.role !== activeTab) return false;
+    if (activeTab === "admin" && user.role !== "admin") return false;
+
+    // Search Filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchName = user.name?.toLowerCase().includes(q);
+      const matchEmail = user.email?.toLowerCase().includes(q);
+      const matchMobile = user.mobile?.includes(q);
+      return matchName || matchEmail || matchMobile;
+    }
+    return true;
   });
 
-  const users = usersData?.data || [];
-  const pagination = usersData?.pagination;
+  // Client-side Pagination
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const paginatedUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+  const users = paginatedUsers; // For compatibility with rendering
 
   // Mutations
   const { mutate: restrictUser, isPending: isRestrictPending } =
@@ -174,7 +191,7 @@ export function UserManagement() {
             ) : (
               <>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {users.map((user: any) => (
+                  {paginatedUsers.map((user: any) => (
                     <UserCard
                       key={user.id}
                       id={user.id}
@@ -203,7 +220,7 @@ export function UserManagement() {
                 </div>
 
                 {/* Pagination Controls */}
-                {pagination && pagination.totalPages > 1 && (
+                {totalPages > 1 && (
                   <div className="mt-8">
                     <Pagination>
                       <PaginationContent>
@@ -219,15 +236,14 @@ export function UserManagement() {
                         </PaginationItem>
 
                         {Array.from(
-                          { length: pagination.totalPages },
+                          { length: totalPages },
                           (_, i) => i + 1
                         ).map((p) => {
-                          // Simple pagination logic
                           if (
-                            pagination.totalPages > 10 &&
+                            totalPages > 10 &&
                             Math.abs(page - p) > 2 &&
                             p !== 1 &&
-                            p !== pagination.totalPages
+                            p !== totalPages
                           ) {
                             if (Math.abs(page - p) === 3)
                               return (
@@ -253,7 +269,7 @@ export function UserManagement() {
                           <PaginationNext
                             onClick={() => handlePageChange(page + 1)}
                             className={
-                              page >= pagination.totalPages
+                              page >= totalPages
                                 ? "pointer-events-none opacity-50"
                                 : "cursor-pointer"
                             }

@@ -37,6 +37,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useUserProfile } from "@/hooks/use-queries";
 import Image from "next/image";
+import NotificationSideBar from "@/components/common/notification-sidebar";
 
 export function AdminLayoutContent({
   children,
@@ -176,6 +177,9 @@ export function AdminLayoutContent({
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Notification Sidebar */}
+            <NotificationSideBar />
+
             <div className="flex flex-col items-end hidden sm:flex">
               <span className="text-sm font-medium">{userName}</span>
               <span className="text-xs text-muted-foreground">

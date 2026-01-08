@@ -64,8 +64,8 @@ export default function CustomerBookingsPage() {
       if (!res.ok) {
         let errMsg = "Failed to fetch bookings";
         try {
-           const errJson = await res.json();
-           errMsg = errJson.error || errMsg;
+          const errJson = await res.json();
+          errMsg = errJson.error || errMsg;
         } catch {}
         throw new Error(errMsg);
       }
@@ -99,13 +99,17 @@ export default function CustomerBookingsPage() {
     filtered.sort((a: any, b: any) => {
       switch (sortBy) {
         case "date-asc":
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         case "price-high":
           return b.totalAmount - a.totalAmount;
         case "price-low":
           return a.totalAmount - b.totalAmount;
         default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
       }
     });
 
@@ -175,9 +179,12 @@ export default function CustomerBookingsPage() {
 
       if (refundInfo && refundInfo.refundAmount > 0) {
         toast.success(
-          `Booking cancelled successfully! Refund of ₹${refundInfo.refundAmount} is being processed.${refundInfo.cancellationFee > 0
-            ? ` (Cancellation fee: ₹${refundInfo.cancellationFee})`
-            : ""
+          `Booking cancelled successfully! Refund of ₹${
+            refundInfo.refundAmount
+          } is being processed.${
+            refundInfo.cancellationFee > 0
+              ? ` (Cancellation fee: ₹${refundInfo.cancellationFee})`
+              : ""
           }`,
           {
             duration: 6000,
@@ -237,7 +244,7 @@ export default function CustomerBookingsPage() {
         icons={<Calendar className="w-8 h-8 text-gray-300" />}
       />
 
-      <div className="min-h-screen bg-muted/50 py-14 sm:py-16">
+      <div className="min-h-auto bg-muted/50 py-14 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between pb-10 gap-2">
             <div className="relative w-full">

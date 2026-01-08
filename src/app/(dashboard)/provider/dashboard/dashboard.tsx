@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { BusinessVisibilityToggle } from "@/components/provider/dashboard/BusinessVisibilityToggle";
 
 const DashboardComponents = () => {
   const queryClient = useQueryClient();
@@ -47,9 +48,41 @@ const DashboardComponents = () => {
     }
   };
 
+  const handleStatusUpdate = () => {
+    queryClient.invalidateQueries({ queryKey: ["common", "profile"] });
+
+    queryClient.setQueryData(["common", "profile"], (oldData: any) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        user: {
+          ...oldData.user,
+          businessProfile: {
+            ...oldData.user.businessProfile,
+            isActive: !oldData.user.businessProfile.isActive,
+          },
+        },
+      };
+    });
+
+    queryClient.setQueryData(["dashboard-stats"], (oldData: any) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        user: {
+          ...oldData.user,
+          businessProfile: {
+            ...oldData.user.businessProfile,
+            isActive: !oldData.user.businessProfile.isActive,
+          },
+        },
+      };
+    });
+  };
+
   return (
     <div className="flex w-full justify-center pb-10">
-      <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-10 md:space-y-14">
+      <div className="w-full max-w-7xl mx-auto px-2 md:px-6 space-y-10 md:space-y-14">
         {/* Header with Refresh Button */}
         <div className="flex justify-between items-center">
           <Welcome
@@ -57,15 +90,23 @@ const DashboardComponents = () => {
             isLoading={isLoading}
             isPending={isPending}
           />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleGlobalRefresh}
-            disabled={isRefreshing || isLoading}
-            className="absolute  top-4 right-17 gap-2  border-none shadow-none"
-            title="Refresh all dashboard data">
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-          </Button>
+          <div className="absolute top-4 right-18 flex items-center gap-2">
+            <BusinessVisibilityToggle
+              business={data?.user?.businessProfile}
+              onUpdate={handleStatusUpdate}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGlobalRefresh}
+              disabled={isRefreshing || isLoading}
+              className="gap-2 border-none shadow-none"
+              title="Refresh all dashboard data">
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
+            </Button>
+          </div>
         </div>
 
         {["premimum", "pro"].some((keyword) =>
@@ -120,7 +161,7 @@ const DashboardComponents = () => {
             plans?.name?.toLowerCase().includes(keyword)
           ) ? (
             <section className="space-y-6">
-                <BookingTable />
+              <BookingTable />
             </section>
           ) : (
             <ServicesTable />

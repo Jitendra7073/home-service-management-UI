@@ -8,7 +8,10 @@ interface ProviderBlockScreenProps {
   reason?: string;
 }
 
-export default function ProviderBlockScreen({ status, reason }: ProviderBlockScreenProps) {
+export default function ProviderBlockScreen({
+  status,
+  reason,
+}: ProviderBlockScreenProps) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -25,9 +28,6 @@ export default function ProviderBlockScreen({ status, reason }: ProviderBlockScr
 
       const data = await res.json();
       toast.success(data.message || "Logout Successful");
-
-      // Clear stored tokens (now handled by httpOnly cookies)
-      // No need to manually clear localStorage
 
       router.push("/auth/login");
     } catch (error) {
@@ -54,37 +54,31 @@ export default function ProviderBlockScreen({ status, reason }: ProviderBlockScr
               ? "Account Rejected"
               : "Access Restricted"}
           </h1>
-          
+
           <p className="text-gray-600">
-            {status === "pending" && (
-              "Your provider account is currently pending administrative approval. You will receive an email once your account is activated."
-            )}
-            {status === "rejected" && (
-              "Your provider application has been rejected by the administration."
-            )}
-            {status === "restricted" && (
-              "Your provider account has been restricted. You cannot access the dashboard at this time."
-            )}
+            {status === "pending" &&
+              "Your provider account is currently pending administrative approval. You will receive an email once your account is activated."}
+            {status === "rejected" &&
+              "Your provider application has been rejected by the administration."}
+            {status === "restricted" &&
+              "Your provider account has been restricted. You cannot access the dashboard at this time."}
           </p>
         </div>
 
-        {(reason && (status === "restricted" || status === "rejected")) && (
+        {reason && (status === "restricted" || status === "rejected") && (
           <div className="bg-red-50 border border-red-100 rounded-md p-4 text-left">
             <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
               Reason Provided
             </p>
-            <p className="text-sm text-red-800">
-              {reason}
-            </p>
+            <p className="text-sm text-red-800">{reason}</p>
           </div>
         )}
 
         <div className="pt-4 flex flex-col gap-3">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={handleLogout}
-            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 gap-2"
-          >
+            className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 gap-2">
             <LogOut className="h-4 w-4" /> Sign Out
           </Button>
         </div>

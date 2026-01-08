@@ -19,6 +19,7 @@ import {
   useApproveBusiness,
   useRestrictBusiness,
   useLiftBusinessRestriction,
+  useBusinessCategories,
 } from "@/hooks/use-admin-queries";
 import {
   Pagination,
@@ -95,20 +96,53 @@ export function BusinessManagement() {
   }, [searchQuery, statusFilter, categoryFilter]);
 
   // Query
-  const {
-    data: businessesData,
-    isLoading,
-    error,
-  } = useAdminBusinesses({
-    status: statusFilter === APPROVAL_STATUS.ALL ? undefined : statusFilter,
-    category: categoryFilter === "all" ? undefined : categoryFilter,
-    search: searchQuery,
-    page,
-    limit: 10,
+  const { data: businessesData, isLoading, error } = useAdminBusinesses();
+
+  const allBusinesses = businessesData?.data || [];
+
+  // Client-side Filtering
+  const filteredBusinesses = allBusinesses.filter((business: any) => {
+    // Status Filter
+    if (statusFilter !== APPROVAL_STATUS.ALL) {
+      if (statusFilter === APPROVAL_STATUS.PENDING) {
+        if (business.isApproved || business.isRejected) return false;
+      } else if (statusFilter === APPROVAL_STATUS.APPROVED) {
+        if (!business.isApproved) return false;
+      } else if (statusFilter === APPROVAL_STATUS.REJECTED) {
+        if (!business.isRejected) return false;
+      }
+    }
+
+    // Category Filter
+    if (
+      categoryFilter !== "all" &&
+      business.category?.name !== categoryFilter
+    ) {
+      return false;
+    }
+
+    // Search Filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchName =
+        business.businessName?.toLowerCase().includes(q) ||
+        business.name?.toLowerCase().includes(q);
+      const matchOwner = business.user?.name?.toLowerCase().includes(q);
+      const matchEmail = business.contactEmail?.toLowerCase().includes(q);
+      return matchName || matchOwner || matchEmail;
+    }
+    return true;
   });
 
-  const businesses = businessesData?.data || [];
-  const pagination = businessesData?.pagination;
+  // Client-side Pagination
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredBusinesses.length / ITEMS_PER_PAGE);
+  const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const paginatedBusinesses = filteredBusinesses.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  );
+  const businesses = paginatedBusinesses; // For rendering compatibility
 
   // Mutations
   const { mutate: approveBusiness, isPending: isApprovePending } =
@@ -134,9 +168,11 @@ export function BusinessManagement() {
     setBlockDialogOpen(false);
   };
 
-  const categories = Array.from(
-    new Set(businesses.map((b: any) => b.category?.name).filter(Boolean))
-  ) as string[];
+  // Fetch Categories for Filtering
+  const { data: categoriesData } = useBusinessCategories();
+  const categories = (
+    categoriesData?.categories?.map((c: any) => c.name) || []
+  ).sort() as string[];
 
   const isMutationPending =
     isApprovePending || isRestrictPending || isLiftPending;
@@ -273,7 +309,7 @@ export function BusinessManagement() {
           </div>
 
           {/* Pagination Controls */}
-          {pagination && pagination.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="mt-8">
               <Pagination>
                 <PaginationContent>
@@ -288,41 +324,40 @@ export function BusinessManagement() {
                     />
                   </PaginationItem>
 
-                  {Array.from(
-                    { length: pagination.totalPages },
-                    (_, i) => i + 1
-                  ).map((p) => {
-                    if (
-                      pagination.totalPages > 10 &&
-                      Math.abs(page - p) > 2 &&
-                      p !== 1 &&
-                      p !== pagination.totalPages
-                    ) {
-                      if (Math.abs(page - p) === 3)
-                        return (
-                          <PaginationItem key={p}>
-                            <span className="px-4">...</span>
-                          </PaginationItem>
-                        );
-                      return null;
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (p) => {
+                      if (
+                        totalPages > 10 &&
+                        Math.abs(page - p) > 2 &&
+                        p !== 1 &&
+                        p !== totalPages
+                      ) {
+                        if (Math.abs(page - p) === 3)
+                          return (
+                            <PaginationItem key={p}>
+                              <span className="px-4">...</span>
+                            </PaginationItem>
+                          );
+                        return null;
+                      }
+                      return (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={page === p}
+                            onClick={() => handlePageChange(p)}
+                            className="cursor-pointer">
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
                     }
-                    return (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          isActive={page === p}
-                          onClick={() => handlePageChange(p)}
-                          className="cursor-pointer">
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
+                  )}
 
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(page + 1)}
                       className={
-                        page >= pagination.totalPages
+                        page >= totalPages
                           ? "pointer-events-none opacity-50"
                           : "cursor-pointer"
                       }
