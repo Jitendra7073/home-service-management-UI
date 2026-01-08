@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2, XCircle, Info, Ban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface BusinessStatusBannerProps {
   business: {
@@ -13,6 +14,7 @@ interface BusinessStatusBannerProps {
     isActive: boolean;
     rejectionReason?: string;
     restrictionReason?: string;
+    restrictionRequestMessage?: string;
   };
 }
 
@@ -37,8 +39,12 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
   const [requestMessage, setRequestMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const queryClient = useQueryClient();
   const handleRequestUnrestrict = async () => {
-    if (!requestMessage.trim()) return;
+    if (!requestMessage.trim()) {
+      toast.error("Please provide a message");
+      return;
+    }
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/provider/request-unrestrict", {
@@ -52,6 +58,11 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
       toast.success("Request submitted successfully to admin");
       setIsDialogOpen(false);
       setRequestMessage("");
+
+      // Invalidate queries to refresh business data
+      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["common", "profile"] });
+      queryClient.invalidateQueries({ queryKey: ["provider-business"] });
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -83,8 +94,11 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
               <Button
                 variant="outline"
                 size="sm"
+                disabled={!!business.restrictionRequestMessage}
                 className="bg-background text-destructive hover:bg-background/90">
-                Request Access
+                {business.restrictionRequestMessage
+                  ? "Request Pending"
+                  : "Request Access"}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

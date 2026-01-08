@@ -54,7 +54,10 @@ export function UserCard({
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               <AvatarFallback className="bg-gray-500">
-                {name.split(" ").map((n) => n[0]).join("")}
+                {name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -84,21 +87,12 @@ export function UserCard({
             <p className="font-medium">{mobile}</p>
           </div>
         )}
-        {isRestricted && restrictionReason && (
-          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3">
-            <p className="mb-1 text-xs font-semibold text-destructive">
-              Restriction Reason
-            </p>
-            <p className="text-sm text-destructive">{restrictionReason}</p>
-          </div>
-        )}
         <div className="flex gap-2 pt-2">
           <Button
             variant="outline"
             size="sm"
             className="flex-1 gap-2"
-            onClick={onViewDetails}
-          >
+            onClick={onViewDetails}>
             <Eye className="h-4 w-4" />
             View Details
           </Button>
@@ -108,19 +102,21 @@ export function UserCard({
               size="sm"
               className="gap-2"
               onClick={isRestricted ? onUnblock : onBlock}
-              disabled={isBlocking}
-            >
-              {isRestricted ? (
-                <>
-                  <Shield className="h-4 w-4" />
-                  Unblock
-                </>
+              disabled={isBlocking}>
+              {isBlocking ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : isRestricted ? (
+                <Shield className="h-4 w-4" />
               ) : (
-                <>
-                  <Ban className="h-4 w-4" />
-                  Block
-                </>
+                <Ban className="h-4 w-4" />
               )}
+              {isBlocking
+                ? isRestricted
+                  ? "Unblocking..."
+                  : "Blocking..."
+                : isRestricted
+                ? "Unblock"
+                : "Block"}
             </Button>
           )}
         </div>

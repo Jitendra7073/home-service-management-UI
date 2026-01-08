@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin Panel | Fixora",
+  title: "Admin Panel",
   description: "Manage your Everything in Fixora.",
 };
 

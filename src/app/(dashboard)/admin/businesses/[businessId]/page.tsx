@@ -39,6 +39,7 @@ interface BusinessData {
   _id: string;
   name: string;
   description: string;
+  businessName: string;
   category: {
     _id: string;
     name: string;
@@ -317,28 +318,6 @@ export default function BusinessDetailsPage() {
     }
   };
 
-  const handleUnblockService = async (serviceId: string) => {
-    try {
-      const res = await fetch(`/api/admin/services/${serviceId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "lift-restriction" }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Service unblocked successfully");
-        fetchBusinessServices();
-      } else {
-        toast.error(data.message || "Failed to unblock service");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to unblock service");
-    }
-  };
-
   if (loading) {
     return (
       <div className="space-y-6 max-w-7xl mx-auto">
@@ -421,8 +400,8 @@ export default function BusinessDetailsPage() {
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {business.name}
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {business.businessName}
             </h1>
             {business.isRestricted && (
               <Badge variant="destructive" className="gap-1">
@@ -550,6 +529,12 @@ export default function BusinessDetailsPage() {
               <CardTitle>Contact Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              {business.businessName && (
+                <div className="flex items-start gap-2 text-sm">
+                  <Building2 className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <span>{business.businessName}</span>
+                </div>
+              )}
               {business.email && (
                 <div className="flex items-start gap-2 text-sm">
                   <Mail className="h-4 w-4 mt-0.5 text-muted-foreground" />
@@ -562,16 +547,6 @@ export default function BusinessDetailsPage() {
                   <span>{business.phone}</span>
                 </div>
               )}
-              <div className="flex items-start gap-2 text-sm">
-                <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <span>{business.address}</span>
-              </div>
-              <div className="flex items-start gap-2 text-sm">
-                <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <span>
-                  Joined {new Date(business.createdAt).toLocaleDateString()}
-                </span>
-              </div>
             </CardContent>
           </Card>
 
@@ -597,24 +572,24 @@ export default function BusinessDetailsPage() {
                       Appeal from Provider:
                     </p>
                     <p className="text-sm text-muted-foreground p-3 bg-secondary/50 rounded-md border italic">
-                      "{business.restrictionRequestMessage}"
+                      "
+                      {business.restrictionRequestMessage &&
+                        business.restrictionRequestMessage
+                          .charAt(0)
+                          .toUpperCase() +
+                          business.restrictionRequestMessage.slice(1)}
+                      "
                     </p>
                   </div>
                 )}
               </CardContent>
             </Card>
           )}
-
-          {business.isRejected &&
-            !business.isRestricted &&
-            // Show rejection reason (API might not return it in the main object, assuming restrictionReason or similar field if supported)
-            // If not supported yet, skipping for now, or could re-purpose restrictionReason if the backend uses it.
-            null}
         </div>
 
         {/* Services */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Services ({services.length})</CardTitle>
             </CardHeader>
@@ -634,12 +609,12 @@ export default function BusinessDetailsPage() {
                   {services.map((service: any) => (
                     <Card
                       key={service.id || service._id}
-                      className={
+                      className={`${
                         service.isRestricted ? "border-destructive" : ""
-                      }>
+                      } gap-0 w-fit`}>
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
-                          <CardTitle className="text-base">
+                          <CardTitle className="text-base capitalize">
                             {service.name}
                           </CardTitle>
                           {service.isRestricted && (
@@ -652,7 +627,12 @@ export default function BusinessDetailsPage() {
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <p className="line-clamp-2 text-sm text-muted-foreground">
-                          {service.description}
+                          <i>
+                            {" "}
+                            {service.description &&
+                              service.description.charAt(0).toUpperCase() +
+                                service.description.slice(1)}
+                          </i>
                         </p>
                         <div className="flex items-center gap-4 text-sm">
                           <div className="flex items-center gap-1">
@@ -663,8 +643,7 @@ export default function BusinessDetailsPage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
-                            <span>${service.price}</span>
+                            <span>₹{service.price}</span>
                           </div>
                         </div>
                         {service.isRestricted && service.restrictionReason && (
@@ -677,6 +656,7 @@ export default function BusinessDetailsPage() {
                             </p>
                           </div>
                         )}
+
                         <div className="flex gap-2 pt-2">
                           <Button
                             variant="outline"
@@ -690,27 +670,6 @@ export default function BusinessDetailsPage() {
                             <Eye className="h-4 w-4" />
                             View Details
                           </Button>
-                          {service.isRestricted ? (
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="gap-2"
-                              onClick={() =>
-                                handleUnblockService(service.id || service._id)
-                              }>
-                              <CheckCircle className="h-4 w-4" />
-                              Unblock
-                            </Button>
-                          ) : (
-                            <ServiceBlockButton
-                              onBlock={(reason) =>
-                                handleBlockService(
-                                  service.id || service._id,
-                                  reason
-                                )
-                              }
-                            />
-                          )}
                         </div>
                       </CardContent>
                     </Card>

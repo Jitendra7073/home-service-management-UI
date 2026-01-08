@@ -6,13 +6,16 @@ interface AlertsSectionProps {
   restrictedBusinesses?: number;
 }
 
-export function AlertsSection({ restrictedUsers = 0, restrictedBusinesses = 0 }: AlertsSectionProps) {
+export function AlertsSection({
+  restrictedUsers = 0,
+  restrictedBusinesses = 0,
+}: AlertsSectionProps) {
   if (restrictedUsers === 0 && restrictedBusinesses === 0) {
     return null;
   }
 
   return (
-    <Card className="border-destructive/50 bg-destructive/5">
+    <Card className="border-destructive/50 bg-destructive/5 gap-0">
       <CardHeader>
         <CardTitle className="text-destructive flex items-center gap-2">
           <Ban className="h-5 w-5" />
@@ -21,8 +24,14 @@ export function AlertsSection({ restrictedUsers = 0, restrictedBusinesses = 0 }:
       </CardHeader>
       <CardContent>
         <p className="text-sm text-destructive">
-          {restrictedUsers > 0 && `${restrictedUsers} restricted user${restrictedUsers > 1 ? "s" : ""}. `}
-          {restrictedBusinesses > 0 && `${restrictedBusinesses} restricted business${restrictedBusinesses > 1 ? "es" : ""}.`}
+          {restrictedUsers > 0 &&
+            `${restrictedUsers} restricted user${
+              restrictedUsers > 1 ? "s" : ""
+            }. `}
+          {restrictedBusinesses > 0 &&
+            `${restrictedBusinesses} restricted business${
+              restrictedBusinesses > 1 ? "es" : ""
+            }.`}
         </p>
       </CardContent>
     </Card>

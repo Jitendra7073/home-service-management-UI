@@ -159,7 +159,7 @@ export function AdminLayoutContent({
 
         <SidebarFooter className="border-t border-sidebar-border p-4">
           <p className="text-xs text-muted-foreground text-center">
-            © {new Date().getFullYear()} HSM Admin
+            © {new Date().getFullYear()} Fixora Admin
           </p>
         </SidebarFooter>
         <SidebarRail />

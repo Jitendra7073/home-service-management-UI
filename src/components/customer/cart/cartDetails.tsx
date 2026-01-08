@@ -114,25 +114,34 @@ export default function HomeServiceCart() {
     return true;
   };
 
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+
   /* 
      REMOVE ITEM
    */
   const handleRemoveFromCart = async (id: string) => {
-    const res = await fetch(`/api/customer/cart`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cartId: id }),
-    });
+    setRemovingItemId(id);
+    try {
+      const res = await fetch(`/api/customer/cart`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartId: id }),
+      });
 
-    const response = await res.json();
+      const response = await res.json();
 
-    if (!res.ok) {
-      toast.error(response.msg || "Unable to remove item");
-      return;
+      if (!res.ok) {
+        toast.error(response.msg || "Unable to remove item");
+        return;
+      }
+
+      toast.success(response.msg || "Item removed from cart");
+      clientQuery.invalidateQueries({ queryKey: ["cart-items"] });
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setRemovingItemId(null);
     }
-
-    toast.success(response.msg || "Item removed from cart");
-    clientQuery.invalidateQueries({ queryKey: ["cart-items"] });
   };
 
   return (
@@ -207,7 +216,8 @@ export default function HomeServiceCart() {
                       </p>
 
                       <p className="text-sm text-red-700">
-                        {slotTimeWarning.message} Please choose a different time to continue with your booking.
+                        {slotTimeWarning.message} Please choose a different time
+                        to continue with your booking.
                       </p>
 
                       <p className="text-xs text-red-600 mt-2">
@@ -269,6 +279,7 @@ export default function HomeServiceCart() {
                   isLoading={isLoading}
                   isError={isError}
                   isPending={isPending}
+                  removingItemId={removingItemId}
                   clickHandle={handleRemoveFromCart}
                 />
               </div>

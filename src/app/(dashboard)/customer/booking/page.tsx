@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Bookings | Fixora",
+  title: "Bookings",
   description: "Manage your bookings effectively with Fixora.",
 };
 

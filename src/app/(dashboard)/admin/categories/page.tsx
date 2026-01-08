@@ -2,7 +2,7 @@ import CategoryManagement from "@/components/admin/CategoryManagement";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Categories | Fixora",
+  title: "Categories",
   description: "Manage All Categories in Fixora.",
 };
 

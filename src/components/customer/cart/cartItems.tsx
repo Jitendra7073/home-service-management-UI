@@ -12,6 +12,7 @@ interface CartItemProps {
   isLoading: boolean;
   isError: boolean;
   isPending: boolean;
+  removingItemId?: string | null;
   clickHandle: (id: string) => void | Promise<void>;
 }
 
@@ -20,6 +21,7 @@ const CartItems: React.FC<CartItemProps> = ({
   isLoading,
   isError,
   isPending,
+  removingItemId,
   clickHandle,
 }) => {
   const cartItems = data?.cart || [];
@@ -109,8 +111,16 @@ const CartItems: React.FC<CartItemProps> = ({
                 </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="mt-1" onClick={() => clickHandle(item.id)}>
-                      <X className="w-4 h-4 text-red-500 hover:text-red-600 cursor-pointer" />
+                    <div
+                      className="mt-1"
+                      onClick={() =>
+                        removingItemId !== item.id && clickHandle(item.id)
+                      }>
+                      {removingItemId === item.id ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                      ) : (
+                        <X className="w-4 h-4 text-red-500 hover:text-red-600 cursor-pointer" />
+                      )}
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>

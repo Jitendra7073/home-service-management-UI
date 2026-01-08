@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
+  Ban,
   ArrowLeft,
   X,
   Pencil,
@@ -11,9 +13,18 @@ import {
   Banknote,
   ShieldCheck,
   Trash2,
-  Loader2, 
+  Loader2,
 } from "lucide-react";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +50,9 @@ interface ServiceData {
   images: string[];
   averageRating: number;
   reviewCount: number;
+  isRestricted: boolean;
+  restrictionReason?: string;
+  restrictionRequestMessage?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -56,6 +70,34 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [requestMessage, setRequestMessage] = useState("");
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+
+  const handleRequestUnrestrict = async () => {
+    if (!requestMessage.trim()) return;
+    setIsSubmittingRequest(true);
+    try {
+      const res = await fetch("/api/provider/request-service-unrestrict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceId, message: requestMessage }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to submit request");
+
+      toast.success("Request submitted successfully to admin");
+      setIsRequestDialogOpen(false);
+      setRequestMessage("");
+      queryClient.invalidateQueries({
+        queryKey: ["individual-service", serviceId],
+      });
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmittingRequest(false);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["individual-service", serviceId],
@@ -92,7 +134,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   }, [isEditing, formData]);
 
   if (isLoading || !originalData || !formData) {
-    return <ServiceDetailsSkeleton/>;
+    return <ServiceDetailsSkeleton />;
   }
 
   const hasChanges = () => {
@@ -245,7 +287,6 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   return (
     <div className="flex w-full justify-center">
       <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-6">
-
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Button
@@ -314,6 +355,71 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
             )}
           </div>
         </div>
+        {originalData.isRestricted && (
+          <Alert
+            variant="destructive"
+            className="border-destructive/50 bg-destructive/10 text-destructive">
+            <Ban className="h-4 w-4" />
+            <AlertTitle>Service Restricted</AlertTitle>
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                This service has been restricted by an administrator.{" "}
+                {originalData.restrictionReason &&
+                  `Reason: ${originalData.restrictionReason}`}
+              </span>
+              <Dialog
+                open={isRequestDialogOpen}
+                onOpenChange={setIsRequestDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!!originalData.restrictionRequestMessage}
+                    className={`bg-background text-destructive ${
+                      !!originalData.restrictionRequestMessage
+                        ? "bg-destructive/50 text-destructive/50"
+                        : ""
+                    } ml-4`}>
+                    {originalData.restrictionRequestMessage
+                      ? "Request Pending"
+                      : "Request Access"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Request to Remove Restriction</DialogTitle>
+                    <DialogDescription>
+                      Please explain why the restriction on "{originalData.name}
+                      " should be lifted. The admin will review your request.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="message">Message to Admin</Label>
+                      <Textarea
+                        id="message"
+                        placeholder="E.g., I have corrected the service details..."
+                        value={requestMessage}
+                        onChange={(e) => setRequestMessage(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={handleRequestUnrestrict}
+                      disabled={isSubmittingRequest || !requestMessage.trim()}>
+                      {isSubmittingRequest && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Submit Request
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
           <div className="lg:col-span-2 space-y-4">

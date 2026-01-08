@@ -267,8 +267,8 @@ export function useRestrictBusiness() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
       toast.success("Business restricted successfully");
+      queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to restrict business");

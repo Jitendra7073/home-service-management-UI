@@ -34,7 +34,7 @@ export default function LoginPage() {
                 Don't have an account?{" "}
                 <Link
                   href="/auth/register"
-                  className="text-primary hover:underline">
+                  className="text-primary hover:underline font-medium">
                   Sign Up
                 </Link>
               </CardDescription>

@@ -27,7 +27,7 @@ import { Spinner } from "@/components/ui/spinner";
 // Require field symbol
 const RequireField = () => {
   return <span className="text-red-500 -ml-1">*</span>;
-}
+};
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -83,7 +83,8 @@ export default function RegisterForm() {
           result.message || "Registration successful! Auto-logging in..."
         );
         // Auto-redirect to dashboard based on role
-        const redirectPath = data.role === "provider" ? "/provider/dashboard" : "/customer";
+        const redirectPath =
+          data.role === "provider" ? "/provider/dashboard" : "/customer";
         // Small delay to ensure cookies are set
         setTimeout(() => {
           router.push(redirectPath);
@@ -123,14 +124,20 @@ export default function RegisterForm() {
               <div className="mb-6">
                 <Tabs
                   value={role}
-                  onValueChange={(value) => handleRoleChange(value as "customer" | "provider")}
+                  onValueChange={(value) =>
+                    handleRoleChange(value as "customer" | "provider")
+                  }
                   className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="customer" className="flex items-center gap-2">
+                    <TabsTrigger
+                      value="customer"
+                      className="flex items-center gap-2">
                       <User className="w-4 h-4" />
                       Customer
                     </TabsTrigger>
-                    <TabsTrigger value="provider" className="flex items-center gap-2">
+                    <TabsTrigger
+                      value="provider"
+                      className="flex items-center gap-2">
                       <Wrench className="w-4 h-4" />
                       Provider
                     </TabsTrigger>
@@ -146,7 +153,9 @@ export default function RegisterForm() {
 
                 {/* Name */}
                 <div className="md:col-span-2">
-                  <Label className="pb-2">Full Name <RequireField /></Label>
+                  <Label className="pb-2">
+                    Full Name <RequireField />
+                  </Label>
                   <Input
                     type="text"
                     placeholder="John Doe"
@@ -161,7 +170,9 @@ export default function RegisterForm() {
 
                 {/* Email */}
                 <div>
-                  <Label className="pb-2">Email <RequireField /></Label>
+                  <Label className="pb-2">
+                    Email <RequireField />
+                  </Label>
                   <Input
                     type="text"
                     placeholder="example@gmail.com"
@@ -176,7 +187,9 @@ export default function RegisterForm() {
 
                 {/* Mobile */}
                 <div>
-                  <Label className="pb-2">Mobile <RequireField /></Label>
+                  <Label className="pb-2">
+                    Mobile <RequireField />
+                  </Label>
                   <Input
                     type="number"
                     placeholder="9876543210"
@@ -191,7 +204,9 @@ export default function RegisterForm() {
 
                 {/* Password */}
                 <div>
-                  <Label className="pb-2">Password <RequireField /></Label>
+                  <Label className="pb-2">
+                    Password <RequireField />
+                  </Label>
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"
@@ -206,7 +221,9 @@ export default function RegisterForm() {
 
                 {/* Confirm Password */}
                 <div>
-                  <Label className="pb-2">Confirm Password <RequireField /></Label>
+                  <Label className="pb-2">
+                    Confirm Password <RequireField />
+                  </Label>
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="******"

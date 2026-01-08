@@ -43,7 +43,8 @@ export type Service = {
   price: number;
   bookings: number;
   rating: number;
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "restricted";
+  restrictionReason?: string;
 };
 
 export default function ServicesTable({
@@ -67,10 +68,9 @@ export default function ServicesTable({
     refetchOnWindowFocus: false,
   });
 
-
   const toggleServiceStatus = async (
     serviceId: string,
-    currentStatus: "active" | "inactive"
+    currentStatus: "active" | "inactive" | "restricted"
   ) => {
     try {
       const res = await fetch(`/api/provider/service`, {
@@ -107,18 +107,22 @@ export default function ServicesTable({
       bookingMap[item.serviceId] = item._count.serviceId;
     });
 
-    return Object.values(data)
-      .filter((item: any) => typeof item === "object" && item.id)
-      .map((service: any) => ({
-        id: service.id,
-        name: service.name,
-        price: service.price,
-        bookings: bookingMap[service.id] || 0,
-        rating: service.averageRating || 0,
-        status: service.isActive ? "active" : "inactive",
-      }));
-  }, [data]);
+    const services = Array.isArray(data?.services) ? data.services : [];
 
+    return services.map((service: any) => ({
+      id: service.id,
+      name: service.name,
+      price: service.price,
+      bookings: bookingMap[service.id] || 0,
+      rating: service.averageRating || 0,
+      status: service.isRestricted
+        ? "restricted"
+        : service.isActive
+        ? "active"
+        : "inactive",
+      restrictionReason: service.restrictionReason,
+    }));
+  }, [data]);
 
   const columns: ColumnDef<Service>[] = [
     {
@@ -158,7 +162,13 @@ export default function ServicesTable({
         const status = row.getValue("status") as string;
         return (
           <Badge
-            variant={status === "active" ? "default" : "destructive"}
+            variant={
+              status === "active"
+                ? "default"
+                : status === "restricted"
+                ? "destructive"
+                : "secondary"
+            }
             className="capitalize">
             {status}
           </Badge>
@@ -188,6 +198,7 @@ export default function ServicesTable({
               </DropdownMenuItem>
 
               <DropdownMenuItem
+                disabled={item.status === "restricted"}
                 onClick={() => toggleServiceStatus(item.id, item.status)}>
                 {item.status === "active" ? "Disable" : "Enable"} Service
               </DropdownMenuItem>
@@ -220,41 +231,42 @@ export default function ServicesTable({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  
-  if(isLoading) {
-    return <TableSkeleton rows={5} columns={5}/>
+  if (isLoading) {
+    return <TableSkeleton rows={5} columns={5} />;
   }
 
   return (
     <div className="w-full space-y-4 mb-10">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg flex items-center gap-2">All Services</h3>
+        <h3 className="font-semibold text-lg flex items-center gap-2">
+          All Services
+        </h3>
 
-       <div className="flex gap-2">
-         <Input
-          placeholder="Search services..."
-          value={globalFilter}
-          onChange={(e) => {
-            setGlobalFilter(e.target.value);
-            table.setPageIndex(0);
-          }}
-          className="w-full md:max-w-sm"
-        />
-        {!isLoading && (
-          <Button
-          variant="outline"
-            size="icon"
-            className="bg-transparent text-black hover:bg-gray-100"
-            onClick={() => refetch()}
-            disabled={isFetching}>
-            <RefreshCw
-              className={`h-4 w-4 transition-transform ${
-                isFetching ? "animate-spin" : ""
-              }`}
-            />
-          </Button>
-        )}
-       </div>
+        <div className="flex gap-2">
+          <Input
+            placeholder="Search services..."
+            value={globalFilter}
+            onChange={(e) => {
+              setGlobalFilter(e.target.value);
+              table.setPageIndex(0);
+            }}
+            className="w-full md:max-w-sm"
+          />
+          {!isLoading && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="bg-transparent text-black hover:bg-gray-100"
+              onClick={() => refetch()}
+              disabled={isFetching}>
+              <RefreshCw
+                className={`h-4 w-4 transition-transform ${
+                  isFetching ? "animate-spin" : ""
+                }`}
+              />
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-md border overflow-hidden">

@@ -235,7 +235,7 @@ const Footer: React.FC = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-700 py-6 text-center text-gray-500 text-sm">
-        © {currentYear} HSM Inc. All rights reserved.
+        © {currentYear} Fixora. All rights reserved.
       </div>
     </footer>
   );

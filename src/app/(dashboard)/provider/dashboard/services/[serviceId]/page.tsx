@@ -3,13 +3,13 @@ import ServiceDashboard from "./services-by-id";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Services | Fixora",
+  title: "Services",
   description: "Manage your services effectively with Fixora.",
 };
 
 const ServiceById = async ({ params }: { params: { serviceId: string } }) => {
   const { serviceId } = await params;
-  return <ServiceDashboard serviceId={serviceId}/>;
+  return <ServiceDashboard serviceId={serviceId} />;
 };
 
 export default ServiceById;

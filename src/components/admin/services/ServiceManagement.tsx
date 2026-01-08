@@ -217,6 +217,7 @@ export function ServiceManagement() {
                 categoryName={service.category?.name || "Uncategorized"}
                 isRestricted={service.isRestricted || false}
                 restrictionReason={service.restrictionReason}
+                restrictionRequestMessage={service.restrictionRequestMessage}
                 isActive={service.isActive ?? true}
                 onViewDetails={() =>
                   router.push(`/admin/services/${service.id || service._id}`)

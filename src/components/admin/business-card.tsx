@@ -1,7 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Ban, CheckCircle, XCircle, Clock, Mail, Phone, MapPin } from "lucide-react";
+import {
+  Eye,
+  Ban,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail,
+  Phone,
+  MapPin,
+  User,
+} from "lucide-react";
 
 interface BusinessCardProps {
   id: string;
@@ -56,7 +66,9 @@ export function BusinessCard({
 
     if (!isApproved && !isRejected) {
       return (
-        <Badge variant="outline" className="gap-1 border-yellow-600 text-yellow-700">
+        <Badge
+          variant="outline"
+          className="gap-1 border-yellow-600 text-yellow-700">
           <Clock className="h-3 w-3" />
           Pending
         </Badge>
@@ -73,7 +85,9 @@ export function BusinessCard({
     }
 
     return (
-      <Badge variant="default" className="gap-1 bg-emerald-600 hover:bg-emerald-700">
+      <Badge
+        variant="default"
+        className="gap-1 bg-emerald-600 hover:bg-emerald-700">
         <CheckCircle className="h-3 w-3" />
         Approved
       </Badge>
@@ -88,7 +102,11 @@ export function BusinessCard({
             <CardTitle className="mb-3 text-xl">{name}</CardTitle>
             <div className="flex flex-wrap items-center gap-2">
               {getStatusBadge()}
-              <Badge variant="outline" className="text-gray-400 border-gray-400">{category}</Badge>
+              <Badge
+                variant="outline"
+                className="text-gray-400 border-gray-400">
+                {category}
+              </Badge>
             </div>
           </div>
         </div>
@@ -100,7 +118,7 @@ export function BusinessCard({
 
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Mail className="h-4 w-4" />
+            <User className="h-4 w-4" />
             <span className="truncate">{ownerName}</span>
           </div>
           {email && (
@@ -122,7 +140,11 @@ export function BusinessCard({
             <p className="mb-1 text-xs font-semibold text-destructive">
               Restriction Reason
             </p>
-            <p className="text-sm text-destructive">{restrictionReason}</p>
+            <p className="text-sm text-destructive">
+              {restrictionReason &&
+                restrictionReason.charAt(0).toUpperCase() +
+                  restrictionReason.slice(1)}
+            </p>
           </div>
         )}
 
@@ -131,8 +153,7 @@ export function BusinessCard({
             variant="outline"
             size="sm"
             className="flex-1 w-[300px] gap-2 cursor-pointer"
-            onClick={onViewDetails}
-          >
+            onClick={onViewDetails}>
             <Eye className="h-4 w-4" />
             View Details
           </Button>
@@ -144,12 +165,11 @@ export function BusinessCard({
                 size="sm"
                 className="gap-2 bg-emerald-600 hover:bg-emerald-700"
                 onClick={onApprove}
-                disabled={!!actionLoading}
-              >
+                disabled={!!actionLoading}>
                 {actionLoading === "approve" ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
-                    <CheckCircle className="h-4 w-4" />
+                  <CheckCircle className="h-4 w-4" />
                 )}
                 Approve
               </Button>
@@ -158,12 +178,11 @@ export function BusinessCard({
                 size="sm"
                 className="gap-2"
                 onClick={onReject}
-                disabled={!!actionLoading}
-              >
+                disabled={!!actionLoading}>
                 {actionLoading === "reject" ? (
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 ) : (
-                    <XCircle className="h-4 w-4" />
+                  <XCircle className="h-4 w-4" />
                 )}
                 Reject
               </Button>
@@ -174,12 +193,11 @@ export function BusinessCard({
               size="sm"
               className="gap-2"
               onClick={onUnblock}
-              disabled={!!actionLoading}
-            >
+              disabled={!!actionLoading}>
               {actionLoading === "unblock" ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : (
-                  <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4" />
               )}
               Unblock
             </Button>
@@ -189,12 +207,11 @@ export function BusinessCard({
               size="sm"
               className="gap-2"
               onClick={onBlock}
-              disabled={!!actionLoading}
-            >
+              disabled={!!actionLoading}>
               {actionLoading === "block" ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               ) : (
-                  <Ban className="h-4 w-4" />
+                <Ban className="h-4 w-4" />
               )}
               Block
             </Button>

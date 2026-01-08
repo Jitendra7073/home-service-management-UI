@@ -1,19 +1,18 @@
-import BusinessInfo from '@/components/provider/business/business-info'
-import React from 'react'
+import BusinessInfo from "@/components/provider/business/business-info";
+import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Business | Fixora",
+  title: "Business",
   description: "Manage your business information effectively with Fixora.",
 };
-
 
 const page = () => {
   return (
     <div>
-      <BusinessInfo/>
+      <BusinessInfo />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

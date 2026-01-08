@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     if (!ok) {
       return NextResponse.json(data?.msg, { status: 500 });
     }
-    return NextResponse.json(data?.services);
+    return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },

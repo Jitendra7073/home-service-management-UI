@@ -5,10 +5,9 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Explore | Fixora",
+  title: "Explore",
   description: "Discover and explore services with Fixora.",
 };
-
 
 export default function ExplorePage() {
   return (
