@@ -13,12 +13,11 @@ import ResetPasswordForm from "./form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Reset Password | Fixora",
-  description: "Reset your password securely with Fixora.",
+  title: "Reset Password",
+  description: "Reset your password securely.",
 };
 
 export default async function ResetPasswordPage() {
-
   return (
     <section className="min-h-screen flex items-center justify-center bg-muted px-4">
       <div className="w-full max-w-3xl md:max-w-4xl rounded-md bg-card shadow-lg border overflow-hidden grid grid-cols-1 md:grid-cols-2">
@@ -41,9 +40,9 @@ export default async function ResetPasswordPage() {
             </CardHeader>
 
             <CardContent className="px-0">
-               <Suspense fallback={<FallbackLoading />}>
-              <ResetPasswordForm/>
-                  </Suspense>
+              <Suspense fallback={<FallbackLoading />}>
+                <ResetPasswordForm />
+              </Suspense>
             </CardContent>
           </Card>
         </div>
@@ -69,4 +68,3 @@ function FallbackLoading() {
     </div>
   );
 }
-
