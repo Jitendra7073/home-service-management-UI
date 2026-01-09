@@ -1,13 +1,10 @@
 "use client";
 
 import QuickCountCard from "@/components/provider/dashboard/quick-count-card";
-import {
-  BarChart,
-  Users,
-  ShoppingBag,
-  Wallet,
-  CircleAlert,
-} from "lucide-react";
+import RevenueChart from "@/components/provider/dashboard/revenue-chart";
+import BookingStatusChart from "@/components/provider/dashboard/booking-status-chart";
+import ServiceChart from "@/components/provider/dashboard/service-chart";
+import { Users, ShoppingBag, Wallet, CircleAlert } from "lucide-react";
 
 interface QuickCountsProps {
   data: any;
@@ -30,9 +27,6 @@ const QuickCounts = ({
     ? data.monthlyAnalysis
     : [];
 
-  const currentMonthAnalysis =
-    monthlyAnalysis.length > 0 ? monthlyAnalysis[0] : null;
-
   const totalCustomers =
     typeof data?.totalCustomers === "number" ? data.totalCustomers : 0;
 
@@ -44,6 +38,16 @@ const QuickCounts = ({
   const totalEarnings =
     typeof data?.totalEarnings === "number" ? data.totalEarnings : 0;
 
+  const bookingStats = {
+    completed: data?.stats?.bookings?.completed ?? 0,
+    confirmed: data?.stats?.bookings?.confirmed ?? 0,
+    cancelled: data?.stats?.bookings?.cancelled ?? 0,
+  };
+
+  const serviceStats = Array.isArray(data?.serviceBookingStats)
+    ? data.serviceBookingStats
+    : [];
+
   if (isError) {
     return (
       <div className="text-red-500 text-sm">
@@ -52,15 +56,9 @@ const QuickCounts = ({
     );
   }
   return (
-    <div className="space-y-4">
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${plan?.name.toLowerCase() === "pro" ? "lg:grid-cols-4" :" lg:grid-cols-3"}  gap-6`}>
-       {plan?.name.toLowerCase() === "pro" &&  <QuickCountCard
-          title={`Monthly Analytics - ${currentMonthAnalysis?.month ?? "N/A"}`}
-          value={`₹ ${currentMonthAnalysis?.earnings ?? 0}`}
-          growth={`${currentMonthAnalysis?.bookings ?? 0} bookings`}
-          icon={BarChart}
-          isLoading={isLoading || isPending}
-        />}
+    <div className="space-y-6">
+      {/* Top Row: Key Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <QuickCountCard
           title={"Total Customers"}
           value={`${totalCustomers}`}
@@ -76,16 +74,37 @@ const QuickCounts = ({
           isLoading={isLoading || isPending}
         />
         <QuickCountCard
-          title={"Total Earnings"}
+          title={"Total Active Value"}
           value={`₹ ${totalEarnings}`}
-          growth={"Overall Earnings"}
+          growth={"Realized + Potential"}
           icon={Wallet}
           isLoading={isLoading || isPending}
         />
       </div>
 
-      {!isLoading && !isPending && data?.serviceBookingStats.length === 0 && (
-        <p className="flex  justify-start item-center gap-2 text-sm bg-blue-50 text-blue-500 border border-blue-300 rounded py-1 px-3 w-fit">
+      {/* Middle Row: Revenue & Booking Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RevenueChart
+            data={monthlyAnalysis}
+            isLoading={isLoading || isPending}
+          />
+        </div>
+        <div className="lg:col-span-1">
+          <BookingStatusChart
+            data={bookingStats}
+            isLoading={isLoading || isPending}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Row: Service Popularity */}
+      <div className="w-full">
+        <ServiceChart data={serviceStats} isLoading={isLoading || isPending} />
+      </div>
+
+      {!isLoading && !isPending && data?.serviceBookingStats?.length === 0 && (
+        <p className="flex justify-start item-center gap-2 text-sm bg-blue-50 text-blue-500 border border-blue-300 rounded py-2 px-4 w-fit">
           <CircleAlert className="w-4 h-4 mt-[0.5px]" />
           No services created yet. Create your first service to start tracking
           analytics.

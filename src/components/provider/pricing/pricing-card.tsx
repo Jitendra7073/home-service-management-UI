@@ -41,7 +41,8 @@ function PricingHero() {
       </h1>
 
       <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-        Start with our 30-day free trial on the PREMIUM plan or unlock full power with PRO.
+        Start with our 7-day free trial on the PREMIUM plan or unlock full power
+        with PRO.
       </p>
 
       <ul className="flex flex-wrap justify-center gap-3 pt-4">
@@ -88,8 +89,7 @@ function PricingCard({
         isActive || (isPremium && isTrialEligible)
           ? "border-blue-500 bg-blue-50 shadow-lg"
           : "border-gray-200 bg-white hover:shadow-lg"
-      }`}
-    >
+      }`}>
       {/* Badge */}
       {(isInTrial || (isPremium && isTrialEligible && !isInTrial)) && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-4 py-1 text-xs font-semibold text-white">
@@ -105,9 +105,7 @@ function PricingCard({
 
       {/* Price */}
       <div className="mb-6 text-center space-y-2">
-        <h3 className="text-xl font-semibold text-gray-900">
-          {plan.name}
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-900">{plan.name}</h3>
 
         {isInTrial && isPremium ? (
           <>
@@ -122,7 +120,8 @@ function PricingCard({
           <p className="text-4xl font-bold text-gray-900">
             ₹{plan.price}
             <span className="text-sm font-medium text-gray-500">
-              {" "} / {plan.interval}
+              {" "}
+              / {plan.interval}
             </span>
           </p>
         )}
@@ -146,18 +145,13 @@ function PricingCard({
 
       {/* CTA */}
       <button
-        disabled={
-          isLoading ||
-          isActive ||
-          (isInTrial && isPremium)
-        }
+        disabled={isLoading || isActive || (isInTrial && isPremium)}
         onClick={() => onSubscribe(plan.stripePriceId)}
         className={`w-full rounded-full py-3 text-sm font-semibold transition ${
           isActive || (isInTrial && isPremium)
             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
             : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-        }`}
-      >
+        }`}>
         {isLoading
           ? "Processing..."
           : isInTrial && isPremium
@@ -237,7 +231,9 @@ export default function PricingSection() {
             <PricingCard
               key={plan.id}
               plan={plan}
-              isActive={activePlanName === plan.name.toUpperCase() && !isInTrial}
+              isActive={
+                activePlanName === plan.name.toUpperCase() && !isInTrial
+              }
               isLoading={checkoutMutation.isPending}
               onSubscribe={(priceId: string) =>
                 checkoutMutation.mutate({

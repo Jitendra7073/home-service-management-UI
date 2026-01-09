@@ -33,6 +33,16 @@ import {
   DollarSign,
   XCircle,
 } from "lucide-react";
+import {
+  useAdminBusinessDetails,
+  useAdminBusinessServices,
+  useApproveBusiness,
+  useRejectBusiness,
+  useRestrictBusiness,
+  useLiftBusinessRestriction,
+  useRestrictService,
+  useLiftServiceRestriction,
+} from "@/hooks/use-admin-queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface BusinessData {
@@ -95,226 +105,106 @@ export default function BusinessDetailsPage() {
   const router = useRouter();
   const businessId = params.businessId as string;
 
-  const [business, setBusiness] = useState<BusinessData | null>(null);
-  const [services, setServices] = useState<ServiceData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [servicesLoading, setServicesLoading] = useState(true);
+  // Queries
+  const {
+    data: businessResponse,
+    isLoading: loading,
+    error: businessError,
+  } = useAdminBusinessDetails(businessId);
+  const {
+    data: servicesResponse,
+    isLoading: servicesLoading,
+    error: servicesError,
+  } = useAdminBusinessServices(businessId);
+
+  // Mutations
+  const { mutate: approveBusiness, isPending: isApprovePending } =
+    useApproveBusiness();
+  const { mutate: rejectBusiness, isPending: isRejectPending } =
+    useRejectBusiness();
+  const { mutate: restrictBusiness, isPending: isRestrictPending } =
+    useRestrictBusiness();
+  const { mutate: liftRestriction, isPending: isLiftPending } =
+    useLiftBusinessRestriction();
+  const { mutateAsync: restrictServiceAsync } = useRestrictService();
+
+  // Derived state
+  const businessDataRaw = businessResponse?.data;
+  const services = servicesResponse?.data || [];
+
+  const business: BusinessData | null = businessDataRaw
+    ? {
+        ...businessDataRaw,
+        _id: businessDataRaw.id || businessDataRaw._id,
+        owner: businessDataRaw.user
+          ? {
+              ...businessDataRaw.user,
+              _id: businessDataRaw.user.id || businessDataRaw.user._id,
+              firstName: businessDataRaw.user.name?.split(" ")[0] || "",
+              lastName:
+                businessDataRaw.user.name?.split(" ").slice(1).join(" ") || "",
+            }
+          : { _id: "", firstName: "Unknown", lastName: "", email: "" },
+        address: businessDataRaw.address || "No address provided",
+        email: businessDataRaw.contactEmail,
+        phone: businessDataRaw.phoneNumber,
+        restrictionRequestMessage: businessDataRaw.restrictionRequestMessage,
+      }
+    : null;
+
+  const actionLoading =
+    isApprovePending || isRejectPending || isRestrictPending || isLiftPending;
+
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [blockReason, setBlockReason] = useState("");
   const [rejectReason, setRejectReason] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    fetchBusinessDetails();
-    fetchBusinessServices();
-  }, [businessId]);
-
-  const fetchBusinessDetails = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const json = await res.json();
-
-      // Handle the nested structure { success: true, data: { ... } }
-      // The API returns 'data' which contains the business object
-      if ((json.success || json.ok) && json.data) {
-        const businessData = json.data;
-        // Map API response to match interface if needed
-        const mappedBusiness: BusinessData = {
-          ...businessData,
-          _id: businessData.id || businessData._id,
-          owner: businessData.user
-            ? {
-                ...businessData.user,
-                _id: businessData.user.id || businessData.user._id,
-                firstName: businessData.user.name?.split(" ")[0] || "",
-                lastName:
-                  businessData.user.name?.split(" ").slice(1).join(" ") || "",
-              }
-            : { _id: "", firstName: "Unknown", lastName: "", email: "" },
-          // Address logic might need adjustment if address is an object or string in API
-          // The provided JSON doesn't show address field, let's check user addresses
-          address: businessData.address || "No address provided",
-          email: businessData.contactEmail,
-          phone: businessData.phoneNumber,
-          restrictionRequestMessage: businessData.restrictionRequestMessage,
-        };
-        setBusiness(mappedBusiness);
-      } else {
-        toast.error(json.message || "Failed to fetch business details");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch business details");
-    } finally {
-      setLoading(false);
-    }
+  const handleApproveBusiness = () => {
+    approveBusiness(businessId);
   };
 
-  const fetchBusinessServices = async () => {
-    try {
-      setServicesLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}/services`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const json = await res.json();
-
-      if ((json.success || json.ok) && json.data) {
-        setServices(json.data);
-      } else {
-        // If services empty or error
-        if (json.data === undefined) {
-          toast.error(json.message || "Failed to fetch services");
-        } else {
-          setServices([]);
-        }
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to fetch services");
-    } finally {
-      setServicesLoading(false);
-    }
-  };
-
-  const handleApproveBusiness = async () => {
-    try {
-      setActionLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "approve" }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Business approved successfully");
-        fetchBusinessDetails();
-      } else {
-        toast.error(data.message || "Failed to approve business");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to approve business");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleRejectBusiness = async () => {
+  const handleRejectBusiness = () => {
     if (!rejectReason.trim()) {
       toast.error("Please provide a reason for rejection");
       return;
     }
-
-    try {
-      setActionLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reject", reason: rejectReason }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Business rejected successfully");
-        setRejectDialogOpen(false);
-        setRejectReason("");
-        fetchBusinessDetails();
-      } else {
-        toast.error(data.message || "Failed to reject business");
+    rejectBusiness(
+      { businessId, reason: rejectReason },
+      {
+        onSuccess: () => {
+          setRejectDialogOpen(false);
+          setRejectReason("");
+        },
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to reject business");
-    } finally {
-      setActionLoading(false);
-    }
+    );
   };
 
-  const handleBlockBusiness = async () => {
+  const handleBlockBusiness = () => {
     if (!blockReason.trim()) {
       toast.error("Please provide a reason for blocking");
       return;
     }
-
-    try {
-      setActionLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "restrict", reason: blockReason }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Business blocked successfully");
-        setBlockDialogOpen(false);
-        setBlockReason("");
-        fetchBusinessDetails();
-      } else {
-        toast.error(data.message || "Failed to block business");
+    restrictBusiness(
+      { businessId, reason: blockReason },
+      {
+        onSuccess: () => {
+          setBlockDialogOpen(false);
+          setBlockReason("");
+        },
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to block business");
-    } finally {
-      setActionLoading(false);
-    }
+    );
   };
 
-  const handleUnblockBusiness = async () => {
-    try {
-      setActionLoading(true);
-      const res = await fetch(`/api/admin/businesses/${businessId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "lift-restriction" }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Business unblocked successfully");
-        fetchBusinessDetails();
-      } else {
-        toast.error(data.message || "Failed to unblock business");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to unblock business");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleUnblockBusiness = () => {
+    liftRestriction(businessId);
   };
 
   const handleBlockService = async (serviceId: string, reason: string) => {
     try {
-      const res = await fetch(`/api/admin/services/${serviceId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "restrict", reason }),
-        credentials: "include",
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        toast.success("Service blocked successfully");
-        fetchBusinessServices();
-      } else {
-        toast.error(data.message || "Failed to block service");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to block service");
+      await restrictServiceAsync({ serviceId, reason });
+    } catch (error) {
+      // Error handled in hook
     }
   };
 

@@ -54,6 +54,10 @@ export function BusinessManagement() {
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
   const [page, setPage] = useState(1);
+  const [processingAction, setProcessingAction] = useState<{
+    id: string;
+    type: string;
+  } | null>(null);
 
   // Sync URL
   useEffect(() => {
@@ -161,10 +165,19 @@ export function BusinessManagement() {
 
   const handleBlockBusiness = async (reason: string) => {
     if (!selectedBusiness) return;
-    restrictBusiness({
-      businessId: selectedBusiness._id || selectedBusiness.id,
-      reason,
+    setProcessingAction({
+      id: selectedBusiness._id || selectedBusiness.id,
+      type: "block",
     });
+    restrictBusiness(
+      {
+        businessId: selectedBusiness._id || selectedBusiness.id,
+        reason,
+      },
+      {
+        onSettled: () => setProcessingAction(null),
+      }
+    );
     setBlockDialogOpen(false);
   };
 
@@ -277,7 +290,13 @@ export function BusinessManagement() {
                 }
                 onApprove={
                   !business.isApproved && !business.isRejected
-                    ? () => approveBusiness(business._id || business.id)
+                    ? () => {
+                        const id = business._id || business.id;
+                        setProcessingAction({ id, type: "approve" });
+                        approveBusiness(id, {
+                          onSettled: () => setProcessingAction(null),
+                        });
+                      }
                     : undefined
                 }
                 onReject={
@@ -298,11 +317,20 @@ export function BusinessManagement() {
                 }
                 onUnblock={
                   business.isRestricted
-                    ? () => liftRestriction(business._id || business.id)
+                    ? () => {
+                        const id = business._id || business.id;
+                        setProcessingAction({ id, type: "unblock" });
+                        liftRestriction(id, {
+                          onSettled: () => setProcessingAction(null),
+                        });
+                      }
                     : undefined
                 }
                 actionLoading={
-                  null /* Handled by global pending for simplicity or individual but requires complex tracking. 'isMutationPending' is global */
+                  processingAction &&
+                  processingAction.id === (business._id || business.id)
+                    ? processingAction.type
+                    : null
                 }
               />
             ))}

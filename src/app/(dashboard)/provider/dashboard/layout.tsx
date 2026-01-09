@@ -25,7 +25,7 @@ export default function DashboardLayout({
             <NotificationSideBar />
           </div>
         </header>
-        <div className="flex-1 space-y-4 p-4 pt-0 mt-4">{children}</div>
+        <div className="flex-1 space-y-4 p-4 pt-0 my-6">{children}</div>
         <ServiceAwarenessModal />
         <AddServiceModal />
       </SidebarInset>

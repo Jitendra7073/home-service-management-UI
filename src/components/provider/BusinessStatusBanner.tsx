@@ -80,7 +80,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
     return (
       <Alert
         variant="destructive"
-        className="mb-4 border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
+        className="mb-6 border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
         <Ban className="h-4 w-4" />
         <AlertTitle>Business Restricted</AlertTitle>
         <AlertDescription className="flex items-center justify-between">
@@ -142,7 +142,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
     return (
       <Alert
         variant="destructive"
-        className="mb-4 border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
+        className="mb-6 border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
         <XCircle className="h-4 w-4" />
         <AlertTitle>Application Rejected</AlertTitle>
         <AlertDescription>
@@ -158,7 +158,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
 
   if (!business.isApproved) {
     return (
-      <Alert className="mb-4 border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:border-yellow-500 dark:bg-yellow-900/20 dark:text-yellow-200">
+      <Alert className="mb-6 border-yellow-500/50 bg-yellow-50 text-yellow-900 dark:border-yellow-500 dark:bg-yellow-900/20 dark:text-yellow-200">
         <Info className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
         <AlertTitle className="text-yellow-800 dark:text-yellow-300">
           Approval Pending
@@ -173,7 +173,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
 
   if (isPublished) {
     return (
-      <Alert className="mb-4 border-emerald-500/50 bg-emerald-50 text-emerald-900 dark:border-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-200">
+      <Alert className="mb-6 border-emerald-500/50 bg-emerald-50 text-emerald-900 dark:border-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-200">
         <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
         <AlertTitle className="text-emerald-800 dark:text-emerald-300">
           Safe & Verified
@@ -188,7 +188,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
 
   if (!business.isActive) {
     return (
-      <Alert className="mb-4 border-slate-500/50 bg-slate-50 text-slate-900 dark:border-slate-500 dark:bg-slate-900/20 dark:text-slate-200">
+      <Alert className="mb-6 border-slate-500/50 bg-slate-50 text-slate-900 dark:border-slate-500 dark:bg-slate-900/20 dark:text-slate-200">
         <Info className="h-4 w-4" />
         <AlertTitle>Inactive</AlertTitle>
         <AlertDescription>

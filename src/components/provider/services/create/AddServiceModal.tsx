@@ -246,7 +246,7 @@ export default function AddServiceModal() {
   return (
     <Dialog
       open={open}
-      onOpenChange={(isOpen) => !isOpen && handleCleanupAndClose()} >
+      onOpenChange={(isOpen) => !isOpen && handleCleanupAndClose()}>
       <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Service</DialogTitle>
@@ -285,14 +285,27 @@ export default function AddServiceModal() {
           </Field>
 
           <Field label="Description" error={errors.description} required>
-            <Textarea
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              rows={4}
-              placeholder="Details about the service..."
-            />
+            <div className="relative">
+              <Textarea
+                value={form.description}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.length <= 200) {
+                    setForm({ ...form, description: val });
+                  }
+                }}
+                rows={4}
+                placeholder="Details about the service... (Max 200 characters)"
+              />
+              <div
+                className={`text-xs text-right mt-1 ${
+                  form.description.length >= 200
+                    ? "text-red-500"
+                    : "text-muted-foreground"
+                }`}>
+                {form.description.length}/200 characters
+              </div>
+            </div>
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
@@ -323,7 +336,10 @@ export default function AddServiceModal() {
           </div>
 
           <div className="grid grid-col-1 md:grid-cols-2 gap-4">
-            <Field label="Estimated Timeline"  error={errors.durationInMinutes} required>
+            <Field
+              label="Estimated Timeline"
+              error={errors.durationInMinutes}
+              required>
               <Input
                 type="number"
                 min={10}
@@ -389,7 +405,7 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label >
+      <Label>
         {label} {required && <RequireField />}
       </Label>
       {children}

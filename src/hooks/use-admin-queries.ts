@@ -121,8 +121,11 @@ export function useRestrictUser() {
       if (!res.ok) throw new Error("Failed to restrict user");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "user", variables.userId],
+      });
       toast.success("User restricted successfully");
     },
     onError: (error: any) => {
@@ -144,8 +147,11 @@ export function useLiftUserRestriction() {
       if (!res.ok) throw new Error("Failed to lift restriction");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "user", variables],
+      });
       toast.success("User restriction lifted successfully");
     },
     onError: (error: any) => {
@@ -208,8 +214,11 @@ export function useApproveBusiness() {
       if (!res.ok) throw new Error("Failed to approve business");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "business", variables],
+      });
       toast.success("Business approved successfully");
     },
     onError: (error: any) => {
@@ -237,8 +246,11 @@ export function useRejectBusiness() {
       if (!res.ok) throw new Error("Failed to reject business");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "business", variables.businessId],
+      });
       toast.success("Business rejected successfully");
     },
     onError: (error: any) => {
@@ -266,9 +278,12 @@ export function useRestrictBusiness() {
       if (!res.ok) throw new Error("Failed to restrict business");
       return res.json();
     },
-    onSuccess: () => {
-      toast.success("Business restricted successfully");
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "business", variables.businessId],
+      });
+      toast.success("Business restricted successfully");
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to restrict business");
@@ -289,8 +304,11 @@ export function useLiftBusinessRestriction() {
       if (!res.ok) throw new Error("Failed to lift restriction");
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "businesses"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "business", variables],
+      });
       toast.success("Business restriction lifted successfully");
     },
     onError: (error: any) => {

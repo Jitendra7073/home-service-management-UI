@@ -24,7 +24,6 @@ const QuickCountCard: React.FC<CardProps> = ({
   icon: Icon,
   isLoading = true,
 }) => {
-
   if (isLoading) {
     return (
       <Card
@@ -40,7 +39,7 @@ const QuickCountCard: React.FC<CardProps> = ({
             <div className="h-6 w-32 bg-gray-200 rounded-sm animate-pulse" />
           </div>
         </CardHeader>
-        <CardContent >
+        <CardContent>
           <div className="h-6 w-35 bg-gray-200 rounded-sm animate-pulse" />
           <div className="h-4 w-25 bg-gray-200 rounded-sm animate-pulse mt-2" />
         </CardContent>
@@ -49,7 +48,7 @@ const QuickCountCard: React.FC<CardProps> = ({
           <div className="h-5 w-5 bg-gray-200 rounded-sm animate-pulse" />
         </CardFooter>
       </Card>
-    )
+    );
   }
   return (
     <Card
@@ -73,14 +72,20 @@ const QuickCountCard: React.FC<CardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent >
+      <CardContent>
         <div className="text-3xl font-bold tracking-tight text-gray-900">
           {value}
         </div>
       </CardContent>
 
       <CardFooter className="flex justify-between items-center ">
-        <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
+        <p
+          className={`text-sm flex items-center gap-1 mt-1 ${
+            growth.toLowerCase().includes("lost") ||
+            growth.toLowerCase().includes("cancelled")
+              ? "text-red-500"
+              : "text-green-600"
+          }`}>
           {growth}
         </p>
       </CardFooter>

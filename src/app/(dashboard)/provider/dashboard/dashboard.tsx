@@ -84,7 +84,7 @@ const DashboardComponents = () => {
     <div className="flex w-full justify-center pb-10">
       <div className="w-full max-w-7xl mx-auto px-2 md:px-6 space-y-10 md:space-y-14">
         {/* Header with Refresh Button */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-0 space-y-6">
           <Welcome
             username={data?.user.name}
             isLoading={isLoading}
@@ -121,29 +121,6 @@ const DashboardComponents = () => {
             error={error}
           />
         )}
-
-        <section
-          className={`${
-            plans?.name?.toLowerCase() === "pro" &&
-            "grid grid-cols-1 md:grid-cols-2 gap-6"
-          }`}>
-          {["premimum", "pro"].some((keyword) =>
-            plans?.name?.toLowerCase().includes(keyword)
-          ) && (
-            <RevenueChart
-              data={data?.monthlyAnalysis || []}
-              isLoading={isLoading || isPending}
-            />
-          )}
-          {["pro"].some((keyword) =>
-            plans?.name?.toLowerCase().includes(keyword)
-          ) && (
-            <ServiceChart
-              data={data?.serviceBookingStats || []}
-              isLoading={isLoading || isPending}
-            />
-          )}
-        </section>
 
         {["premimum", "pro"].some((keyword) =>
           plans?.name?.toLowerCase().includes(keyword)
