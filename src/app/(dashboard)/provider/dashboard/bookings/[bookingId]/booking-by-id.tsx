@@ -17,27 +17,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 /* ---------------- TYPES ---------------- */
 
-type BookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "COMPLETED"
-  | "CANCELLED";
+type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
 
-type PaymentStatus =
-  | "PENDING"
-  | "PAID"
-  | "FAILED"
-  | "CANCELLED";
+type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED";
 
 interface BookingData {
   user: {
@@ -147,11 +134,7 @@ export default function BookingDetailsDashboard({
       <div className="w-full max-w-[1400px] px-4 py-6 space-y-6">
         {/* HEADER */}
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.back()}
-          >
+          <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
 
@@ -161,14 +144,16 @@ export default function BookingDetailsDashboard({
             </h1>
 
             <Badge
-              className={`${bookingStatusClasses[booking.bookingStatus]} px-2 py-1`}
-            >
+              className={`${
+                bookingStatusClasses[booking.bookingStatus]
+              } px-2 py-1`}>
               {booking.bookingStatus}
             </Badge>
 
             <Badge
-              className={`${paymentStatusClasses[booking.paymentStatus]} px-2 py-1`}
-            >
+              className={`${
+                paymentStatusClasses[booking.paymentStatus]
+              } px-2 py-1`}>
               {booking.paymentStatus}
             </Badge>
           </div>
@@ -189,8 +174,16 @@ export default function BookingDetailsDashboard({
 
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <InfoBox icon={User} label="Full Name" value={booking.user.name} />
-                  <InfoBox icon={Phone} label="Mobile" value={booking.user.mobile} />
+                  <InfoBox
+                    icon={User}
+                    label="Full Name"
+                    value={booking.user.name}
+                  />
+                  <InfoBox
+                    icon={Phone}
+                    label="Mobile"
+                    value={booking.user.mobile}
+                  />
                 </div>
 
                 <InfoBox icon={Mail} label="Email" value={booking.user.email} />
@@ -226,7 +219,9 @@ export default function BookingDetailsDashboard({
                   />
                   <Tag
                     icon={Banknote}
-                    text={`${booking.service.currency} ${booking.service.price.toLocaleString()}`}
+                    text={`${
+                      booking.service.currency ? booking.service.currency : "₹"
+                    } ${booking.service.price.toLocaleString()}`}
                   />
                 </div>
 
@@ -235,14 +230,9 @@ export default function BookingDetailsDashboard({
                 </p>
               </CardContent>
             </Card>
-          </div>
 
-        </div>
-            
-          {/* RIGHT */}
-          <div className="space-y-4">
-             {/* INVOICE SUMMARY */}
-             <Card className="px-6">
+            {/* INVOICE SUMMARY */}
+            <Card className="px-6">
               <CardHeader className="p-0">
                 <CardTitle className="flex items-center gap-2">
                   <Banknote className="w-5 h-5 text-blue-600" />
@@ -250,47 +240,63 @@ export default function BookingDetailsDashboard({
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0 space-y-3">
-                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Service Price</span>
-                    <span className="font-medium">₹{booking.service.price.toLocaleString()}</span>
-                 </div>
-                 {/* Assuming totalAmount might differ from price due to quantity or taxes */}
-                 <Separator />
-                 <div className="flex justify-between text-base font-bold">
-                    <span>Total Amount</span>
-                    <span>₹{booking.totalAmount?.toLocaleString() ?? booking.service.price.toLocaleString()}</span>
-                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Service Price</span>
+                  <span className="font-medium">
+                    ₹{booking.service.price.toLocaleString()}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-base font-bold">
+                  <span>Total Amount</span>
+                  <span>
+                    ₹
+                    {booking.totalAmount?.toLocaleString() ??
+                      booking.service.price.toLocaleString()}
+                  </span>
+                </div>
               </CardContent>
             </Card>
 
             {/* REFUND INFO (If Cancelled) */}
             {booking.cancellation && (
-               <Card className="px-6 border-red-200 bg-red-50">
-                  <CardHeader className="p-0">
-                    <CardTitle className="flex items-center gap-2 text-red-700">
-                      <Banknote className="w-5 h-5" />
-                      Refund Details
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-red-800">Refund Amount</span>
-                        <span className="font-bold text-red-900">₹{booking.cancellation.refundAmount}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-red-800">Status</span>
-                        <span className="capitalize text-red-900">{booking.cancellation.refundStatus}</span>
-                      </div>
-                      {booking.cancellation.reason && (
-                         <div className="pt-2">
-                            <p className="text-xs text-red-600 font-semibold">Reason:</p>
-                            <p className="text-red-800 italic">{booking.cancellation.reason}</p>
-                         </div>
-                      )}
-                  </CardContent>
-               </Card>
+              <Card className="px-6 border-red-200 bg-red-50">
+                <CardHeader className="p-0">
+                  <CardTitle className="flex items-center gap-2 text-red-700">
+                    <Banknote className="w-5 h-5" />
+                    Refund Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-red-800">Refund Amount</span>
+                    <span className="font-bold text-red-900">
+                      ₹{booking.cancellation.refundAmount}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-red-800">Status</span>
+                    <span className="capitalize text-red-900">
+                      {booking.cancellation.refundStatus}
+                    </span>
+                  </div>
+                  {booking.cancellation.reason && (
+                    <div className="pt-2">
+                      <p className="text-xs text-red-600 font-semibold">
+                        Reason:
+                      </p>
+                      <p className="text-red-800 italic">
+                        {booking.cancellation.reason}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
+          </div>
 
+          {/* RIGHT */}
+          <div className="space-y-4">
             {/* SLOT */}
             <Card className="px-6">
               <CardHeader className="p-0">
@@ -335,15 +341,25 @@ export default function BookingDetailsDashboard({
               <CardContent className="pt-6 space-y-3 text-xs">
                 <MetaRow label="Service ID" value={booking.service.id} />
                 <Separator />
-                <MetaRow label="Booking Created" value={formatDate(booking.createdAt)} />
-                <MetaRow label="Last Updated" value={formatDate(booking.updatedAt)} />
+                <MetaRow
+                  label="Booking Created"
+                  value={formatDate(booking.createdAt)}
+                />
+                <MetaRow
+                  label="Last Updated"
+                  value={formatDate(booking.updatedAt)}
+                />
                 <Separator />
-                <MetaRow label="Service Created" value={formatDate(booking.service.createdAt)} />
+                <MetaRow
+                  label="Service Created"
+                  value={formatDate(booking.service.createdAt)}
+                />
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
+    </div>
   );
 }
 
