@@ -130,7 +130,7 @@ export default function BusinessDetailsPage() {
 
   // Derived state
   const businessDataRaw = businessResponse?.data;
-  const services = servicesResponse?.data || [];
+  const services = businessDataRaw?.services || [];
 
   const business: BusinessData | null = businessDataRaw
     ? {
