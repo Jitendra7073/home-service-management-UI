@@ -46,6 +46,7 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
+              suppressHydrationWarning
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-md grayscale">
                 <AvatarImage
@@ -105,7 +106,6 @@ export function NavUser({
                   </span>
                 </div>
               </div>
-              
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
