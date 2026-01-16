@@ -9,12 +9,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Bell,
-  X,
-  RefreshCw,
-  AlertTriangle,
-} from "lucide-react";
+import { Bell, X, RefreshCw, AlertTriangle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -25,7 +20,9 @@ const NOTIFICATION_QUERY_KEY = ["notifications"];
 const getRelativeTime = (createdAt: string) => {
   const now = new Date();
   const notificationTime = new Date(createdAt);
-  const seconds = Math.floor((now.getTime() - notificationTime.getTime()) / 1000);
+  const seconds = Math.floor(
+    (now.getTime() - notificationTime.getTime()) / 1000
+  );
 
   if (seconds < 60) return "just now";
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
@@ -55,7 +52,7 @@ const NotificationSideBar = () => {
   const queryClient = useQueryClient();
 
   /* ---------------- FETCH NOTIFICATIONS ---------------- */
-  const { data, isLoading, isError,isFetching, refetch } = useQuery({
+  const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: NOTIFICATION_QUERY_KEY,
     queryFn: async () => {
       const res = await fetch("/api/notification/all");
@@ -112,7 +109,11 @@ const NotificationSideBar = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          suppressHydrationWarning>
           <Bell size={26} className="text-primary" />
 
           {unreadNotifications.length > 0 && (
@@ -125,7 +126,9 @@ const NotificationSideBar = () => {
       <SheetTitle></SheetTitle>
       <SheetDescription></SheetDescription>
 
-      <SheetContent side="right" className="w-[380px] sm:w-[420px] p-0 bg-white">
+      <SheetContent
+        side="right"
+        className="w-[380px] sm:w-[420px] p-0 bg-white">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white px-4 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
@@ -203,7 +206,6 @@ const NotificationSideBar = () => {
             </div>
           )}
         </div>
-
       </SheetContent>
     </Sheet>
   );
