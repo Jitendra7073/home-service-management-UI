@@ -58,11 +58,10 @@ const BusinessSchema = z.object({
 
 type BusinessFormValues = z.infer<typeof BusinessSchema>;
 
-
 // Require field symbol
-const RequireField = () =>{
+const RequireField = () => {
   return <span className="text-red-500 -ml-1">*</span>;
-}
+};
 
 export default function BusinessProfileForm({
   onNext,
@@ -247,10 +246,7 @@ export default function BusinessProfileForm({
                     Business Name <RequireField />
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Jitendra Cleaning Services"
-                      {...field}
-                    />
+                    <Input placeholder="Enter your business name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

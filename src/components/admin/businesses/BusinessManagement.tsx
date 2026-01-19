@@ -30,13 +30,13 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 const APPROVAL_STATUS = {
   ALL: "all",
   PENDING: "pending",
   APPROVED: "approved",
   REJECTED: "rejected",
+  RESTRICTED: "restricted",
 } as const;
 
 export function BusinessManagement() {
@@ -114,6 +114,8 @@ export function BusinessManagement() {
         if (!business.isApproved) return false;
       } else if (statusFilter === APPROVAL_STATUS.REJECTED) {
         if (!business.isRejected) return false;
+      } else if (statusFilter === APPROVAL_STATUS.RESTRICTED) {
+        if (!business.isRestricted) return false;
       }
     }
 
@@ -214,6 +216,9 @@ export function BusinessManagement() {
               <SelectItem value={APPROVAL_STATUS.PENDING}>Pending</SelectItem>
               <SelectItem value={APPROVAL_STATUS.APPROVED}>Approved</SelectItem>
               <SelectItem value={APPROVAL_STATUS.REJECTED}>Rejected</SelectItem>
+              <SelectItem value={APPROVAL_STATUS.RESTRICTED}>
+                Restricted
+              </SelectItem>
             </SelectContent>
           </Select>
 

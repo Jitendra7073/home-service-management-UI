@@ -11,7 +11,7 @@ export default function Dashboard() {
   return (
     <>
       {business && (
-        <div className="max-w-7xl mx-auto px-2 md:px-6">
+        <div className="max-w-7xl mx-auto px-2 md:px-6 transition-all">
           <BusinessStatusBanner business={business} />
         </div>
       )}
