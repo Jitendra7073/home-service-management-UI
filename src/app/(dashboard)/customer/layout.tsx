@@ -6,7 +6,7 @@ import GetFcmToken from "@/app/fcm-token";
 import FirebaseForegroundListener from "@/components/common/firebase-foreground";
 
 export const metadata: Metadata = {
-  title: "Fixora | Customer",
+  title: "Customer",
   description: "Customer dashboard for Fixora application",
 };
 
