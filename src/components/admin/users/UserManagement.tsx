@@ -31,7 +31,7 @@ export function UserManagement() {
   const pathname = usePathname();
 
   const [activeTab, setActiveTab] = useState<UserRole>(
-    (searchParams.get("role") as UserRole) || "customer"
+    (searchParams.get("role") as UserRole) || "customer",
   );
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
@@ -90,7 +90,7 @@ export function UserManagement() {
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const paginatedUsers = filteredUsers.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + ITEMS_PER_PAGE,
   );
   const users = paginatedUsers; // For compatibility with rendering
 
@@ -237,7 +237,7 @@ export function UserManagement() {
 
                         {Array.from(
                           { length: totalPages },
-                          (_, i) => i + 1
+                          (_, i) => i + 1,
                         ).map((p) => {
                           if (
                             totalPages > 10 &&

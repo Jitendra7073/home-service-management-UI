@@ -169,19 +169,6 @@ export function BusinessCard({
                 )}
                 Approve
               </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="gap-2"
-                onClick={onReject}
-                disabled={!!actionLoading}>
-                {actionLoading === "reject" ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                ) : (
-                  <XCircle className="h-4 w-4" />
-                )}
-                Reject
-              </Button>
             </>
           ) : isRestricted && onUnblock ? (
             <Button

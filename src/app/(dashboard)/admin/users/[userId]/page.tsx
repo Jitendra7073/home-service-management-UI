@@ -146,7 +146,7 @@ export default function UserDetailsPage() {
     .slice(0, 2);
 
   const memberDays = Math.floor(
-    (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+    (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24),
   );
 
   // Get primary address
@@ -187,13 +187,18 @@ export default function UserDetailsPage() {
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight">{fullName}</h1>
-            {user.isRestricted && (
-              <Badge variant="destructive" className="gap-1">
+            {user.isRestricted ? (
+              <Badge variant="destructive" className="gap-2">
                 <Ban className="h-3 w-3" />
-                Blocked
+                Restricted
+              </Badge>
+            ) : (
+              <Badge variant="default" className="gap-2 bg-emerald-600">
+                <Shield className="h-3 w-3" />
+                Active
               </Badge>
             )}
-            <Badge variant="outline" className="gap-1">
+            <Badge variant="outline" className="gap-2">
               {getRoleIcon()}
               <span className="capitalize">{user.role}</span>
             </Badge>
@@ -215,10 +220,35 @@ export default function UserDetailsPage() {
         className={`${
           user.role === "provider"
             ? "grid gap-6 md:grid-cols-2 lg:grid-cols-2"
-            : "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+            : "grid gap-6 md:grid-cols-2"
         }`}>
+        {/* Restriction Details */}
+        {user.isRestricted && user.restrictionReason && (
+          <Card className="md:col-span-2 lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-destructive">
+                Restriction Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
+                <p className="mb-2 text-sm font-semibold text-destructive">
+                  Reason for Restriction
+                </p>
+                <p className="text-destructive">{user.restrictionReason}</p>
+              </div>
+              <div className="mt-4 text-sm text-muted-foreground">
+                <p>
+                  This user is currently restricted from accessing the platform.
+                  To lift the restriction.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile Card */}
-        <Card className="lg:col-span-1">
+        <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
           </CardHeader>
@@ -279,35 +309,9 @@ export default function UserDetailsPage() {
           </CardContent>
         </Card>
 
-        {/* Restriction Details */}
-        {user.isRestricted && user.restrictionReason && (
-          <Card className="border-destructive md:col-span-2 lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-destructive">
-                Restriction Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
-                <p className="mb-2 text-sm font-semibold text-destructive">
-                  Reason for Restriction
-                </p>
-                <p className="text-destructive">{user.restrictionReason}</p>
-              </div>
-              <div className="mt-4 text-sm text-muted-foreground">
-                <p>
-                  This user is currently restricted from accessing the platform.
-                  To lift the restriction, click the "Unblock User" button
-                  above.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Provider Businesses */}
         {user.role === "provider" && user.businessProfile && (
-          <Card className="md:col-span-2 lg:col-span-2">
+          <Card>
             <CardHeader>
               <CardTitle>Business Profile</CardTitle>
             </CardHeader>
@@ -348,7 +352,7 @@ export default function UserDetailsPage() {
                     className="w-full gap-2"
                     onClick={() =>
                       router.push(
-                        `/admin/businesses/${user.businessProfile?.id}`
+                        `/admin/businesses/${user.businessProfile?.id}`,
                       )
                     }>
                     View Business Details
@@ -364,7 +368,7 @@ export default function UserDetailsPage() {
           user.businesses &&
           user.businesses.length > 0 &&
           !user.businessProfile && (
-            <Card className="md:col-span-2 lg:col-span-2">
+            <Card>
               <CardHeader>
                 <CardTitle>Businesses ({user.businesses.length})</CardTitle>
               </CardHeader>
@@ -408,7 +412,9 @@ export default function UserDetailsPage() {
                           className="w-full gap-2"
                           onClick={() =>
                             router.push(
-                              `/admin/businesses/${business._id || business.id}`
+                              `/admin/businesses/${
+                                business._id || business.id
+                              }`,
                             )
                           }>
                           View Business Details
@@ -421,55 +427,74 @@ export default function UserDetailsPage() {
             </Card>
           )}
 
-        {/* Activity Summary */}
-        <Card
-          className={`${
-            user.role === "provider" ? "md:col-span-2 lg:col-span-2" : ""
-          }`}>
-          <CardHeader>
-            <CardTitle>Account Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div
-              className={`${
-                user.role === "provider"
-                  ? "grid gap-6 md:grid-cols-3"
-                  : "grid gap-6 md:grid-cols-2"
-              }`}>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Account Status</p>
-                <div className="flex items-center gap-2">
-                  {user.isRestricted ? (
-                    <>
-                      <Ban className="h-5 w-5 text-destructive" />
-                      <span className="font-medium text-destructive">
-                        Restricted
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="h-5 w-5 text-emerald-600" />
-                      <span className="font-medium text-emerald-600">
-                        Active
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Account Type</p>
-                <div className="flex items-center gap-2">
-                  {getRoleIcon()}
-                  <span className="font-medium capitalize">{user.role}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Member For</p>
-                <p className="font-medium">{memberDays} days</p>
-              </div>
+        <Card className={user.role === "customer" ? "" : "col-span-2"}>
+          <CardHeader className="flex flex-row items-center justify-between px-6">
+            <div className="space-y-2">
+              <CardTitle>
+                {user.role === "customer"
+                  ? "Booking Activity Logs"
+                  : "Subscription Activity Logs"}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {user.role === "customer"
+                  ? "Recent booking activities from customers"
+                  : "Recent subscription activities from providers"}
+              </p>
             </div>
+          </CardHeader>
+
+          <CardContent className="space-y-2 max-h-[420px] overflow-y-auto px-6">
+            {user.role === "customer"
+              ? [1, 2, 3, 4, 5].map((booking) => (
+                  <div
+                    key={booking}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-sm border bg-background p-4 hover:bg-accent transition">
+                    {/* Left Info */}
+                    <div className="space-y-1">
+                      <p className="font-medium">Booking #{booking} Created</p>
+                      <p className="text-sm text-muted-foreground">
+                        Customer: John Doe • Service: AC Repair
+                      </p>
+                    </div>
+
+                    {/* Right Meta */}
+                    <div className="flex items-center gap-3">
+                      <span className="rounded-sm bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 text-xs font-medium">
+                        Completed
+                      </span>
+
+                      <span className="text-xs text-muted-foreground">
+                        2 min ago
+                      </span>
+                    </div>
+                  </div>
+                ))
+              : [1, 2, 3, 4, 5].map((booking) => (
+                  <div
+                    key={booking}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-sm border bg-background p-4 hover:bg-accent transition">
+                    {/* Left Info */}
+                    <div className="space-y-1">
+                      <p className="font-medium">
+                        Subscription #{booking} Created
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Provider: John Doe
+                      </p>
+                    </div>
+
+                    {/* Right Meta */}
+                    <div className="flex items-center gap-3">
+                      <span className="rounded-sm bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 text-xs font-medium">
+                        Trial
+                      </span>
+
+                      <span className="text-xs text-muted-foreground">
+                        2 min ago
+                      </span>
+                    </div>
+                  </div>
+                ))}
           </CardContent>
         </Card>
       </div>
