@@ -83,20 +83,22 @@ const QuickCounts = ({
       </div>
 
       {/* Middle Row: Revenue & Booking Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RevenueChart
-            data={monthlyAnalysis}
-            isLoading={isLoading || isPending}
-          />
+      {plan?.name?.toLowerCase().includes("pr") && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <RevenueChart
+              data={monthlyAnalysis}
+              isLoading={isLoading || isPending}
+            />
+          </div>
+          <div className="lg:col-span-1">
+            <BookingStatusChart
+              data={bookingStats}
+              isLoading={isLoading || isPending}
+            />
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <BookingStatusChart
-            data={bookingStats}
-            isLoading={isLoading || isPending}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Bottom Row: Service Popularity */}
       <div className="w-full">

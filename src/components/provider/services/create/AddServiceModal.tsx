@@ -67,7 +67,7 @@ export default function AddServiceModal() {
       e.durationInMinutes = "Enter a valid duration";
     if (form.totalBookingAllow <= 0)
       e.totalBookingAllow = "Enter a valid number.";
-    if (form.price <= 0) e.price = "Enter a valid price";
+    if (form.price <= 50) e.price = "Minimum payment amount must be ₹50";
 
     setErrors(e);
     return Object.keys(e).length === 0;

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react"; // ✅ ADDED useEffect
-
+import React, { useMemo, useState, useEffect } from "react";
 import ExploreHeader from "@/components/customer/explore/exploreHeroSection";
 import SearchBar from "@/components/customer/explore/exploreSearchBar";
 import Filters from "@/components/customer/explore/exploreFilters";
@@ -199,12 +198,22 @@ const Explore: React.FC = () => {
       const matchesCity = (() => {
         if (!selectedState) return true;
         const provider = providers.find((p) => p.id === service.providerId);
-        return provider?.addresses?.some((addr) => addr.city === selectedState) || false;
+        return (
+          provider?.addresses?.some((addr) => addr.city === selectedState) ||
+          false
+        );
       })();
 
       return matchesSearch && matchesCategory && matchesPrice && matchesCity;
     });
-  }, [allServices, searchTerm, selectedCategories, priceRange, selectedState, providers]);
+  }, [
+    allServices,
+    searchTerm,
+    selectedCategories,
+    priceRange,
+    selectedState,
+    providers,
+  ]);
 
   const totalPages = Math.ceil(filteredServices.length / limit);
 

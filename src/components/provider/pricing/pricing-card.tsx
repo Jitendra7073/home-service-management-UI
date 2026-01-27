@@ -1,8 +1,14 @@
 "use client";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check, StickyNote, TriangleAlert } from "lucide-react";
+
 import PricingSkeleton from "./pricingSkeleton";
+
+import { toast } from "sonner";
+import { QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 /* ----------------------- BENEFITS ----------------------- */
 
@@ -20,7 +26,6 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     "Unlimited services",
     "Priority customer bookings",
     "Advanced analytics & reports",
-    "Higher search visibility",
     "Priority support",
   ],
 };
@@ -49,7 +54,7 @@ function PricingHero() {
         {highlights.map((item, i) => (
           <li
             key={i}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-medium text-gray-700">
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-medium text-gray-700">
             <Check className="h-4 w-4 text-blue-600" />
             {item}
           </li>
@@ -69,6 +74,12 @@ function PricingCard({
   isInTrial = false,
   trialEndDate = null,
   isTrialEligible = false,
+  onCancel,
+  onManage,
+  subscriptionStatus,
+  isCancelAtPeriodEnd,
+  isCancelLoading,
+  isManageLoading,
 }: any) {
   const benefits = PLAN_BENEFITS[plan.name] ?? [];
   const isPremium = plan.name.toUpperCase() === "PREMIMUM";
@@ -86,20 +97,27 @@ function PricingCard({
   return (
     <div
       className={`relative flex flex-col rounded-md border p-7 transition-all ${
-        isActive || (isPremium && isTrialEligible)
+        isActive || (isPremium && isTrialEligible && !isActive)
           ? "border-blue-500 bg-blue-50 shadow-lg"
           : "border-gray-200 bg-white hover:shadow-lg"
       }`}>
       {/* Badge */}
-      {(isInTrial || (isPremium && isTrialEligible && !isInTrial)) && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-4 py-1 text-xs font-semibold text-white">
+      {(isInTrial ||
+        (isPremium && isTrialEligible && !isInTrial && !isActive)) && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-md bg-blue-600 px-4 py-1 text-xs font-semibold text-white">
           {isInTrial ? "TRIAL ACTIVE" : "FREE TRIAL"}
         </div>
       )}
 
-      {isActive && !isInTrial && (
-        <span className="absolute top-4 right-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+      {isActive && !isInTrial && !isCancelAtPeriodEnd && (
+        <span className="absolute top-4 right-4 rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white uppercase">
           Active
+        </span>
+      )}
+
+      {isCancelAtPeriodEnd && isActive && (
+        <span className="absolute top-4 right-4 rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white">
+          Cancelled
         </span>
       )}
 
@@ -117,16 +135,18 @@ function PricingCard({
             </p>
           </>
         ) : (
-          <p className="text-4xl font-bold text-gray-900">
-            ₹{plan.price}
-            <span className="text-sm font-medium text-gray-500">
-              {" "}
-              / {plan.interval}
-            </span>
-          </p>
+          <div className="flex flex-col items-center">
+            <p className="text-4xl font-bold text-gray-900">
+              ₹{plan.price}
+              <span className="text-sm font-medium text-gray-500">
+                {" "}
+                / {plan.interval}
+              </span>
+            </p>
+          </div>
         )}
 
-        {isPremium && isTrialEligible && !isInTrial && (
+        {isPremium && isTrialEligible && !isInTrial && !isActive && (
           <p className="text-xs text-gray-600">
             Free for 7 days • Cancel anytime
           </p>
@@ -143,25 +163,111 @@ function PricingCard({
         ))}
       </ul>
 
-      {/* CTA */}
-      <button
-        disabled={isLoading || isActive || (isInTrial && isPremium)}
-        onClick={() => onSubscribe(plan.stripePriceId)}
-        className={`w-full rounded-full py-3 text-sm font-semibold transition ${
-          isActive || (isInTrial && isPremium)
-            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
-        }`}>
-        {isLoading
-          ? "Processing..."
-          : isInTrial && isPremium
-          ? `Trial Ends in ${daysRemaining} Days`
-          : isActive
-          ? "Current Plan"
-          : isPremium
-          ? "Start Free Trial"
-          : "Upgrade to PRO"}
-      </button>
+      {isCancelAtPeriodEnd && isActive && (
+        <div className="mb-4 flex items-center gap-2 rounded border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <TriangleAlert size={14} />
+          <span>
+            <strong>Plan cancelled.</strong> Access available until period end.
+          </span>
+        </div>
+      )}
+      {/* CTA Buttons */}
+      <div className="mt-auto flex flex-col gap-3">
+        {isActive ? (
+          <>
+            {/* TRIALING STATE */}
+            {subscriptionStatus === "trialing" && (
+              <>
+                {isCancelAtPeriodEnd ? (
+                  <div className="flex flex-col gap-2">
+                    <button
+                      disabled={isManageLoading}
+                      onClick={onManage}
+                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isManageLoading
+                        ? "Redirecting..."
+                        : "Manage Subscription"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
+                    <button
+                      disabled={isCancelLoading}
+                      onClick={onCancel}
+                      className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isCancelLoading ? "Cancelling..." : "Cancel Trial"}
+                    </button>
+                    <button
+                      disabled={isManageLoading}
+                      onClick={onManage}
+                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isManageLoading
+                        ? "Redirecting..."
+                        : "Manage Subscription"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ACTIVE STATE */}
+            {subscriptionStatus === "active" && (
+              <>
+                {isCancelAtPeriodEnd ? (
+                  <button
+                    disabled={isManageLoading}
+                    onClick={onManage}
+                    className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                    {isManageLoading ? "Redirecting..." : "Manage Subscription"}
+                  </button>
+                ) : (
+                  <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
+                    <button
+                      disabled={isCancelLoading}
+                      onClick={onCancel}
+                      className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isCancelLoading
+                        ? "Cancelling..."
+                        : "Cancel Subscription"}
+                    </button>
+                    <button
+                      disabled={isManageLoading}
+                      onClick={onManage}
+                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isManageLoading
+                        ? "Redirecting..."
+                        : "Manage Subscription"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ERROR / FALLBACK STATE*/}
+            {subscriptionStatus !== "trialing" &&
+              subscriptionStatus !== "active" && (
+                <button
+                  disabled={isManageLoading}
+                  onClick={onManage}
+                  className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                  {isManageLoading ? "Redirecting..." : "Manage Subscription"}
+                </button>
+              )}
+          </>
+        ) : (
+          /* NOT ACTIVE PLAN (Free User viewing Paid Plan) -> Show Upgrade */
+          <button
+            disabled={isLoading}
+            onClick={() => onSubscribe(plan.stripePriceId)}
+            className="w-full cursor-pointer rounded-md bg-blue-600 text-white hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+            {isLoading
+              ? "Processing..."
+              : isPremium && isTrialEligible
+              ? "Start Free Trial"
+              : "Upgrade Now"}
+          </button>
+        )}
+      </div>
 
       <p className="mt-4 text-center text-xs text-gray-500">
         Secure payments • No hidden charges
@@ -173,7 +279,11 @@ function PricingCard({
 /* ----------------------- MAIN ----------------------- */
 
 export default function PricingSection() {
-  const { data: plans } = useQuery({
+  const {
+    data: plans,
+    isLoading: plansLoading,
+    isFetching: plansFetching,
+  } = useQuery({
     queryKey: ["pricingPlans"],
     queryFn: async () => {
       const res = await fetch("/api/provider/subscription");
@@ -182,7 +292,11 @@ export default function PricingSection() {
     staleTime: Infinity,
   });
 
-  const { data: profile, isLoading } = useQuery({
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isFetching: profileFetching,
+  } = useQuery({
     queryKey: ["provider-profile"],
     queryFn: async () => {
       const res = await fetch("/api/common/profile");
@@ -190,14 +304,22 @@ export default function PricingSection() {
     },
   });
 
-  const activePlanName =
-    profile?.user?.providerSubscription?.plan?.name?.toUpperCase() ?? "FREE";
+  const subscription = profile?.user?.providerSubscription;
 
-  const subscriptionStatus =
-    profile?.user?.providerSubscription?.status ?? "FREE";
+  const activePlanName = subscription?.plan?.name?.toUpperCase() ?? "FREE";
+  const subscriptionStatus = subscription?.status ?? "FREE";
 
   const isInTrial = subscriptionStatus === "trialing";
-  const trialEndDate = profile?.user?.providerSubscription?.currentPeriodEnd;
+
+  // Safely calculate trial end date
+  const trialEndDate =
+    isInTrial && subscription?.currentPeriodStart
+      ? new Date(
+          new Date(subscription.currentPeriodStart).getTime() +
+            7 * 24 * 60 * 60 * 1000
+        )
+      : null;
+
   const isTrialEligible = activePlanName === "FREE" && !isInTrial;
 
   const checkoutMutation = useMutation({
@@ -207,47 +329,113 @@ export default function PricingSection() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId, isTrial }),
       });
-      return res.json();
+      const data = await res.json();
+      console.log(data);
+      return data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
+      console.log("url data", data);
       window.location.href = data.url;
     },
   });
 
-  if (isLoading) return <PricingSkeleton />;
+  const cancelSubscription = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/provider/subscription/cancel", {
+        method: "POST",
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success(data.msg);
+        queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
+      } else if (data.success === false) {
+        toast.error(data.msg);
+      }
+    },
+    onError: (error) => {
+      console.error("Cancel subscription error:", error);
+    },
+  });
+
+  const billingPortalURL = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/provider/subscription/billing", {
+        method: "GET",
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        window.location.href = data.url;
+      } else if (data.success === false) {
+        toast.error(data.msg);
+      }
+    },
+    onError: (error) => {
+      console.error("Cancel subscription error:", error);
+    },
+  });
 
   const visiblePlans =
     plans?.filter((p: any) =>
       ["PREMIMUM", "PRO"].includes(p.name.toUpperCase())
     ) ?? [];
 
+  const isLoading = profileLoading || plansLoading;
+
   return (
     <div className="flex justify-center w-full">
       <div className="w-full max-w-6xl px-4 space-y-10">
         <PricingHero />
 
-        <div className="grid gap-8 sm:grid-cols-1 lg:grid-cols-2 justify-center">
-          {visiblePlans.map((plan: any) => (
-            <PricingCard
-              key={plan.id}
-              plan={plan}
-              isActive={
-                activePlanName === plan.name.toUpperCase() && !isInTrial
-              }
-              isLoading={checkoutMutation.isPending}
-              onSubscribe={(priceId: string) =>
-                checkoutMutation.mutate({
-                  priceId,
-                  isTrial:
-                    plan.name.toUpperCase() === "PREMIMUM" && isTrialEligible,
-                })
-              }
-              isInTrial={isInTrial && plan.name.toUpperCase() === "PREMIMUM"}
-              trialEndDate={trialEndDate}
-              isTrialEligible={isTrialEligible}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid gap-8 w-full sm:grid-cols-1 lg:grid-cols-2 justify-center">
+            {[...Array(2)].map((_, i) => (
+              <PricingSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-8 w-full sm:grid-cols-1 lg:grid-cols-2 justify-center">
+            {visiblePlans.map((plan: any) => {
+              const isCurrentPlanName =
+                activePlanName === plan.name.toUpperCase();
+              const isActive =
+                isCurrentPlanName &&
+                subscriptionStatus !== "FREE" &&
+                subscriptionStatus !== "canceled";
+
+              return (
+                <PricingCard
+                  key={plan.id}
+                  plan={plan}
+                  onCancel={() => cancelSubscription.mutate()}
+                  onManage={() => billingPortalURL.mutate()}
+                  isActive={isActive}
+                  subscriptionStatus={subscriptionStatus}
+                  isCancelAtPeriodEnd={subscription?.cancelAtPeriodEnd}
+                  isLoading={checkoutMutation.isPending}
+                  isCancelLoading={cancelSubscription.isPending}
+                  isManageLoading={billingPortalURL.isPending}
+                  onSubscribe={(priceId: string) =>
+                    checkoutMutation.mutate({
+                      priceId,
+                      isTrial:
+                        plan.name.toUpperCase() === "PREMIMUM" &&
+                        isTrialEligible,
+                    })
+                  }
+                  isInTrial={
+                    isInTrial && plan.name.toUpperCase() === "PREMIMUM"
+                  }
+                  trialEndDate={trialEndDate}
+                  isTrialEligible={isTrialEligible}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

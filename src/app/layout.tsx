@@ -85,6 +85,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <meta
+          name="google-site-verification"
+          content="WVbSWAOzRGMZEG-jf9B1EOfvItVxBQ6WDIy4YfgaYC4"
+        />
         <link
           rel="icon"
           href="/favicon-32x32.png"
@@ -106,7 +110,7 @@ export default function RootLayout({
       <body>
         <TanstackProvider>
           <AuthProvider>
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-right" />
             {children}
           </AuthProvider>
         </TanstackProvider>
