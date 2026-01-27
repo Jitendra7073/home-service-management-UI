@@ -11,6 +11,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   ArrowLeft,
   User,
   Mail,
@@ -20,6 +25,7 @@ import {
   Ban,
   Shield,
   Building2,
+  Info,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -430,74 +436,209 @@ export default function UserDetailsPage() {
         <Card className={user.role === "customer" ? "" : "col-span-2"}>
           <CardHeader className="flex flex-row items-center justify-between px-6">
             <div className="space-y-2">
-              <CardTitle>
-                {user.role === "customer"
-                  ? "Booking Activity Logs"
-                  : "Subscription Activity Logs"}
-              </CardTitle>
+              <CardTitle>Activity Logs</CardTitle>
               <p className="text-sm text-muted-foreground">
-                {user.role === "customer"
-                  ? "Recent booking activities from customers"
-                  : "Recent subscription activities from providers"}
+                Recent activities and actions performed by this user
               </p>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-2 max-h-[420px] overflow-y-auto px-6">
-            {user.role === "customer"
-              ? [1, 2, 3, 4, 5].map((booking) => (
-                  <div
-                    key={booking}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-sm border bg-background p-4 hover:bg-accent transition">
-                    {/* Left Info */}
-                    <div className="space-y-1">
-                      <p className="font-medium">Booking #{booking} Created</p>
-                      <p className="text-sm text-muted-foreground">
-                        Customer: John Doe • Service: AC Repair
-                      </p>
-                    </div>
-
-                    {/* Right Meta */}
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-sm bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 text-xs font-medium">
-                        Completed
-                      </span>
-
-                      <span className="text-xs text-muted-foreground">
-                        2 min ago
-                      </span>
-                    </div>
-                  </div>
-                ))
-              : [1, 2, 3, 4, 5].map((booking) => (
-                  <div
-                    key={booking}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-sm border bg-background p-4 hover:bg-accent transition">
-                    {/* Left Info */}
-                    <div className="space-y-1">
-                      <p className="font-medium">
-                        Subscription #{booking} Created
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Provider: John Doe
-                      </p>
-                    </div>
-
-                    {/* Right Meta */}
-                    <div className="flex items-center gap-3">
-                      <span className="rounded-sm bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-3 py-1 text-xs font-medium">
-                        Trial
-                      </span>
-
-                      <span className="text-xs text-muted-foreground">
-                        2 min ago
-                      </span>
-                    </div>
-                  </div>
-                ))}
-          </CardContent>
+          <ActivityLogsSection userId={userId} userRole={user.role} />
         </Card>
       </div>
     </div>
+  );
+}
+
+// Activity Logs Component
+function ActivityLogsSection({
+  userId,
+  userRole,
+}: {
+  userId: string;
+  userRole: string;
+}) {
+  const { data: logsData, isLoading } = useQuery({
+    queryKey: ["user-activity-logs", userId],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/admin/users/${userId}/activity-logs?limit=20`,
+      );
+      if (!res.ok) throw new Error("Failed to fetch activity logs");
+      const result = await res.json();
+      return result.data;
+    },
+    retry: 1,
+  });
+
+  if (isLoading) {
+    return (
+      <CardContent className="space-y-2 max-h-[420px] overflow-y-auto px-6">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between rounded-sm border bg-background p-4">
+            <Skeleton className="h-12 w-3/4" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+        ))}
+      </CardContent>
+    );
+  }
+
+  const logs = logsData?.logs || [];
+
+  if (logs.length === 0) {
+    return (
+      <CardContent className="flex min-h-[200px] flex-col items-center justify-center p-6">
+        <Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
+        <p className="text-lg font-medium">No activity logs yet</p>
+        <p className="text-sm text-muted-foreground">
+          Activity will appear here
+        </p>
+      </CardContent>
+    );
+  }
+
+  const getStatusBadge = (status: string) => {
+    const statusStyles: Record<string, string> = {
+      SUCCESS:
+        "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+      FAILED: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      PENDING:
+        "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+      EMAIL_SENT:
+        "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+      PROCESSING:
+        "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    };
+
+    return (
+      <span
+        className={`rounded-sm px-3 py-1 text-xs font-medium ${
+          statusStyles[status] || statusStyles.SUCCESS
+        }`}>
+        {status}
+      </span>
+    );
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+    if (diffHours < 24)
+      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    return date.toLocaleDateString();
+  };
+
+  const formatJSON = (obj: any) => {
+    const jsonString = JSON.stringify(obj, null, 2);
+    return jsonString
+      .split("\n")
+      .map((line) => {
+        // Color keys
+        line = line.replace(
+          /"([^"]+)":/g,
+          '<span style="color: #9CDCFE">"$1"</span>:',
+        );
+
+        // Color string values
+        line = line.replace(
+          /: "([^"]*)"/g,
+          ': <span style="color: #CE9178">"$1"</span>',
+        );
+
+        // Color numbers
+        line = line.replace(
+          /: (\d+),?$/g,
+          ': <span style="color: #B5CEA8">$1</span>',
+        );
+        line = line.replace(
+          /: (\d+\.\d+),?$/g,
+          ': <span style="color: #B5CEA8">$1</span>',
+        );
+
+        // Color booleans
+        line = line.replace(
+          /: (true|false),?$/g,
+          ': <span style="color: #569CD6">$1</span>',
+        );
+
+        // Color null
+        line = line.replace(
+          /: (null),?$/g,
+          ': <span style="color: #569CD6">$1</span>',
+        );
+
+        return line;
+      })
+      .join("\n");
+  };
+
+  return (
+    <CardContent className="space-y-2 max-h-[420px] overflow-y-auto px-6">
+      {logs.map((log: any) => (
+        <div
+          key={log.id}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-sm border bg-background p-4 hover:bg-accent transition">
+          {/* Left Info */}
+          <div className="space-y-1 flex-1">
+            <p className="font-medium">{log.description}</p>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>{log.actionType}</span>
+              {log.ipAddress && (
+                <>
+                  <span>•</span>
+                  <span>IP: {log.ipAddress}</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right Meta */}
+          <div className="flex items-center gap-3">
+            {/* Metadata Info Icon */}
+            {log.metadata && Object.keys(log.metadata).length > 0 && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="text-muted-foreground hover:text-foreground transition-colors p-1 hover:bg-accent rounded"
+                    aria-label="View metadata">
+                    <Info className="h-4 w-4" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto max-w-md" align="end">
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Metadata</h4>
+                    <div className="rounded-md bg-slate-950 dark:bg-slate-900 p-3 overflow-auto max-h-[300px]">
+                      <pre className="text-xs font-mono">
+                        <code
+                          dangerouslySetInnerHTML={{
+                            __html: formatJSON(log.metadata),
+                          }}
+                        />
+                      </pre>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+
+            {getStatusBadge(log.status)}
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {formatTimeAgo(log.createdAt)}
+            </span>
+          </div>
+        </div>
+      ))}
+    </CardContent>
   );
 }

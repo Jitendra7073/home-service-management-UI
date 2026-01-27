@@ -34,22 +34,24 @@ const ServiceAwarenessModal = () => {
   }
 
   return (
-    <div
-      className="fixed bottom-4 right-4 z-50 w-[320px] rounded-md border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer"
-      onClick={() => setServiceModelOpen(true)}>
+    <div className="fixed bottom-4 right-4 z-50 w-[320px] rounded-md border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer">
       {/* Close Button */}
       <button
         onClick={() => setIsDismissed(true)}
-        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+        className="absolute top-3 hover:bg-gray-200 p-1 rounded right-3 text-gray-600 hover:text-gray-600 cursor-pointer">
         <X className="w-4 h-4" />
       </button>
 
-      <h3 className="text-sm font-medium text-gray-900">Add a service</h3>
+      <div
+        className="w-full h-full cursor-pointer"
+        onClick={() => setServiceModelOpen(true)}>
+        <h3 className="text-sm font-medium text-gray-900">Add a service</h3>
 
-      <p className="mt-1 text-xs text-gray-600">
-        You haven’t added any services yet. Adding one helps customers
-        understand what you offer.
-      </p>
+        <p className="mt-1 text-xs text-gray-600">
+          You haven’t added any services yet. Adding one helps customers
+          understand what you offer.
+        </p>
+      </div>
     </div>
   );
 };
