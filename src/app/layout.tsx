@@ -110,7 +110,7 @@ export default function RootLayout({
       <body>
         <TanstackProvider>
           <AuthProvider>
-            <Toaster position="top-right" />
+            <Toaster position="top-right" richColors />
             {children}
           </AuthProvider>
         </TanstackProvider>
