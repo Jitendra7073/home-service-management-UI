@@ -12,12 +12,14 @@ export async function GET(
     const limit = searchParams.get("limit") || "20";
     const page = searchParams.get("page") || "1";
     const actionType = searchParams.get("actionType") || "";
+    const status = searchParams.get("status") || "";
 
     // Build query string
     const queryParams = new URLSearchParams({
       limit,
       page,
       ...(actionType && { actionType }),
+      ...(status && { status }),
     });
 
     const backendRes = await backend(
