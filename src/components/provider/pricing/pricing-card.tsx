@@ -78,6 +78,8 @@ function PricingCard({
   onManage,
   subscriptionStatus,
   isCancelAtPeriodEnd,
+  currentPeriodStart,
+  currentPeriodEnd,
   isCancelLoading,
   isManageLoading,
 }: any) {
@@ -89,8 +91,8 @@ function PricingCard({
         0,
         Math.ceil(
           (new Date(trialEndDate).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24)
-        )
+            (1000 * 60 * 60 * 24),
+        ),
       )
     : 0;
 
@@ -164,13 +166,32 @@ function PricingCard({
       </ul>
 
       {isCancelAtPeriodEnd && isActive && (
-        <div className="mb-4 flex items-center gap-2 rounded border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          <TriangleAlert size={14} />
-          <span>
-            <strong>Plan cancelled.</strong> Access available until period end.
-          </span>
+        <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+          <div className="mt-0.5 text-amber-500">
+            <TriangleAlert size={18} />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-semibold text-amber-800">
+              Subscription Cancelled
+            </p>
+
+            <p className="text-xs text-amber-700">
+              Your plan will remain active until the end of the current billing
+              period.
+            </p>
+
+            {currentPeriodStart && currentPeriodEnd && (
+              <div className="mt-1 text-xs text-gray-600">
+                <span className="font-medium">Active Period:</span>{" "}
+                {new Date(currentPeriodStart).toLocaleDateString()} —{" "}
+                {new Date(currentPeriodEnd).toLocaleDateString()}
+              </div>
+            )}
+          </div>
         </div>
       )}
+
       {/* CTA Buttons */}
       <div className="mt-auto flex flex-col gap-3">
         {isActive ? (
@@ -316,7 +337,7 @@ export default function PricingSection() {
     isInTrial && subscription?.currentPeriodStart
       ? new Date(
           new Date(subscription.currentPeriodStart).getTime() +
-            7 * 24 * 60 * 60 * 1000
+            7 * 24 * 60 * 60 * 1000,
         )
       : null;
 
@@ -380,7 +401,7 @@ export default function PricingSection() {
 
   const visiblePlans =
     plans?.filter((p: any) =>
-      ["PREMIMUM", "PRO"].includes(p.name.toUpperCase())
+      ["PREMIMUM", "PRO"].includes(p.name.toUpperCase()),
     ) ?? [];
 
   const isLoading = profileLoading || plansLoading;
@@ -416,6 +437,8 @@ export default function PricingSection() {
                   subscriptionStatus={subscriptionStatus}
                   isCancelAtPeriodEnd={subscription?.cancelAtPeriodEnd}
                   isLoading={checkoutMutation.isPending}
+                  currentPeriodStart={subscription?.currentPeriodStart}
+                  currentPeriodEnd={subscription?.currentPeriodEnd}
                   isCancelLoading={cancelSubscription.isPending}
                   isManageLoading={billingPortalURL.isPending}
                   onSubscribe={(priceId: string) =>
