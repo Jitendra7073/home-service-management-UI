@@ -102,7 +102,7 @@ const DashboardComponents = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border bg-card rounded-xl p-2 shadow-sm">
           {/* LEFT SIDE */}
           <Welcome
-            username={data?.user.name}
+            username={data?.user?.name}
             isLoading={isLoading}
             isPending={isPending}
           />

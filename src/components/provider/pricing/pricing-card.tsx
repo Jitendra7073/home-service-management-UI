@@ -233,7 +233,7 @@ function PricingCard({
                       <button
                         disabled={isManageLoading}
                         onClick={onManage}
-                        className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 md:px-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         {isManageLoading
                           ? "Redirecting..."
                           : "Manage Subscription"}
@@ -251,7 +251,7 @@ function PricingCard({
                         <button
                           disabled={isManageLoading}
                           onClick={onManage}
-                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                           {isManageLoading
                             ? "Redirecting..."
                             : "Manage Subscription"}
@@ -267,7 +267,7 @@ function PricingCard({
                     <button
                       disabled={isManageLoading}
                       onClick={onManage}
-                      className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                       {isManageLoading
                         ? "Redirecting..."
                         : "Manage Subscription"}
