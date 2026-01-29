@@ -1,14 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Eye,
-  Ban,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Building2,
-} from "lucide-react";
+import { Eye, Ban, CheckCircle, Clock, Building2 } from "lucide-react";
 
 interface ServiceCardProps {
   id: string;
@@ -27,6 +20,7 @@ interface ServiceCardProps {
   onBlock?: () => void;
   onUnblock?: () => void;
   isActionPending?: boolean;
+  className?: string;
 }
 
 export function ServiceCard({
@@ -46,12 +40,13 @@ export function ServiceCard({
   onBlock,
   onUnblock,
   isActionPending = false,
+  className,
 }: ServiceCardProps) {
   return (
     <Card
-      className={`overflow-hidden p-0 w-fit max-w-[500px] gap-0 border-0 hover:shadow-md transition-shadow ${
+      className={`overflow-hidden p-0 w-full gap-0 border-0 hover:shadow-md transition-shadow ${
         isRestricted ? "border-1 border-destructive/50" : ""
-      } ${!isActive ? "opacity-60" : ""}`}>
+      } ${!isActive ? "opacity-60" : ""} ${className || ""}`}>
       <CardHeader className="bg-gray-800 p-5 text-white gap-0">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-semibold capitalize">

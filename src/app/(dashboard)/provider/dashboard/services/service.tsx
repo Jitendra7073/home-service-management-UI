@@ -15,7 +15,6 @@ export default function ServiceView() {
       return res.json();
     },
   });
-  console.log("data", data);
 
   if (isLoading) {
     return <ServiceSkeleton />;

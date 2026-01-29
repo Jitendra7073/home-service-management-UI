@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { AdminDataTable } from "@/components/admin/ui/admin-data-table";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -67,7 +61,7 @@ export default function CategoryManagement() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(
-    null
+    null,
   );
 
   // Form states
@@ -102,7 +96,7 @@ export default function CategoryManagement() {
     },
   });
 
-  const categories = categoriesData?.categories || [];
+  const categories = (categoriesData?.categories || []) as Category[];
   const pagination = categoriesData?.pagination;
 
   // Mutations
@@ -118,7 +112,7 @@ export default function CategoryManagement() {
 
       if (!res.ok || result.success === false) {
         throw new Error(
-          result.msg || result.message || "Failed to create category"
+          result.msg || result.message || "Failed to create category",
         );
       }
 
@@ -154,7 +148,7 @@ export default function CategoryManagement() {
 
       if (!res.ok || result.success === false) {
         throw new Error(
-          result.msg || result.message || "Failed to update category"
+          result.msg || result.message || "Failed to update category",
         );
       }
 
@@ -181,7 +175,7 @@ export default function CategoryManagement() {
 
       if (!res.ok || result.success === false) {
         throw new Error(
-          result.msg || result.message || "Failed to delete category"
+          result.msg || result.message || "Failed to delete category",
         );
       }
 
@@ -231,6 +225,9 @@ export default function CategoryManagement() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold tracking-tight">Categories</h2>
+      </div>
       <div className="flex justify-between items-center space-x-2">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -255,172 +252,80 @@ export default function CategoryManagement() {
         </div>
       </div>
 
-      <div className="border rounded-md overflow-hidden bg-white shadow-sm">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead>Category Name</TableHead>
-              <TableHead className="hidden md:table-cell">
-                Description
-              </TableHead>
-              <TableHead className="text-center">Total Providers</TableHead>
-              <TableHead className="text-center">Active Providers</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <div className="h-4 w-24 bg-gray-100 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <div className="h-4 w-48 bg-gray-100 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-4 w-12 mx-auto bg-gray-100 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-4 w-12 mx-auto bg-gray-100 animate-pulse rounded" />
-                  </TableCell>
-                  <TableCell>
-                    <div className="h-8 w-8 ml-auto bg-gray-100 animate-pulse rounded" />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : categories.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="h-32 text-center text-muted-foreground">
-                  No categories found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              categories.map((category: Category) => (
-                <TableRow key={category.id}>
-                  <TableCell className="font-medium capitalize">
-                    {category.name}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground truncate max-w-[200px]">
-                    {category.description}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="secondary">
-                      {category.totalProvidersCount}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className="border-green-200 text-green-700 bg-green-50">
-                      {category.activeProvidersCount}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer"
-                        onClick={() => openEdit(category)}
-                        disabled={
-                          updateMutation.isPending &&
-                          editingCategory?.id === category.id
-                        }>
-                        {updateMutation.isPending &&
-                        editingCategory?.id === category.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
-                        ) : (
-                          <Pencil className="h-4 w-4 text-gray-500" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeletingCategory(category)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
-                        disabled={
-                          deleteMutation.isPending &&
-                          deletingCategory?.id === category.id
-                        }>
-                        {deleteMutation.isPending &&
-                        deletingCategory?.id === category.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
+      <AdminDataTable
+        title="Manage Categories"
+        columns={[
+          { header: "Category Name" },
+          { header: "Description", className: "hidden md:table-cell" },
+          { header: "Total Providers", className: "text-center" },
+          { header: "Active Providers", className: "text-center" },
+          { header: "Actions", className: "text-right" },
+        ]}
+        data={categories}
+        isLoading={isLoading}
+        emptyMessage="No categories found."
+        currentPage={page}
+        totalPages={pagination?.totalPages || 1}
+        onPageChange={handlePageChange}
+        renderRow={(category) => (
+          <TableRow key={category.id}>
+            <TableCell className="font-medium capitalize">
+              {category.name}
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-muted-foreground truncate max-w-[200px]">
+              {category.description}
+            </TableCell>
+            <TableCell className="text-center">
+              <Badge variant="secondary">{category.totalProvidersCount}</Badge>
+            </TableCell>
+            <TableCell className="text-center">
+              <Badge
+                variant="outline"
+                className="border-green-200 text-green-700 bg-green-50">
+                {category.activeProvidersCount}
+              </Badge>
+            </TableCell>
+            <TableCell className="text-right">
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="cursor-pointer"
+                  onClick={() => openEdit(category)}
+                  disabled={
+                    updateMutation.isPending &&
+                    editingCategory?.id === category.id
+                  }>
+                  {updateMutation.isPending &&
+                  editingCategory?.id === category.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                  ) : (
+                    <div className="flex ">
+                      <Pencil className="h-4 w-4 text-gray-500" />{" "}
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination Controls */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="mt-4 pb-4">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => handlePageChange(page - 1)}
-                  className={
-                    page <= 1
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-
-              {Array.from(
-                { length: pagination.totalPages },
-                (_, i) => i + 1
-              ).map((p) => {
-                if (
-                  pagination.totalPages > 10 &&
-                  Math.abs(page - p) > 2 &&
-                  p !== 1 &&
-                  p !== pagination.totalPages
-                ) {
-                  if (Math.abs(page - p) === 3)
-                    return (
-                      <PaginationItem key={p}>
-                        <span className="px-4">...</span>
-                      </PaginationItem>
-                    );
-                  return null;
-                }
-                return (
-                  <PaginationItem key={p}>
-                    <PaginationLink
-                      isActive={page === p}
-                      onClick={() => handlePageChange(p)}
-                      className="cursor-pointer">
-                      {p}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => handlePageChange(page + 1)}
-                  className={
-                    page >= pagination.totalPages
-                      ? "pointer-events-none opacity-50"
-                      : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setDeletingCategory(category)}
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                  disabled={
+                    deleteMutation.isPending &&
+                    deletingCategory?.id === category.id
+                  }>
+                  {deleteMutation.isPending &&
+                  deletingCategory?.id === category.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
+      />
 
       {/* Add/Edit Modal */}
       <Dialog

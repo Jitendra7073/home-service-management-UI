@@ -5,8 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 const PricingSkeleton = () => {
   return (
     <div className="relative flex flex-col rounded-md border p-6 h-[450px] w-full mx-auto">
-      <Skeleton className="absolute top-4 right-4 h-6 w-28 rounded-md animate-pulse" />
-
       <div className="mb-6 text-center space-y-3">
         <Skeleton className="h-6 w-32 mx-auto animate-pulse" />
         <Skeleton className="h-10 w-40 mx-auto animate-pulse" />

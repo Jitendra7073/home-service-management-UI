@@ -60,7 +60,7 @@ export default function UserDetailsSkeleton() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border p-4 space-y-4">
+              <div className="rounded-md border p-4 space-y-4">
                 <div className="flex items-start justify-between">
                   <Skeleton className="h-5 w-[200px]" />
                   <div className="flex gap-2">
@@ -97,7 +97,7 @@ export default function UserDetailsSkeleton() {
               {/* Activity Log Items Skeleton */}
               <div className="space-y-3">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="rounded-lg border p-4 space-y-3">
+                  <div key={i} className="rounded-md border p-4 space-y-3">
                     {/* Header Row */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 space-y-2">

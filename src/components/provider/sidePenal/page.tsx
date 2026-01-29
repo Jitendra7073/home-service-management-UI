@@ -9,6 +9,7 @@ import {
   PanelsTopLeft,
   HandCoins,
   Building2,
+  TicketCheck,
 } from "lucide-react";
 
 import { NavMain } from "@/components/provider/dashboard/nav-main";
@@ -50,6 +51,12 @@ const data = {
       title: "Services",
       url: "/provider/dashboard/services",
       icon: BarChart,
+    },
+
+    {
+      title: "Bookings",
+      url: "/provider/dashboard/bookings",
+      icon: TicketCheck,
     },
     {
       title: "Pricing",
@@ -101,10 +108,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className="h-16 border-b border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="hover:bg-transparent data-[state=open]:hover:bg-transparent">
-              <Link href="/provider/dashboard" className="flex items-center gap-2">
-                 <div className="flex justify-center items-center gap-0 relative">
-                  <div className="flex aspect-squar items-center justify-center rounded-lg ">
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className="hover:bg-transparent data-[state=open]:hover:bg-transparent">
+              <Link
+                href="/provider/dashboard"
+                className="flex items-center gap-2">
+                <div className="flex justify-center items-center gap-0 relative">
+                  <div className="flex aspect-squar items-center justify-center rounded-md ">
                     <Image
                       src="/HSM-logo.png"
                       alt="ServiceHub Logo"
@@ -112,9 +124,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       height={70}
                       className="object-contain"
                     />
+                  </div>
+                  <span className="absolute bottom-14 -right-10 truncate text-xs font-semibold">
+                    (Provider)
+                  </span>
                 </div>
-                  <span className="absolute bottom-14 -right-10 truncate text-xs font-semibold">(Provider)</span>
-                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

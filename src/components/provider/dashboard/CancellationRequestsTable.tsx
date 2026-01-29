@@ -16,14 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { AdminDataTable } from "@/components/admin/ui/admin-data-table";
 
 import {
   HoverCard,
@@ -33,7 +27,6 @@ import {
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import TableSkeleton from "../tableSkeleton";
 
 /* -------------------- TYPES -------------------- */
 
@@ -204,84 +197,38 @@ export default function CancellationRequestsTable() {
 
   /* -------------------- RENDER -------------------- */
 
-  if (isLoading || isPending) {
-    return <TableSkeleton rows={5} columns={7} />;
-  }
+  /* -------------------- RENDER -------------------- */
+  const adminColumns = table.getHeaderGroups()[0].headers.map((header) => ({
+    header: flexRender(header.column.columnDef.header, header.getContext()),
+  }));
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex justify-between items-center flex-wrap gap-3">
-        <h2 className="font-semibold">Cancellation Requests</h2>
-
+    <AdminDataTable
+      title="Cancellation Requests"
+      columns={adminColumns}
+      data={table.getRowModel().rows}
+      isLoading={isLoading || isPending}
+      actionButton={
         <Input
           placeholder="Search cancellation..."
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
-      </div>
-
-      {/* Table */}
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((g) => (
-              <TableRow key={g.id}>
-                {g.headers.map((h) => (
-                  <TableHead key={h.id}>
-                    {flexRender(
-                      h.column.columnDef.header,
-                      h.getContext()
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-
-            {table.getRowModel().rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-6">
-                  No cancellation requests found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          Next
-        </Button>
-      </div>
-    </div>
+      }
+      renderRow={(row) => (
+        <TableRow key={row.id}>
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      )}
+      onPageChange={(p) => table.setPageIndex(p - 1)}
+      currentPage={table.getState().pagination.pageIndex + 1}
+      totalPages={table.getPageCount()}
+      emptyMessage="No cancellation requests found."
+    />
   );
 }

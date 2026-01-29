@@ -31,7 +31,7 @@ export function NavMain({ items, subscriptionStatus }: NavMainProps) {
   const getStateValue = "pro";
 
   const hasPremiumAccess = ["premimum", "pro"].some((keyword) =>
-    subscriptionStatus?.includes(keyword)
+    subscriptionStatus?.includes(keyword),
   );
 
   const isItemActive = (url: string) =>
@@ -53,7 +53,7 @@ export function NavMain({ items, subscriptionStatus }: NavMainProps) {
                     "transition-colors",
                     active
                       ? "bg-gray-200 text-gray-900 font-medium"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
                   )}>
                   <Link href={url} aria-current={active ? "page" : undefined}>
                     {Icon && <Icon className="h-4 w-4" />}
@@ -63,22 +63,6 @@ export function NavMain({ items, subscriptionStatus }: NavMainProps) {
               </SidebarMenuItem>
             );
           })}
-
-          {hasPremiumAccess && (
-            <>
-              <SidebarMenuItem key="booking">
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Booking"
-                  className="transition-colors text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-                  <Link href="/provider/dashboard/bookings">
-                    <TicketCheck className="h-4 w-4" />
-                    <span>Booking</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </>
-          )}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
