@@ -5,13 +5,11 @@ export function isPublicRoute(path: string) {
     "/auth/forgot-password",
     "/auth/reset-password",
   ];
-  return publicRoutes.some(route => path.startsWith(route));
+  return publicRoutes.some((route) => path.startsWith(route));
 }
 
 export function isProtectedRoute(path: string) {
   return (
-    path.startsWith("/provider") ||
-    path.startsWith("/customer") ||
     path.startsWith("/admin") ||
     path.startsWith("/restricted") ||
     path.startsWith("/provider/pending-approval")
