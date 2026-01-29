@@ -48,6 +48,18 @@ const QuickCounts = ({
     ? data.serviceBookingStats
     : [];
 
+  // Check if subscription is active or trialing (covers scheduled cancellation)
+  const subscriptionStatus = data?.user?.providerSubscription?.status;
+  const isPlanActive =
+    subscriptionStatus == "active" || subscriptionStatus == "trialing";
+
+  const showRevenueChart =
+    isPlanActive && plan?.features?.allowedGraphs?.includes("revenue_chart");
+
+  const showBookingStatusChart =
+    isPlanActive &&
+    plan?.features?.allowedGraphs?.includes("bookings_status_chart");
+
   if (isError) {
     return (
       <div className="text-red-500 text-sm">
@@ -59,59 +71,78 @@ const QuickCounts = ({
     <div className="space-y-6">
       {/* Top Row: Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <QuickCountCard
-          title={"Total Customers"}
-          value={`${totalCustomers}`}
-          growth={"Unique customers"}
-          icon={Users}
-          isLoading={isLoading || isPending}
-        />
-        <QuickCountCard
-          title={"Total Bookings"}
-          value={`${totalBookings}`}
-          growth={"All time bookings"}
-          icon={ShoppingBag}
-          isLoading={isLoading || isPending}
-        />
-        <QuickCountCard
-          title={"Total Active Value"}
-          value={`₹ ${totalEarnings}`}
-          growth={"Realized + Potential"}
-          icon={Wallet}
-          isLoading={isLoading || isPending}
-        />
+        {isPlanActive &&
+          plan?.features?.allowedRoutes?.includes("total_customers") && (
+            <QuickCountCard
+              title={"Total Customers"}
+              value={`${totalCustomers}`}
+              growth={"Unique customers"}
+              icon={Users}
+              isLoading={isLoading || isPending}
+            />
+          )}
+        {isPlanActive &&
+          plan?.features?.allowedRoutes?.includes("total_bookings") && (
+            <QuickCountCard
+              title={"Total Bookings"}
+              value={`${totalBookings}`}
+              growth={"All time bookings"}
+              icon={ShoppingBag}
+              isLoading={isLoading || isPending}
+            />
+          )}
+        {isPlanActive &&
+          plan?.features?.allowedRoutes?.includes("total_revenue") && (
+            <QuickCountCard
+              title={"Total Active Value"}
+              value={`₹ ${totalEarnings}`}
+              growth={"Realized + Potential"}
+              icon={Wallet}
+              isLoading={isLoading || isPending}
+            />
+          )}
       </div>
 
       {/* Middle Row: Revenue & Booking Status */}
-      {plan?.name?.toLowerCase().includes("pr") && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+      <div
+        className={`grid gap-6 ${
+          !showRevenueChart && !showBookingStatusChart
+            ? "hidden"
+            : showRevenueChart && showBookingStatusChart
+            ? "grid-cols-1 lg:grid-cols-3"
+            : "grid-cols-1"
+        }`}>
+        {showRevenueChart && (
+          <div
+            className={
+              showBookingStatusChart ? "lg:col-span-2" : "lg:col-span-3"
+            }>
             <RevenueChart
               data={monthlyAnalysis}
               isLoading={isLoading || isPending}
             />
           </div>
+        )}
+        {showBookingStatusChart && (
           <div className="lg:col-span-1">
             <BookingStatusChart
               data={bookingStats}
               isLoading={isLoading || isPending}
             />
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Bottom Row: Service Popularity */}
       <div className="w-full">
-        <ServiceChart data={serviceStats} isLoading={isLoading || isPending} />
+        {isPlanActive &&
+          plan?.features?.allowedGraphs?.includes("popular_services_chart") && (
+            <ServiceChart
+              data={serviceStats}
+              isLoading={isLoading || isPending}
+            />
+          )}
       </div>
-
-      {!isLoading && !isPending && data?.serviceBookingStats?.length === 0 && (
-        <p className="flex justify-start item-center gap-2 text-sm bg-blue-50 text-blue-500 border border-blue-300 rounded py-2 px-4 w-fit">
-          <CircleAlert className="w-4 h-4 mt-[0.5px]" />
-          No services created yet. Create your first service to start tracking
-          analytics.
-        </p>
-      )}
     </div>
   );
 };

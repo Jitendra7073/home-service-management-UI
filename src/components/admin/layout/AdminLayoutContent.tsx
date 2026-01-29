@@ -9,6 +9,8 @@ import {
   List,
   LogOut,
   LayoutList,
+  BadgeIndianRupee,
+  CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,6 +89,16 @@ export function AdminLayoutContent({
       label: "Categories",
       icon: LayoutList,
     },
+    {
+      href: "/admin/plans",
+      label: "Plans",
+      icon: BadgeIndianRupee,
+    },
+    {
+      href: "/admin/subscriptions",
+      label: "Subscriptions",
+      icon: CreditCard,
+    },
   ];
 
   const isActive = (href: string) => {
@@ -112,7 +124,7 @@ export function AdminLayoutContent({
                   href="/provider/dashboard"
                   className="flex items-center gap-2">
                   <div className="flex justify-center items-center gap-0 relative">
-                    <div className="flex aspect-squar items-center justify-center rounded-lg ">
+                    <div className="flex aspect-squar items-center justify-center rounded-md ">
                       <Image
                         src="/HSM-logo.png"
                         alt="ServiceHub Logo"

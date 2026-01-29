@@ -16,6 +16,11 @@ interface BusinessStatusBannerProps {
     restrictionReason?: string;
     restrictionRequestMessage?: string;
   };
+  plan?: {
+    name: string;
+    maxServices: number;
+    maxBookings: number;
+  } | null;
 }
 
 import {
@@ -31,9 +36,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, LayoutDashboard } from "lucide-react";
 
-export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
+export function BusinessStatusBanner({
+  business,
+  plan,
+}: BusinessStatusBannerProps) {
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [requestMessage, setRequestMessage] = useState("");
@@ -80,7 +88,7 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
     return (
       <Alert
         variant="destructive"
-        className="mb-6 border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
+        className="border-destructive/50 bg-destructive/10 text-destructive dark:border-destructive">
         <Ban className="h-4 w-4" />
         <AlertTitle>Business Restricted</AlertTitle>
         <AlertDescription className="flex items-center justify-between">
@@ -173,22 +181,24 @@ export function BusinessStatusBanner({ business }: BusinessStatusBannerProps) {
 
   if (isPublished) {
     return (
-      <Alert className="mb-6 border-emerald-500/50 bg-emerald-50 text-emerald-900 dark:border-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-200">
-        <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-        <AlertTitle className="text-emerald-800 dark:text-emerald-300">
-          Safe & Verified
-        </AlertTitle>
-        <AlertDescription>
-          Your business has been successfully verified and meets all platform
-          safety guidelines.
-        </AlertDescription>
-      </Alert>
+      <div className="space-y-4">
+        <Alert className="border-emerald-500/50 bg-emerald-50 text-emerald-900 dark:border-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-200">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          <AlertTitle className="text-emerald-800 dark:text-emerald-300">
+            Safe & Verified
+          </AlertTitle>
+          <AlertDescription>
+            Your business has been successfully verified and meets all platform
+            safety guidelines.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   if (!business.isActive) {
     return (
-      <Alert className="mb-6 border-slate-500/50 bg-slate-50 text-slate-900 dark:border-slate-500 dark:bg-slate-900/20 dark:text-slate-200">
+      <Alert className=" border-slate-500/50 bg-slate-50 text-slate-900 dark:border-slate-500 dark:bg-slate-900/20 dark:text-slate-200">
         <Info className="h-4 w-4" />
         <AlertTitle>Inactive</AlertTitle>
         <AlertDescription>

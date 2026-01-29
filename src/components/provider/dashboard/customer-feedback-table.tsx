@@ -16,17 +16,10 @@ import { ArrowUpDown, Star, MessageSquare, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
 
 import { useQuery } from "@tanstack/react-query";
-import TableSkeleton from "../tableSkeleton";
+import { AdminDataTable } from "@/components/admin/ui/admin-data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Feedback = {
@@ -160,121 +153,68 @@ export default function FeedbackTable({
     return (sum / feedbacks.length).toFixed(1);
   }, [feedbacks]);
 
-  if (isLoading) {
-    return <TableSkeleton rows={10} columns={5} />;
-  }
+  /* -------------------- RENDER -------------------- */
+  const adminColumns = table.getHeaderGroups()[0].headers.map((header) => ({
+    header: flexRender(header.column.columnDef.header, header.getContext()),
+  }));
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="font-semibold text-lg flex items-center gap-2">
-            Customer Feedback
-          </h3>
-          {feedbacks.length > 0 && (
-            <p className="text-sm text-gray-500 mt-1">
-              Average rating:{" "}
-              <span className="font-semibold text-yellow-600">{avgRating}</span>{" "}
-              ({feedbacks.length} reviews)
-            </p>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search reviews..."
-            value={globalFilter}
-            onChange={(e) => {
-              setGlobalFilter(e.target.value);
-              table.setPageIndex(0);
-            }}
-            className="max-w-sm"
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            title="Refresh feedback">
-            <RefreshCw
-              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-            />
-          </Button>
-        </div>
-      </div>
-
-      <div className="rounded-md border overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((g) => (
-              <TableRow key={g.id}>
-                {g.headers.map((h) => (
-                  <TableHead key={h.id}>
-                    {flexRender(h.column.columnDef.header, h.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-10">
-                  <p className="text-sm text-gray-400">
-                    Customer reviews will appear here
-                  </p>
-                </TableCell>
-              </TableRow>
+      <AdminDataTable
+        title={
+          <div className="flex flex-col gap-1">
+            <span>Customer Feedback</span>
+            {feedbacks.length > 0 && (
+              <span className="text-sm font-normal text-muted-foreground">
+                Average rating:{" "}
+                <span className="font-semibold text-yellow-600">
+                  {avgRating}
+                </span>{" "}
+                ({feedbacks.length} reviews)
+              </span>
             )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      {table.getRowModel().rows.length > NumberOfRows && (
-        <div className="flex items-center justify-between px-2">
-          <div className="text-sm text-gray-500">
-            Showing {table.getState().pagination.pageIndex * NumberOfRows + 1}{" "}
-            to{" "}
-            {Math.min(
-              (table.getState().pagination.pageIndex + 1) * NumberOfRows,
-              table.getRowModel().rows.length
-            )}{" "}
-            of {table.getRowModel().rows.length} feedbacks
           </div>
+        }
+        columns={adminColumns}
+        data={table.getRowModel().rows}
+        isLoading={isLoading}
+        actionButton={
           <div className="flex gap-2">
+            <Input
+              placeholder="Search reviews..."
+              value={globalFilter}
+              onChange={(e) => {
+                setGlobalFilter(e.target.value);
+                table.setPageIndex(0);
+              }}
+              className="max-w-sm"
+            />
             <Button
               variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}>
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}>
-              Next
+              size="icon"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              title="Refresh feedback">
+              <RefreshCw
+                className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+              />
             </Button>
           </div>
-        </div>
-      )}
+        }
+        renderRow={(row) => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        )}
+        onPageChange={(p) => table.setPageIndex(p - 1)}
+        currentPage={table.getState().pagination.pageIndex + 1}
+        totalPages={table.getPageCount()}
+        emptyMessage="Customer reviews will appear here"
+      />
     </div>
   );
 }

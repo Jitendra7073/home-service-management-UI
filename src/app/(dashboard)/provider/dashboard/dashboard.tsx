@@ -3,14 +3,13 @@
 import { BookingTable } from "@/components/provider/dashboard/booking-table";
 import FeedbackTable from "@/components/provider/dashboard/customer-feedback-table";
 import QuickCounts from "@/components/provider/dashboard/dashboardStats";
-import RevenueChart from "@/components/provider/dashboard/revenue-chart";
-import ServiceChart from "@/components/provider/dashboard/service-chart";
 import ServicesTable from "@/components/provider/dashboard/services-table";
 import Welcome from "@/components/provider/dashboard/welcome";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import DashboardSkeleton from "@/components/provider/dashboard/DashboardSkeleton";
 import { BusinessVisibilityToggle } from "@/components/provider/dashboard/BusinessVisibilityToggle";
 
 const DashboardComponents = () => {
@@ -25,6 +24,10 @@ const DashboardComponents = () => {
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   const subscriptionstate =
     data?.user?.providerSubscription !== null
@@ -80,28 +83,46 @@ const DashboardComponents = () => {
     });
   };
 
+  // Check if subscription is active or trialing (covers scheduled cancellation)
+  const subscriptionStatus = data?.user?.providerSubscription?.status;
+  const isPlanActive =
+    subscriptionStatus == "active" || subscriptionStatus == "trialing";
+  const showServices =
+    isPlanActive && plans?.features?.allowedRoutes?.includes("all_services");
+
+  const showFeedback =
+    isPlanActive &&
+    plans?.features?.allowedRoutes?.includes("customer_feedback");
+
   return (
-    <div className="flex w-full justify-center pb-10">
-      <div className="w-full max-w-7xl mx-auto px-2 md:px-6 space-y-10 md:space-y-14">
-        {/* Header with Refresh Button */}
-        <div className="flex justify-between items-center mb-0 space-y-6">
+    <div className="w-full min-h-screen bg-background">
+      {/* MAIN CONTAINER */}
+      <div className="max-w-7xl mx-auto md:px-6 py-6 md:py-8 space-y-8">
+        {/* HEADER BAR */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border bg-card rounded-xl p-2 shadow-sm">
+          {/* LEFT SIDE */}
           <Welcome
             username={data?.user.name}
             isLoading={isLoading}
             isPending={isPending}
           />
-          <div className="absolute top-4 right-18 flex items-center gap-2">
-            <BusinessVisibilityToggle
-              business={data?.user?.businessProfile}
-              onUpdate={handleStatusUpdate}
-            />
+
+          {/* RIGHT SIDE ICON ACTIONS */}
+          <div className="flex items-center justify-end gap-2 px-6 md:px-4 pb-4 md:pb-0">
+            <div className="h-9 flex items-center">
+              <BusinessVisibilityToggle
+                business={data?.user?.businessProfile}
+                onUpdate={handleStatusUpdate}
+              />
+            </div>
+
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={handleGlobalRefresh}
               disabled={isRefreshing || isLoading}
-              className="gap-2 border-none shadow-none"
-              title="Refresh all dashboard data">
+              title="Refresh Dashboard"
+              className="h-9 w-9 bg-transparent border-input hover:bg-accent hover:text-accent-foreground transition-colors">
               <RefreshCw
                 className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
               />
@@ -109,9 +130,8 @@ const DashboardComponents = () => {
           </div>
         </div>
 
-        {["premimum", "pro"].some((keyword) =>
-          plans?.name?.toLowerCase().includes(keyword)
-        ) && (
+        {/* STATS SECTION */}
+        <div>
           <QuickCounts
             data={data}
             plan={plans}
@@ -120,28 +140,44 @@ const DashboardComponents = () => {
             isError={isError}
             error={error}
           />
-        )}
+        </div>
 
-        {["premimum", "pro"].some((keyword) =>
-          plans?.name?.toLowerCase().includes(keyword)
-        ) && (
-          <section className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <ServicesTable />
-              <FeedbackTable />
-            </div>
-          </section>
-        )}
+        {/* TABLES SECTION */}
+        <section className="space-y-8">
+          {/* TOP GRID TABLES */}
+          <div
+            className={`grid gap-6 ${
+              !showServices && !showFeedback
+                ? "hidden"
+                : showServices && showFeedback
+                ? "grid-cols-1 xl:grid-cols-2"
+                : "grid-cols-1"
+            }`}>
+            {showServices && <ServicesTable />}
 
-        <section className="mb-10">
-          {["premimum", "pro"].some((keyword) =>
-            plans?.name?.toLowerCase().includes(keyword)
-          ) ? (
-            <section className="space-y-6">
+            {showFeedback && <FeedbackTable />}
+          </div>
+
+          {/* FULL WIDTH BOOKINGS */}
+          {isPlanActive &&
+            plans?.features?.allowedRoutes?.includes("booking_list") && (
               <BookingTable />
-            </section>
-          ) : (
-            <ServicesTable />
+            )}
+
+          {/* EMPTY STATE */}
+          {!isPlanActive && (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 p-12 text-center">
+              <h3 className="text-lg font-semibold">
+                No Dashboard Data Available
+              </h3>
+
+              <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                Your current subscription does not include dashboard features.
+                Upgrade your plan to unlock analytics and management tools.
+              </p>
+
+              <Button className="mt-4">Upgrade Plan</Button>
+            </div>
           )}
         </section>
       </div>

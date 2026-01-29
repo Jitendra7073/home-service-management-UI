@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Spinner } from "@/components/ui/spinner";
 
 interface BusinessVisibilityToggleProps {
   business:
@@ -51,7 +52,7 @@ export function BusinessVisibilityToggle({
       toast.success(
         business.isActive
           ? "Business is now hidden from customers"
-          : "Business is now visible to customers"
+          : "Business is now visible to customers",
       );
 
       if (onUpdate) onUpdate();
@@ -62,7 +63,6 @@ export function BusinessVisibilityToggle({
     }
   };
 
-  const currentStatus = business?.isActive ? "Visible" : "Hidden";
   const tooltipText = business?.isActive
     ? "Hide business from customers"
     : "Show business to customers";
@@ -72,11 +72,10 @@ export function BusinessVisibilityToggle({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="outline"
             size="sm"
             onClick={handleToggle}
             disabled={isLoading}
-            className="gap-2 transition-all">
+            className="transition-all bg-transparent text-black hover:bg-gray-100">
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : business?.isActive ? (
@@ -84,9 +83,7 @@ export function BusinessVisibilityToggle({
             ) : (
               <EyeOff className="h-4 w-4" />
             )}
-            <span className="hidden sm:inline">
-              {isLoading ? "Updating..." : currentStatus}
-            </span>
+            {isLoading ? "" : business?.isActive ? "Hide" : "Show"}
           </Button>
         </TooltipTrigger>
         <TooltipContent>

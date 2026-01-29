@@ -30,6 +30,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminDataGrid } from "@/components/admin/ui/admin-data-grid";
 
 const APPROVAL_STATUS = {
   ALL: "all",
@@ -39,6 +40,23 @@ const APPROVAL_STATUS = {
   RESTRICTED: "restricted",
 } as const;
 
+interface Business {
+  id?: string;
+  _id?: string;
+  name?: string;
+  businessName?: string;
+  description?: string;
+  category?: { name: string };
+  user?: { name: string; email: string };
+  contactEmail?: string;
+  phoneNumber?: string;
+  phone?: string;
+  isApproved?: boolean;
+  isRejected?: boolean;
+  isRestricted?: boolean;
+  restrictionReason?: string;
+}
+
 export function BusinessManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -46,10 +64,10 @@ export function BusinessManagement() {
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [statusFilter, setStatusFilter] = useState<string>(
-    searchParams.get("status") || APPROVAL_STATUS.ALL
+    searchParams.get("status") || APPROVAL_STATUS.ALL,
   );
   const [categoryFilter, setCategoryFilter] = useState<string>(
-    searchParams.get("category") || "all"
+    searchParams.get("category") || "all",
   );
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState<any>(null);
@@ -102,10 +120,10 @@ export function BusinessManagement() {
   // Query
   const { data: businessesData, isLoading, error } = useAdminBusinesses();
 
-  const allBusinesses = businessesData?.data || [];
+  const allBusinesses = (businessesData?.data || []) as Business[];
 
   // Client-side Filtering
-  const filteredBusinesses = allBusinesses.filter((business: any) => {
+  const filteredBusinesses = allBusinesses.filter((business) => {
     // Status Filter
     if (statusFilter !== APPROVAL_STATUS.ALL) {
       if (statusFilter === APPROVAL_STATUS.PENDING) {
@@ -146,7 +164,7 @@ export function BusinessManagement() {
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const paginatedBusinesses = filteredBusinesses.slice(
     startIndex,
-    startIndex + ITEMS_PER_PAGE
+    startIndex + ITEMS_PER_PAGE,
   );
   const businesses = paginatedBusinesses; // For rendering compatibility
 
@@ -178,7 +196,7 @@ export function BusinessManagement() {
       },
       {
         onSettled: () => setProcessingAction(null),
-      }
+      },
     );
     setBlockDialogOpen(false);
   };
@@ -239,20 +257,7 @@ export function BusinessManagement() {
         </div>
       </div>
 
-      {/* Businesses Grid */}
-      {isLoading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="flex flex-col space-y-3">
-              <Skeleton className="h-[200px] w-full rounded-md" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : error ? (
+      {error ? (
         <EmptyState
           icon={Building2}
           title="Error loading businesses"
@@ -260,147 +265,91 @@ export function BusinessManagement() {
             error?.message || "Something went wrong. Please try again."
           }
         />
-      ) : businesses.length === 0 ? (
-        <EmptyState
-          icon={Building2}
-          title="No businesses found"
-          description={
-            searchQuery || statusFilter !== APPROVAL_STATUS.ALL
-              ? "Try adjusting your filters"
-              : "No businesses registered yet"
-          }
-        />
       ) : (
-        <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {businesses.map((business: any) => (
-              <BusinessCard
-                key={business._id || business.id}
-                id={business._id || business.id}
-                name={business.name || business.businessName}
-                description={business.description}
-                category={business.category?.name}
-                ownerName={business.user?.name}
-                ownerEmail={business.user?.email}
-                email={business.contactEmail}
-                phone={business.phoneNumber || business.phone}
-                isApproved={business.isApproved}
-                isRejected={business.isRejected}
-                isRestricted={business.isRestricted}
-                restrictionReason={business.restrictionReason}
-                onViewDetails={() =>
-                  router.push(
-                    `/admin/businesses/${business._id || business.id}`
-                  )
-                }
-                onApprove={
-                  !business.isApproved && !business.isRejected
-                    ? () => {
-                        const id = business._id || business.id;
-                        setProcessingAction({ id, type: "approve" });
-                        approveBusiness(id, {
-                          onSettled: () => setProcessingAction(null),
-                        });
-                      }
-                    : undefined
-                }
-                onReject={
-                  !business.isApproved && !business.isRejected
-                    ? () =>
-                        router.push(
-                          `/admin/businesses/${business._id || business.id}`
-                        )
-                    : undefined
-                }
-                onBlock={
-                  business.isApproved && !business.isRestricted
-                    ? () => {
-                        setSelectedBusiness(business);
-                        setBlockDialogOpen(true);
-                      }
-                    : undefined
-                }
-                onUnblock={
-                  business.isRestricted
-                    ? () => {
-                        const id = business._id || business.id;
-                        setProcessingAction({ id, type: "unblock" });
-                        liftRestriction(id, {
-                          onSettled: () => setProcessingAction(null),
-                        });
-                      }
-                    : undefined
-                }
-                actionLoading={
-                  processingAction &&
-                  processingAction.id === (business._id || business.id)
-                    ? processingAction.type
-                    : null
-                }
-              />
-            ))}
-          </div>
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="mt-8">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => handlePageChange(page - 1)}
-                      className={
-                        page <= 1
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (p) => {
-                      if (
-                        totalPages > 10 &&
-                        Math.abs(page - p) > 2 &&
-                        p !== 1 &&
-                        p !== totalPages
-                      ) {
-                        if (Math.abs(page - p) === 3)
-                          return (
-                            <PaginationItem key={p}>
-                              <span className="px-4">...</span>
-                            </PaginationItem>
-                          );
-                        return null;
-                      }
-                      return (
-                        <PaginationItem key={p}>
-                          <PaginationLink
-                            isActive={page === p}
-                            onClick={() => handlePageChange(p)}
-                            className="cursor-pointer">
-                            {p}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
+        <AdminDataGrid
+          data={businesses}
+          isLoading={isLoading}
+          gridClassName="lg:grid-cols-3"
+          emptyState={{
+            icon: Building2,
+            title: "No businesses found",
+            description:
+              searchQuery || statusFilter !== APPROVAL_STATUS.ALL
+                ? "Try adjusting your filters"
+                : "No businesses registered yet",
+          }}
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          renderItem={(business) => (
+            <BusinessCard
+              key={business._id || business.id || "unknown"}
+              id={business._id || business.id || ""}
+              name={
+                business.name || business.businessName || "Unknown Business"
+              }
+              description={business.description || ""}
+              category={business.category?.name || "Uncategorized"}
+              ownerName={business.user?.name || "Unknown Owner"}
+              ownerEmail={business.user?.email || ""}
+              email={business.contactEmail || ""}
+              phone={business.phoneNumber || business.phone || ""}
+              isApproved={business.isApproved ?? false}
+              isRejected={business.isRejected ?? false}
+              isRestricted={business.isRestricted ?? false}
+              restrictionReason={business.restrictionReason || ""}
+              onViewDetails={() =>
+                router.push(`/admin/businesses/${business._id || business.id}`)
+              }
+              onApprove={
+                !business.isApproved && !business.isRejected
+                  ? () => {
+                      const id = business._id || business.id || "";
+                      setProcessingAction({ id, type: "approve" });
+                      approveBusiness(id, {
+                        onSettled: () => setProcessingAction(null),
+                      });
                     }
-                  )}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => handlePageChange(page + 1)}
-                      className={
-                        page >= totalPages
-                          ? "pointer-events-none opacity-50"
-                          : "cursor-pointer"
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
+                  : undefined
+              }
+              onReject={
+                !business.isApproved && !business.isRejected
+                  ? () =>
+                      router.push(
+                        `/admin/businesses/${
+                          business._id || business.id || ""
+                        }`,
+                      )
+                  : undefined
+              }
+              onBlock={
+                business.isApproved && !business.isRestricted
+                  ? () => {
+                      setSelectedBusiness(business);
+                      setBlockDialogOpen(true);
+                    }
+                  : undefined
+              }
+              onUnblock={
+                business.isRestricted
+                  ? () => {
+                      const id = business._id || business.id || "";
+                      setProcessingAction({ id, type: "unblock" });
+                      liftRestriction(id, {
+                        onSettled: () => setProcessingAction(null),
+                      });
+                    }
+                  : undefined
+              }
+              actionLoading={
+                processingAction &&
+                processingAction.id === (business._id || business.id)
+                  ? processingAction.type
+                  : null
+              }
+            />
           )}
-        </>
+        />
       )}
 
       {/* Block Business Dialog */}

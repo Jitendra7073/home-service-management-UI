@@ -94,7 +94,7 @@ export default function UserDetailsPage() {
   };
 
   if (isLoading) {
-    return <UserDetailsSkeleton/>;
+    return <UserDetailsSkeleton />;
   }
 
   if (error || !user) {
@@ -200,7 +200,7 @@ export default function UserDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+            <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
               <p className="mb-2 text-sm font-semibold text-destructive">
                 Reason for Restriction
               </p>
@@ -308,7 +308,7 @@ export default function UserDetailsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="rounded-lg border bg-card p-4">
+                <div className="rounded-md border bg-card p-4">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">
@@ -370,7 +370,7 @@ export default function UserDetailsPage() {
                     {user.businesses.map((business: any) => (
                       <div
                         key={business._id || business.id}
-                        className="rounded-lg border bg-card p-4">
+                        className="rounded-md border bg-card p-4">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="font-semibold">
                             {business.name || business.businessName}
@@ -469,7 +469,7 @@ function timeAgo(dateString: string) {
 
 function ActivityLogItem({ log }: { log: any }) {
   return (
-    <div className="group rounded-lg border bg-card p-4 transition-all hover:shadow-md hover:border-primary/50">
+    <div className="group rounded-md border bg-card p-4 transition-all hover:shadow-md hover:border-primary/50">
       <div className="space-y-3">
         {/* Header Row */}
         <div className="flex items-start justify-between gap-3">
@@ -555,7 +555,7 @@ function MetadataPopover({ metadata }: { metadata: any }) {
             <p className="text-sm font-semibold">Additional Information</p>
           </div>
 
-          <pre className="max-h-[400px] overflow-auto rounded-lg bg-muted p-4 text-xs font-mono leading-relaxed">
+          <pre className="max-h-[400px] overflow-auto rounded-md bg-muted p-4 text-xs font-mono leading-relaxed">
             {JSON.stringify(metadata, null, 2)}
           </pre>
         </div>
@@ -762,7 +762,7 @@ function ActivityLogsSection({
         {/* Activity Log Items Skeleton */}
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="rounded-lg border p-4 space-y-3">
+            <div key={i} className="rounded-md border p-4 space-y-3">
               {/* Header Row */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
@@ -948,7 +948,7 @@ function ActivityLogsSection({
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="rounded-lg border p-4 space-y-3 animate-pulse">
+                className="rounded-md border p-4 space-y-3 animate-pulse">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />

@@ -13,14 +13,8 @@ import {
 
 import { ArrowUpDown, MoreHorizontal, RefreshCw } from "lucide-react";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { AdminDataTable } from "@/components/admin/ui/admin-data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +29,6 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
-import TableSkeleton from "../tableSkeleton";
 
 export type Service = {
   id: string;
@@ -70,7 +63,7 @@ export default function ServicesTable({
 
   const toggleServiceStatus = async (
     serviceId: string,
-    currentStatus: "active" | "inactive" | "restricted"
+    currentStatus: "active" | "inactive" | "restricted",
   ) => {
     try {
       const res = await fetch(`/api/provider/service`, {
@@ -231,120 +224,58 @@ export default function ServicesTable({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  if (isLoading) {
-    return <TableSkeleton rows={5} columns={5} />;
-  }
+  const adminColumns = table.getHeaderGroups()[0].headers.map((header) => ({
+    header: flexRender(header.column.columnDef.header, header.getContext()),
+  }));
 
   return (
-    <div className="w-full space-y-4 mb-10">
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg flex items-center gap-2">
-          All Services
-        </h3>
-
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search services..."
-            value={globalFilter}
-            onChange={(e) => {
-              setGlobalFilter(e.target.value);
-              table.setPageIndex(0);
-            }}
-            className="w-full md:max-w-sm"
-          />
-          {!isLoading && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="bg-transparent text-black hover:bg-gray-100"
-              onClick={() => refetch()}
-              disabled={isFetching}>
-              <RefreshCw
-                className={`h-4 w-4 transition-transform ${
-                  isFetching ? "animate-spin" : ""
-                }`}
-              />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="rounded-md border overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((group) => (
-              <TableRow key={group.id}>
-                {group.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-6">
-                  Loading services...
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center py-6">
-                  No services found.
-                </TableCell>
-              </TableRow>
+    <div className="w-full space-y-4">
+      <AdminDataTable
+        title="All Services"
+        columns={adminColumns}
+        data={table.getRowModel().rows}
+        isLoading={isLoading}
+        actionButton={
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search services..."
+              value={globalFilter}
+              onChange={(e) => {
+                setGlobalFilter(e.target.value);
+                table.setPageIndex(0);
+              }}
+              className="w-full md:max-w-sm"
+            />
+            {!isLoading && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="bg-transparent text-black hover:bg-gray-100"
+                onClick={() => refetch()}
+                disabled={isFetching}>
+                <RefreshCw
+                  className={`h-4 w-4 transition-transform ${
+                    isFetching ? "animate-spin" : ""
+                  }`}
+                />
+              </Button>
             )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </p>
-
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}>
-            Previous
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}>
-            Next
-          </Button>
-        </div>
-      </div>
+          </div>
+        }
+        renderRow={(row) => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        )}
+        onPageChange={(p) => table.setPageIndex(p - 1)}
+        currentPage={table.getState().pagination.pageIndex + 1}
+        totalPages={table.getPageCount()}
+        emptyMessage="No services found."
+      />
     </div>
   );
 }

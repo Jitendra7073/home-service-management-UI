@@ -13,15 +13,17 @@ import {
   useRestrictUser,
   useLiftUserRestriction,
 } from "@/hooks/use-admin-queries";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AdminDataGrid } from "@/components/admin/ui/admin-data-grid";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  mobile?: string;
+  role: UserRole;
+  isRestricted?: boolean;
+  restrictionReason?: string;
+}
 
 type UserRole = "customer" | "provider" | "admin";
 
@@ -65,10 +67,10 @@ export function UserManagement() {
   // Hook for fetching users
   const { data: usersData, isLoading, error } = useAdminUsers();
 
-  const allUsers = usersData?.data || [];
+  const allUsers = (usersData?.data || []) as User[];
 
   // Client-side Filtering
-  const filteredUsers = allUsers.filter((user: any) => {
+  const filteredUsers = allUsers.filter((user) => {
     // Role Filter
     if (activeTab !== "admin" && user.role !== activeTab) return false;
     if (activeTab === "admin" && user.role !== "admin") return false;
@@ -158,19 +160,7 @@ export function UserManagement() {
 
         {(["customer", "provider", "admin"] as const).map((role) => (
           <TabsContent key={role} value={role} className="space-y-4">
-            {isLoading ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="flex flex-col space-y-3">
-                    <Skeleton className="h-[200px] w-full rounded-md" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-[250px]" />
-                      <Skeleton className="h-4 w-[200px]" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : error ? (
+            {error ? (
               <EmptyState
                 icon={Shield}
                 title="Error loading users"
@@ -178,108 +168,46 @@ export function UserManagement() {
                   error?.message || "Something went wrong. Please try again."
                 }
               />
-            ) : users.length === 0 ? (
-              <EmptyState
-                icon={Users}
-                title={`No ${role}s found`}
-                description={
-                  searchQuery
-                    ? "Try adjusting your search query"
-                    : "No users registered yet"
-                }
-              />
             ) : (
-              <>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {paginatedUsers.map((user: any) => (
-                    <UserCard
-                      key={user.id}
-                      id={user.id}
-                      name={user.name}
-                      email={user.email}
-                      mobile={user.mobile}
-                      role={user.role}
-                      isRestricted={user.isRestricted}
-                      restrictionReason={user.restrictionReason}
-                      onViewDetails={() =>
-                        router.push(`/admin/users/${user.id}`)
-                      }
-                      onBlock={
-                        role !== "admin" && !user.isRestricted
-                          ? () => openBlockDialog(user)
-                          : undefined
-                      }
-                      onUnblock={
-                        role !== "admin" && user.isRestricted
-                          ? () => handleUnblockUser(user)
-                          : undefined
-                      }
-                      isBlocking={isActionPending}
-                    />
-                  ))}
-                </div>
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="mt-8">
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={() => handlePageChange(page - 1)}
-                            className={
-                              page <= 1
-                                ? "pointer-events-none opacity-50"
-                                : "cursor-pointer"
-                            }
-                          />
-                        </PaginationItem>
-
-                        {Array.from(
-                          { length: totalPages },
-                          (_, i) => i + 1,
-                        ).map((p) => {
-                          if (
-                            totalPages > 10 &&
-                            Math.abs(page - p) > 2 &&
-                            p !== 1 &&
-                            p !== totalPages
-                          ) {
-                            if (Math.abs(page - p) === 3)
-                              return (
-                                <PaginationItem key={p}>
-                                  <span className="px-4">...</span>
-                                </PaginationItem>
-                              );
-                            return null;
-                          }
-                          return (
-                            <PaginationItem key={p}>
-                              <PaginationLink
-                                isActive={page === p}
-                                onClick={() => handlePageChange(p)}
-                                className="cursor-pointer">
-                                {p}
-                              </PaginationLink>
-                            </PaginationItem>
-                          );
-                        })}
-
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={() => handlePageChange(page + 1)}
-                            className={
-                              page >= totalPages
-                                ? "pointer-events-none opacity-50"
-                                : "cursor-pointer"
-                            }
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
+              <AdminDataGrid
+                data={users}
+                isLoading={isLoading}
+                gridClassName="lg:grid-cols-3"
+                emptyState={{
+                  icon: Users,
+                  title: `No ${role}s found`,
+                  description: searchQuery
+                    ? "Try adjusting your search query"
+                    : "No users registered yet",
+                }}
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                renderItem={(user) => (
+                  <UserCard
+                    key={user.id}
+                    id={user.id}
+                    name={user.name}
+                    email={user.email}
+                    mobile={user.mobile || ""}
+                    role={user.role}
+                    isRestricted={user.isRestricted ?? false}
+                    restrictionReason={user.restrictionReason || ""}
+                    onViewDetails={() => router.push(`/admin/users/${user.id}`)}
+                    onBlock={
+                      role !== "admin" && !user.isRestricted
+                        ? () => openBlockDialog(user)
+                        : undefined
+                    }
+                    onUnblock={
+                      role !== "admin" && user.isRestricted
+                        ? () => handleUnblockUser(user)
+                        : undefined
+                    }
+                    isBlocking={isActionPending}
+                  />
                 )}
-              </>
+              />
             )}
           </TabsContent>
         ))}

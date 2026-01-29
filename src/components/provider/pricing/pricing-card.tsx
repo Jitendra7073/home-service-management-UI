@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Check, StickyNote, TriangleAlert } from "lucide-react";
 
@@ -11,24 +13,6 @@ import { QueryClient } from "@tanstack/react-query";
 const queryClient = new QueryClient();
 
 /* ----------------------- BENEFITS ----------------------- */
-
-const PLAN_BENEFITS: Record<string, string[]> = {
-  PREMIMUM: [
-    "Publish business profile",
-    "List up to 5 services",
-    "Receive customer bookings",
-    "Basic business analytics",
-    "Standard support",
-    "7 days free trial included",
-  ],
-  PRO: [
-    "Publish business profile",
-    "Unlimited services",
-    "Priority customer bookings",
-    "Advanced analytics & reports",
-    "Priority support",
-  ],
-};
 
 /* ----------------------- HERO ----------------------- */
 
@@ -82,8 +66,10 @@ function PricingCard({
   currentPeriodEnd,
   isCancelLoading,
   isManageLoading,
+  hasActivePaidSubscription,
 }: any) {
-  const benefits = PLAN_BENEFITS[plan.name] ?? [];
+  // Use dynamic benefits if available, otherwise fallback to hardcoded
+  const benefits = plan.benefits ?? [];
   const isPremium = plan.name.toUpperCase() === "PREMIMUM";
 
   const daysRemaining = trialEndDate
@@ -98,7 +84,7 @@ function PricingCard({
 
   return (
     <div
-      className={`relative flex flex-col rounded-md border p-7 transition-all ${
+      className={`relative flex flex-col rounded-md border p-7 transition-all h-full ${
         isActive || (isPremium && isTrialEligible && !isActive)
           ? "border-blue-500 bg-blue-50 shadow-lg"
           : "border-gray-200 bg-white hover:shadow-lg"
@@ -156,7 +142,7 @@ function PricingCard({
       </div>
 
       {/* Benefits */}
-      <ul className="flex-1 space-y-3 mb-6">
+      <ul className="flex-1 space-y-3 mb-10">
         {benefits.map((benefit: string, i: number) => (
           <li key={i} className="flex gap-3 text-sm text-gray-800">
             <Check className="h-4 w-4 text-blue-600 mt-0.5" />
@@ -166,7 +152,7 @@ function PricingCard({
       </ul>
 
       {isCancelAtPeriodEnd && isActive && (
-        <div className="mb-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+        <div className="mb-4 flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
           <div className="mt-0.5 text-amber-500">
             <TriangleAlert size={18} />
           </div>
@@ -196,95 +182,119 @@ function PricingCard({
       <div className="mt-auto flex flex-col gap-3">
         {isActive ? (
           <>
-            {/* TRIALING STATE */}
-            {subscriptionStatus === "trialing" && (
+            {/* Free Plan Active State */}
+            {plan.price === 0 ? (
+              <button
+                disabled
+                className="w-full cursor-default rounded-md bg-green-100 text-green-700 border border-green-200 py-3 text-sm font-semibold">
+                Current Active Plan
+              </button>
+            ) : (
               <>
-                {isCancelAtPeriodEnd ? (
-                  <div className="flex flex-col gap-2">
-                    <button
-                      disabled={isManageLoading}
-                      onClick={onManage}
-                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isManageLoading
-                        ? "Redirecting..."
-                        : "Manage Subscription"}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
-                    <button
-                      disabled={isCancelLoading}
-                      onClick={onCancel}
-                      className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isCancelLoading ? "Cancelling..." : "Cancel Trial"}
-                    </button>
-                    <button
-                      disabled={isManageLoading}
-                      onClick={onManage}
-                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isManageLoading
-                        ? "Redirecting..."
-                        : "Manage Subscription"}
-                    </button>
-                  </div>
+                {/* TRIALING STATE */}
+                {subscriptionStatus === "trialing" && (
+                  <>
+                    {isCancelAtPeriodEnd ? (
+                      <div className="flex flex-col gap-2">
+                        <button
+                          disabled={isManageLoading}
+                          onClick={onManage}
+                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isManageLoading
+                            ? "Redirecting..."
+                            : "Manage Subscription"}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
+                        <button
+                          disabled={isCancelLoading}
+                          onClick={onCancel}
+                          className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isCancelLoading ? "Cancelling..." : "Cancel Trial"}
+                        </button>
+                        <button
+                          disabled={isManageLoading}
+                          onClick={onManage}
+                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isManageLoading
+                            ? "Redirecting..."
+                            : "Manage Subscription"}
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
+
+                {/* ACTIVE STATE */}
+                {subscriptionStatus === "active" && (
+                  <>
+                    {isCancelAtPeriodEnd ? (
+                      <button
+                        disabled={isManageLoading}
+                        onClick={onManage}
+                        className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {isManageLoading
+                          ? "Redirecting..."
+                          : "Manage Subscription"}
+                      </button>
+                    ) : (
+                      <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
+                        <button
+                          disabled={isCancelLoading}
+                          onClick={onCancel}
+                          className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isCancelLoading
+                            ? "Cancelling..."
+                            : "Cancel Subscription"}
+                        </button>
+                        <button
+                          disabled={isManageLoading}
+                          onClick={onManage}
+                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          {isManageLoading
+                            ? "Redirecting..."
+                            : "Manage Subscription"}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* ERROR / FALLBACK STATE*/}
+                {subscriptionStatus !== "trialing" &&
+                  subscriptionStatus !== "active" && (
+                    <button
+                      disabled={isManageLoading}
+                      onClick={onManage}
+                      className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                      {isManageLoading
+                        ? "Redirecting..."
+                        : "Manage Subscription"}
+                    </button>
+                  )}
               </>
             )}
-
-            {/* ACTIVE STATE */}
-            {subscriptionStatus === "active" && (
-              <>
-                {isCancelAtPeriodEnd ? (
-                  <button
-                    disabled={isManageLoading}
-                    onClick={onManage}
-                    className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                    {isManageLoading ? "Redirecting..." : "Manage Subscription"}
-                  </button>
-                ) : (
-                  <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
-                    <button
-                      disabled={isCancelLoading}
-                      onClick={onCancel}
-                      className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isCancelLoading
-                        ? "Cancelling..."
-                        : "Cancel Subscription"}
-                    </button>
-                    <button
-                      disabled={isManageLoading}
-                      onClick={onManage}
-                      className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isManageLoading
-                        ? "Redirecting..."
-                        : "Manage Subscription"}
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* ERROR / FALLBACK STATE*/}
-            {subscriptionStatus !== "trialing" &&
-              subscriptionStatus !== "active" && (
-                <button
-                  disabled={isManageLoading}
-                  onClick={onManage}
-                  className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                  {isManageLoading ? "Redirecting..." : "Manage Subscription"}
-                </button>
-              )}
           </>
         ) : (
-          /* NOT ACTIVE PLAN (Free User viewing Paid Plan) -> Show Upgrade */
           <button
-            disabled={isLoading}
+            disabled={
+              isLoading || (plan.price === 0 && hasActivePaidSubscription)
+            }
             onClick={() => onSubscribe(plan.stripePriceId)}
-            className="w-full cursor-pointer rounded-md bg-blue-600 text-white hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+            className={`w-full cursor-pointer rounded-md bg-blue-600  hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${
+              plan.price === 0 && hasActivePaidSubscription
+                ? "bg-gray-200 text-black border border-gray-200 cursor-not-allowed hover:bg-gray-200" // More distinct disabled style
+                : "text-white"
+            }`}>
             {isLoading
               ? "Processing..."
+              : plan.price === 0 && hasActivePaidSubscription
+              ? "You have active subscription"
               : isPremium && isTrialEligible
               ? "Start Free Trial"
+              : plan.price === 0
+              ? "Get Started"
               : "Upgrade Now"}
           </button>
         )}
@@ -300,6 +310,9 @@ function PricingCard({
 /* ----------------------- MAIN ----------------------- */
 
 export default function PricingSection() {
+  const [processingPlanId, setProcessingPlanId] = React.useState<string | null>(
+    null,
+  );
   const {
     data: plans,
     isLoading: plansLoading,
@@ -351,11 +364,9 @@ export default function PricingSection() {
         body: JSON.stringify({ priceId, isTrial }),
       });
       const data = await res.json();
-      console.log(data);
       return data;
     },
     onSuccess: (data: any) => {
-      console.log("url data", data);
       window.location.href = data.url;
     },
   });
@@ -399,10 +410,9 @@ export default function PricingSection() {
     },
   });
 
-  const visiblePlans =
-    plans?.filter((p: any) =>
-      ["PREMIMUM", "PRO"].includes(p.name.toUpperCase()),
-    ) ?? [];
+  const visiblePlans = plans
+    ? [...plans].sort((a: any, b: any) => a.price - b.price)
+    : [];
 
   const isLoading = profileLoading || plansLoading;
 
@@ -412,13 +422,13 @@ export default function PricingSection() {
         <PricingHero />
 
         {isLoading ? (
-          <div className="grid gap-8 w-full sm:grid-cols-1 lg:grid-cols-2 justify-center">
-            {[...Array(2)].map((_, i) => (
+          <div className="grid gap-6 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
+            {[...Array(3)].map((_, i) => (
               <PricingSkeleton key={i} />
             ))}
           </div>
         ) : (
-          <div className="grid gap-8 w-full sm:grid-cols-1 lg:grid-cols-2 justify-center">
+          <div className="grid gap-6 w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
             {visiblePlans.map((plan: any) => {
               const isCurrentPlanName =
                 activePlanName === plan.name.toUpperCase();
@@ -427,28 +437,41 @@ export default function PricingSection() {
                 subscriptionStatus !== "FREE" &&
                 subscriptionStatus !== "canceled";
 
+              const isPaidSubscription =
+                subscription?.plan?.price > 0 &&
+                (subscription?.status === "active" ||
+                  subscription?.status === "trialing");
+
               return (
                 <PricingCard
                   key={plan.id}
                   plan={plan}
                   onCancel={() => cancelSubscription.mutate()}
                   onManage={() => billingPortalURL.mutate()}
-                  isActive={isActive}
+                  isActive={
+                    plan.price === 0
+                      ? activePlanName === plan.name.toUpperCase()
+                      : isActive
+                  }
                   subscriptionStatus={subscriptionStatus}
                   isCancelAtPeriodEnd={subscription?.cancelAtPeriodEnd}
-                  isLoading={checkoutMutation.isPending}
+                  isLoading={
+                    checkoutMutation.isPending && processingPlanId === plan.id
+                  }
                   currentPeriodStart={subscription?.currentPeriodStart}
                   currentPeriodEnd={subscription?.currentPeriodEnd}
                   isCancelLoading={cancelSubscription.isPending}
                   isManageLoading={billingPortalURL.isPending}
-                  onSubscribe={(priceId: string) =>
+                  hasActivePaidSubscription={isPaidSubscription}
+                  onSubscribe={(priceId: string) => {
+                    setProcessingPlanId(plan.id);
                     checkoutMutation.mutate({
                       priceId,
                       isTrial:
                         plan.name.toUpperCase() === "PREMIMUM" &&
                         isTrialEligible,
-                    })
-                  }
+                    });
+                  }}
                   isInTrial={
                     isInTrial && plan.name.toUpperCase() === "PREMIMUM"
                   }

@@ -44,6 +44,8 @@ import {
   useLiftServiceRestriction,
 } from "@/hooks/use-admin-queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminDataGrid } from "@/components/admin/ui/admin-data-grid";
+import { ServiceCard } from "@/components/admin/service-card";
 
 interface BusinessData {
   _id: string;
@@ -176,7 +178,7 @@ export default function BusinessDetailsPage() {
           setRejectDialogOpen(false);
           setRejectReason("");
         },
-      }
+      },
     );
   };
 
@@ -192,7 +194,7 @@ export default function BusinessDetailsPage() {
           setBlockDialogOpen(false);
           setBlockReason("");
         },
-      }
+      },
     );
   };
 
@@ -289,93 +291,103 @@ export default function BusinessDetailsPage() {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {business.businessName}
-            </h1>
-            {business.isRestricted && (
-              <Badge variant="destructive" className="gap-1">
-                <Ban className="h-3 w-3" />
-                Blocked
-              </Badge>
-            )}
-            {!business.isApproved && !business.isRejected && (
-              <Badge
-                variant="outline"
-                className="gap-1 border-yellow-500 text-yellow-600">
-                <Clock className="h-3 w-3" />
-                Pending
-              </Badge>
-            )}
-            {business.isApproved && (
-              <Badge variant="default" className="gap-1 bg-green-600">
-                <CheckCircle className="h-3 w-3" />
-                Approved
-              </Badge>
-            )}
-            {business.isRejected && (
-              <Badge variant="destructive" className="gap-1">
-                <XCircle className="h-3 w-3" />
-                Rejected
-              </Badge>
-            )}
-          </div>
-          <p className="text-muted-foreground">{business.category.name}</p>
-        </div>
-
-        {/* Actions */}
-        {!business.isApproved &&
-          !business.isRejected &&
-          !business.isRestricted && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="gap-2 border-destructive text-destructive"
-                onClick={() => setRejectDialogOpen(true)}
-                disabled={actionLoading}>
-                <XCircle className="h-4 w-4" />
-                Reject
-              </Button>
-              <Button
-                variant="default"
-                className="gap-2 bg-green-600 hover:bg-green-700"
-                onClick={handleApproveBusiness}
-                disabled={actionLoading}>
-                {actionLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CheckCircle className="h-4 w-4" />
-                )}
-                Approve
-              </Button>
+          <div className="flex md:flex-row flex-col justify-between items-start w-full">
+            <div className="flex flex-col text-left w-fit">
+              <h1 className="text-xl md:text-2xl font-semibold tracking-tight w-fit">
+                {business.businessName}
+              </h1>
+              <p className="text-muted-foreground w-fit">
+                {business.category.name}
+              </p>
             </div>
-          )}
+            <div className="flex gap-3 justify-between w-full md:w-fit md:justify-end">
+              <div>
+                {business.isRestricted && (
+                  <Badge variant="destructive" className="gap-1">
+                    <Ban className="h-3 w-3" />
+                    Blocked
+                  </Badge>
+                )}
+                {!business.isApproved && !business.isRejected && (
+                  <Badge
+                    variant="outline"
+                    className="gap-1 border-yellow-500 text-yellow-600">
+                    <Clock className="h-3 w-3" />
+                    Pending
+                  </Badge>
+                )}
+                {business.isApproved && (
+                  <Badge variant="default" className="gap-1 bg-green-600">
+                    <CheckCircle className="h-3 w-3" />
+                    Approved
+                  </Badge>
+                )}
+                {business.isRejected && (
+                  <Badge variant="destructive" className="gap-1">
+                    <XCircle className="h-3 w-3" />
+                    Rejected
+                  </Badge>
+                )}
+              </div>
 
-        {business.isRestricted ? (
-          <Button
-            variant="default"
-            className="gap-2"
-            onClick={handleUnblockBusiness}
-            disabled={actionLoading}>
-            {actionLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <CheckCircle className="h-4 w-4" />
-            )}
-            Unblock Business
-          </Button>
-        ) : (
-          business.isApproved && (
-            <Button
-              variant="destructive"
-              className="gap-2"
-              onClick={() => setBlockDialogOpen(true)}
-              disabled={actionLoading}>
-              <Ban className="h-4 w-4" />
-              Block Business
-            </Button>
-          )
-        )}
+              <div>
+                {/* Actions */}
+                {!business.isApproved &&
+                  !business.isRejected &&
+                  !business.isRestricted && (
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="gap-2 border-destructive text-destructive"
+                        onClick={() => setRejectDialogOpen(true)}
+                        disabled={actionLoading}>
+                        <XCircle className="h-4 w-4" />
+                        Reject
+                      </Button>
+                      <Button
+                        variant="default"
+                        className="gap-2 bg-green-600 hover:bg-green-700"
+                        onClick={handleApproveBusiness}
+                        disabled={actionLoading}>
+                        {actionLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4" />
+                        )}
+                        Approve
+                      </Button>
+                    </div>
+                  )}
+
+                {business.isRestricted ? (
+                  <Button
+                    variant="default"
+                    className="gap-2"
+                    onClick={handleUnblockBusiness}
+                    disabled={actionLoading}>
+                    {actionLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4" />
+                    )}
+                    Unblock Business
+                  </Button>
+                ) : (
+                  business.isApproved && (
+                    <Button
+                      variant="destructive"
+                      className="gap-2"
+                      onClick={() => setBlockDialogOpen(true)}
+                      disabled={actionLoading}>
+                      <Ban className="h-4 w-4" />
+                      Block Business
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -484,88 +496,39 @@ export default function BusinessDetailsPage() {
               <CardTitle>Services ({services.length})</CardTitle>
             </CardHeader>
             <CardContent>
-              {servicesLoading ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Skeleton className="h-40 rounded-md" />
-                  <Skeleton className="h-40 rounded-md" />
-                </div>
-              ) : services.length === 0 ? (
-                <div className="flex min-h-[200px] flex-col items-center justify-center p-6">
-                  <Clock className="mb-4 h-8 w-8 text-muted-foreground" />
-                  <p className="text-muted-foreground">No services found</p>
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {services.map((service: any) => (
-                    <Card
-                      key={service.id || service._id}
-                      className={`${
-                        service.isRestricted ? "border-destructive" : ""
-                      } gap-0 w-fit`}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <CardTitle className="text-base capitalize">
-                            {service.name}
-                          </CardTitle>
-                          {service.isRestricted && (
-                            <Badge variant="destructive" className="gap-1">
-                              <Ban className="h-3 w-3" />
-                              Blocked
-                            </Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <p className="line-clamp-2 text-sm text-muted-foreground">
-                          <i>
-                            {" "}
-                            {service.description &&
-                              service.description.charAt(0).toUpperCase() +
-                                service.description.slice(1)}
-                          </i>
-                        </p>
-                        <div className="flex items-center gap-4 text-sm">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span>
-                              {service.duration || service.durationInMinutes}{" "}
-                              mins
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <span>₹{service.price}</span>
-                          </div>
-                        </div>
-                        {service.isRestricted && service.restrictionReason && (
-                          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-2 text-xs">
-                            <p className="font-semibold text-destructive">
-                              Reason:
-                            </p>
-                            <p className="text-destructive">
-                              {service.restrictionReason}
-                            </p>
-                          </div>
-                        )}
-
-                        <div className="flex gap-2 pt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 gap-2"
-                            onClick={() =>
-                              router.push(
-                                `/admin/services/${service.id || service._id}`
-                              )
-                            }>
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <AdminDataGrid
+                data={services}
+                isLoading={servicesLoading}
+                gridClassName="lg:grid-cols-2"
+                emptyState={{
+                  icon: Clock,
+                  title: "No services found",
+                  description: "This business has not added any services yet.",
+                }}
+                renderItem={(service: any) => (
+                  <ServiceCard
+                    key={service.id || service._id}
+                    id={service.id || service._id}
+                    name={service.name}
+                    description={service.description}
+                    duration={
+                      service.duration || service.durationInMinutes || 0
+                    }
+                    price={service.price}
+                    currency="INR"
+                    businessName={business.businessName}
+                    categoryName={business.category.name}
+                    isRestricted={service.isRestricted}
+                    restrictionReason={service.restrictionReason}
+                    isActive={service.isActive ?? true}
+                    onViewDetails={() =>
+                      router.push(
+                        `/admin/services/${service.id || service._id}`,
+                      )
+                    }
+                  />
+                )}
+              />
             </CardContent>
           </Card>
         </div>

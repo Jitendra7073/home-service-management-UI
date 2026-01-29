@@ -77,7 +77,7 @@ const Explore: React.FC = () => {
   const [page, setPage] = useState(Number(searchParams.get("page") || 1));
   const [limit, setLimit] = useState(Number(searchParams.get("limit") || 6));
   const [searchTerm, setSearchTerm] = useState<string>(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
     const cats = searchParams.get("categories");
@@ -89,7 +89,7 @@ const Explore: React.FC = () => {
     return [min, max];
   });
   const [selectedState, setSelectedState] = useState<string>(
-    searchParams.get("state") || ""
+    searchParams.get("state") || "",
   );
   const [mobileFilterOpen, setMobileFilterOpen] = useState<boolean>(false);
 
@@ -221,7 +221,7 @@ const Explore: React.FC = () => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
     setPage(1);
   };
@@ -242,7 +242,7 @@ const Explore: React.FC = () => {
 
   const handleServiceClick = (service: any) => {
     router.push(
-      `/customer/explore/${service.providerId}?serviceId=${service.id}`
+      `/customer/explore/${service.providerId}?serviceId=${service.id}`,
     );
   };
 
