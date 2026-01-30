@@ -20,6 +20,7 @@ interface BusinessStatusBannerProps {
     name: string;
     maxServices: number;
     maxBookings: number;
+    commissionRate?: number;
   } | null;
 }
 
@@ -184,9 +185,11 @@ export function BusinessStatusBanner({
       <div className="space-y-4">
         <Alert className="border-emerald-500/50 bg-emerald-50 text-emerald-900 dark:border-emerald-500 dark:bg-emerald-900/20 dark:text-emerald-200">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+
           <AlertTitle className="text-emerald-800 dark:text-emerald-300">
             Safe & Verified
           </AlertTitle>
+
           <AlertDescription>
             Your business has been successfully verified and meets all platform
             safety guidelines.

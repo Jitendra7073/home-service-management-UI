@@ -7,7 +7,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Cell,
+  Legend,
 } from "recharts";
 
 import {
@@ -24,11 +24,12 @@ interface ServiceChartProps {
   data: {
     service: string;
     totalBookings: number;
+    confirmed: number;
+    completed: number;
+    cancelled: number;
   }[];
   isLoading: boolean;
 }
-
-const COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#f59e0b", "#10b981"];
 
 const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
   if (isLoading) {
@@ -36,7 +37,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
       <Card className="w-full shadow-sm border rounded-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            Popular Services
+            Top Performing Services
           </CardTitle>
           <CardDescription>Top 5 most booked services</CardDescription>
         </CardHeader>
@@ -55,7 +56,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
       <Card className="w-full shadow-sm border rounded-md">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
-            Popular Services
+            Top Performing Services
           </CardTitle>
           <CardDescription>No booking data available</CardDescription>
         </CardHeader>
@@ -79,7 +80,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
           Top Performing Services
         </CardTitle>
         <CardDescription>
-          Services with the highest number of bookings
+          Breakdown of bookings by status for top services
         </CardDescription>
       </CardHeader>
 
@@ -107,19 +108,27 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
                   border: "none",
                   boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                 }}
-                formatter={(value: number) => [`${value} Bookings`, "Volume"]}
+              />
+              <Legend iconType="circle" />
+              <Bar
+                dataKey="completed"
+                stackId="a"
+                fill="#10b981" // Green
+                name="Completed"
               />
               <Bar
-                dataKey="totalBookings"
+                dataKey="confirmed"
+                stackId="a"
+                fill="#3b82f6" // Blue
+                name="Confirmed"
+              />
+              <Bar
+                dataKey="cancelled"
+                stackId="a"
+                fill="#ef4444" // Red
+                name="Cancelled"
                 radius={[0, 4, 4, 0]}
-                background={{ fill: "#f3f4f6" }}>
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Bar>
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>

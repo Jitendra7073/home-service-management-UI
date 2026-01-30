@@ -38,27 +38,25 @@ type SocialMedia = {
 };
 
 const Footer: React.FC = () => {
-  const BASE_URL = process.env.NEXT_PUBLIC_FRONTEND_URL;
-
   const footerlinks: FooterSection[] = [
     {
       title: "Bookings",
       options: [
         {
           label: "Pending",
-          endPoint: `${BASE_URL}/customer/booking?status=pending`,
+          endPoint: `/customer/booking?status=pending_payment`,
         },
         {
           label: "Confirmed",
-          endPoint: `${BASE_URL}/customer/booking?status=confirmed`,
+          endPoint: `/customer/booking?status=confirmed`,
         },
         {
           label: "Completed",
-          endPoint: `${BASE_URL}/customer/booking?status=completed`,
+          endPoint: `/customer/booking?status=completed`,
         },
         {
           label: "Cancelled",
-          endPoint: `${BASE_URL}/customer/booking?status=cancelled`,
+          endPoint: `/customer/booking?status=cancelled`,
         },
       ],
     },
@@ -66,24 +64,16 @@ const Footer: React.FC = () => {
       title: "Legal",
       options: [
         {
+          label: "About Us",
+          endPoint: `/customer/about`,
+        },
+        {
           label: "Privacy Policy",
-          endPoint: "",
-          tooltips: "Not yet created!",
+          endPoint: `/customer/privacy-policy`,
         },
         {
           label: "Terms of Service",
-          endPoint: "",
-          tooltips: "Not yet created!",
-        },
-        {
-          label: "Cookie Policy",
-          endPoint: "",
-          tooltips: "Not yet created!",
-        },
-        {
-          label: "Compliance",
-          endPoint: "",
-          tooltips: "Not yet created!",
+          endPoint: `/customer/terms`,
         },
       ],
     },
@@ -92,19 +82,19 @@ const Footer: React.FC = () => {
       options: [
         {
           label: "Explore",
-          endPoint: `${BASE_URL}/customer/explore`,
+          endPoint: `/customer/explore`,
         },
         {
           label: "Booking",
-          endPoint: `${BASE_URL}/customer/booking`,
+          endPoint: `/customer/booking`,
         },
         {
           label: "Cart",
-          endPoint: `${BASE_URL}/customer/cart`,
+          endPoint: `/customer/cart`,
         },
         {
           label: "Profile",
-          endPoint: `${BASE_URL}/customer/profile`,
+          endPoint: `/customer/profile`,
         },
       ],
     },

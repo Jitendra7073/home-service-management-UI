@@ -11,6 +11,7 @@ import {
   LayoutList,
   BadgeIndianRupee,
   CreditCard,
+  ChartPie,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,6 +99,16 @@ export function AdminLayoutContent({
       href: "/admin/subscriptions",
       label: "Subscriptions",
       icon: CreditCard,
+    },
+    {
+      href: "/admin/revenue",
+      label: "Financials",
+      icon: ChartPie,
+    },
+    {
+      href: "/admin/legal",
+      label: "Legal Docs",
+      icon: List,
     },
   ];
 

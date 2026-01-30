@@ -371,7 +371,7 @@ export function useLiftServiceRestriction() {
         `/api/admin/services/${serviceId}/lift-restriction`,
         {
           method: "PATCH",
-        }
+        },
       );
       if (!res.ok) throw new Error("Failed to lift restriction");
       return res.json();

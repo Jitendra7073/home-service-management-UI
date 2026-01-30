@@ -13,6 +13,7 @@ import { Bell, X, RefreshCw, AlertTriangle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NOTIFICATION_QUERY_KEY = ["notifications"];
 
@@ -21,7 +22,7 @@ const getRelativeTime = (createdAt: string) => {
   const now = new Date();
   const notificationTime = new Date(createdAt);
   const seconds = Math.floor(
-    (now.getTime() - notificationTime.getTime()) / 1000
+    (now.getTime() - notificationTime.getTime()) / 1000,
   );
 
   if (seconds < 60) return "just now";
@@ -47,6 +48,52 @@ const NotificationSkeleton = () => {
   });
 };
 
+const NotificationItem = ({
+  notify,
+  onDismiss,
+}: {
+  notify: any;
+  onDismiss: (id: string) => void;
+}) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, height: 0, transition: { duration: 0.2 } }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.7}
+      onDragEnd={(_, info) => {
+        // Swipe threshold (left or right)
+        if (Math.abs(info.offset.x) > 100) {
+          onDismiss(notify.id);
+        }
+      }}
+      whileDrag={{ scale: 1.02, cursor: "grabbing", zIndex: 10 }}
+      className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 bg-white transition flex justify-between items-start group cursor-grab active:cursor-grabbing touch-pan-y relative will-change-transform">
+      <div className="flex-1 min-w-0 pointer-events-none select-none">
+        <p className="font-medium text-sm text-gray-900">{notify.title}</p>
+        <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
+          {notify.message}
+        </p>
+        <span className="text-xs text-gray-400 mt-1 block">
+          {getRelativeTime(notify.createdAt)}
+        </span>
+      </div>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent drag interference if any
+          onDismiss(notify.id);
+        }}
+        className="ml-2 text-gray-400 hover:text-gray-600 shrink-0 p-1 rounded-full hover:bg-gray-100 transition-colors pointer-events-auto">
+        <X size={16} />
+      </button>
+    </motion.div>
+  );
+};
+
 const NotificationSideBar = () => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -64,7 +111,7 @@ const NotificationSideBar = () => {
   const notifications = data?.notifications ?? [];
 
   const unreadNotifications = notifications.filter(
-    (n: any) => n.read === false
+    (n: any) => n.read === false,
   );
 
   /* ---------------- MARK AS READ ---------------- */
@@ -79,8 +126,11 @@ const NotificationSideBar = () => {
 
     // Optimistic UI update
     onMutate: async (id) => {
+      // Optimistically remove the notification from the list
+      // We don't necessarily need to cancel queries if we are just modifying cache
+      // But adhering to standard pattern:
       await queryClient.cancelQueries({
-        queryKey: ["NOTIFICATION_QUERY_KEY"],
+        queryKey: NOTIFICATION_QUERY_KEY,
       });
 
       const previous = queryClient.getQueryData(NOTIFICATION_QUERY_KEY);
@@ -90,7 +140,7 @@ const NotificationSideBar = () => {
         return {
           ...old,
           notifications: old.notifications.map((n: any) =>
-            n.id === id ? { ...n, read: true } : n
+            n.id === id ? { ...n, read: true } : n,
           ),
         };
       });
@@ -128,10 +178,17 @@ const NotificationSideBar = () => {
 
       <SheetContent
         side="right"
-        className="w-[380px] sm:w-[420px] p-0 bg-white">
+        className="w-[380px] sm:w-[420px] p-0 bg-white shadow-xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white px-4 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Notifications</h2>
+        <div className="sticky top-0 z-20 bg-white px-4 py-4 border-b border-gray-200 flex items-center justify-between shadow-sm">
+          <div className="flex flex-col">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Notifications
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Swipe left or right to dismiss
+            </p>
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -145,7 +202,7 @@ const NotificationSideBar = () => {
         </div>
 
         {/* Body */}
-        <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
+        <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar">
           {isLoading ? (
             <NotificationSkeleton />
           ) : isError ? (
@@ -179,30 +236,16 @@ const NotificationSideBar = () => {
               </p>
             </div>
           ) : (
-            <div>
-              {unreadNotifications.map((notify: any) => (
-                <div
-                  key={notify.id}
-                  className="px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition flex justify-between items-start group">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-gray-900">
-                      {notify.title}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
-                      {notify.message}
-                    </p>
-                    <span className="text-xs text-gray-400 mt-1 block">
-                      {getRelativeTime(notify.createdAt)}
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => markAsReadMutation.mutate(notify.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 text-gray-400 hover:text-gray-600 shrink-0">
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
+            <div className="flex flex-col">
+              <AnimatePresence initial={false} mode="popLayout">
+                {unreadNotifications.map((notify: any) => (
+                  <NotificationItem
+                    key={notify.id}
+                    notify={notify}
+                    onDismiss={(id) => markAsReadMutation.mutate(id)}
+                  />
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </div>
