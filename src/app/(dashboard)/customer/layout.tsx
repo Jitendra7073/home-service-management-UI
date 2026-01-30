@@ -6,7 +6,7 @@ import GetFcmToken from "@/app/fcm-token";
 import FirebaseForegroundListener from "@/components/common/firebase-foreground";
 
 export const metadata: Metadata = {
-  title: "Dashboard - Book Top Rated Home Services | Fixora",
+  title: "Dashboard - Book Top Rated Home Services | HomHelpers",
   description:
     "Your personal dashboard to book and manage home services. Hire 5-star plumbers, electricians, cleaners, and beauty experts. Track bookings, view invoices, and get support instantly.",
   keywords: [
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     "weekend service booking",
     "holiday home maintenance",
     "annual maintenance contract AMC",
-    "Fixora customer login",
+    "HomHelpers customer login",
     "manage home repairs",
     "home service history",
   ],
@@ -62,12 +62,12 @@ export const metadata: Metadata = {
     canonical: "/customer",
   },
   openGraph: {
-    title: "Fixora Customer Dashboard - Manage Your Home Services",
+    title: "HomHelpers Customer Dashboard - Manage Your Home Services",
     description:
       "Your central hub for booking and managing top-rated home services. Trusted professionals, secure payments, and reliable service.",
     url: "/customer",
     type: "website",
-    siteName: "Fixora",
+    siteName: "HomHelpers",
   },
   robots: {
     index: true,

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Business",
-  description: "Manage your business information effectively with Fixora.",
+  description: "Manage your business information effectively with HomHelpers.",
 };
 
 const page = () => {

@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Explore",
-  description: "Discover and explore services with Fixora.",
+  description: "Discover and explore services with HomHelpers.",
 };
 
 export default function ExplorePage() {

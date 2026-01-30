@@ -97,8 +97,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     });
     const data = await res.json();
     if (data.success) {
-      // Clear stored tokens (now handled by httpOnly cookies)
-      // No need to manually clear localStorage
       window.location.reload();
     }
     return data;
@@ -111,23 +109,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               size="lg"
               asChild
-              className="hover:bg-transparent data-[state=open]:hover:bg-transparent">
+              className="hover:bg-transparent data-[state=open]:hover:bg-transparent hover:bg-gray-100 w-full">
               <Link
                 href="/provider/dashboard"
-                className="flex items-center gap-2">
-                <div className="flex justify-center items-center gap-0 relative">
-                  <div className="flex aspect-squar items-center justify-center rounded-md ">
-                    <Image
-                      src="/HSM-logo.png"
-                      alt="ServiceHub Logo"
-                      width={140}
-                      height={70}
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="absolute bottom-14 -right-10 truncate text-xs font-semibold">
-                    (Provider)
-                  </span>
+                className="flex justify-center items-center gap-2 w-full">
+                <div className="flex aspect-squar items-center justify-center rounded-md ">
+                  <Image
+                    src="/HSM-logo.png"
+                    alt="Homhelpers"
+                    width={140}
+                    height={70}
+                    className="object-contain"
+                  />
                 </div>
               </Link>
             </SidebarMenuButton>

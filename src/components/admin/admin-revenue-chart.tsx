@@ -10,15 +10,7 @@ import {
   YAxis,
   Legend,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import Image from "next/image";
 
 interface AdminRevenueChartProps {
   data: {

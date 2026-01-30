@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description: "Manage All Categories in Fixora.",
+  description: "Manage All Categories in HomHelpers.",
 };
 
 export default function CategoryPage() {

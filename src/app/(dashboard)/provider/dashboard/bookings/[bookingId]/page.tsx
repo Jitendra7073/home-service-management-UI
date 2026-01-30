@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Booking Details",
-  description: "View and manage your booking details effectively with Fixora.",
+  description:
+    "View and manage your booking details effectively with HomHelpers.",
 };
 
 const BookingById = async ({ params }: { params: { bookingId: string } }) => {

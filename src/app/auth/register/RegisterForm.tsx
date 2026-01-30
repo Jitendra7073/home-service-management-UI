@@ -80,7 +80,7 @@ export default function RegisterForm() {
 
       if (res.ok) {
         toast.success(
-          result.message || "Registration successful! Auto-logging in..."
+          result.message || "Registration successful! Auto-logging in...",
         );
         // Auto-redirect to dashboard based on role
         const redirectPath =

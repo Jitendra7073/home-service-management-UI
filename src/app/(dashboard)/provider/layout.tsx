@@ -5,7 +5,7 @@ import FirebaseForegroundListener from "@/components/common/firebase-foreground"
 export const metadata: Metadata = {
   title: "Provider Portal - Grow Your Service Business",
   description:
-    "Join Fixora as a service provider. Manage bookings, grow your customer base, and track earnings. The best platform for plumbers, electricians, cleaners, and home experts.",
+    "Join HomHelpers as a service provider. Manage bookings, grow your customer base, and track earnings. The best platform for plumbers, electricians, cleaners, and home experts.",
   keywords: [
     "provider portal",
     "business management for contractors",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "leads for electricians",
     "leads for painters",
     "register as professional",
-    "Fixora provider login",
+    "HomHelpers provider login",
     "manage service requests",
     "independent contractor jobs",
     "gig economy jobs",
@@ -48,18 +48,18 @@ export const metadata: Metadata = {
     canonical: "/provider",
   },
   openGraph: {
-    title: "Fixora Provider Portal - Grow Your Business",
+    title: "HomHelpers Provider Portal - Grow Your Business",
     description:
       "Connect with homeowners needing your skills. Manage jobs, payments, and your profile in one place.",
     url: "/provider",
     type: "website",
-    siteName: "Fixora",
+    siteName: "HomHelpers",
     images: [
       {
         url: "/provider-dashboard-og.png",
         width: 1200,
         height: 630,
-        alt: "Fixora Provider Dashboard",
+        alt: "HomHelpers Provider Dashboard",
       },
     ],
   },

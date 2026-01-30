@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Fixora - Home Service Management",
-    short_name: "Fixora",
+    name: "HomHelpers - Home Service Management",
+    short_name: "HomHelpers",
     description: "Book trusted home service professionals.",
     start_url: "/",
     display: "standalone",

@@ -130,23 +130,18 @@ export function AdminLayoutContent({
               <SidebarMenuButton
                 size="lg"
                 asChild
-                className="hover:bg-transparent data-[state=open]:hover:bg-transparent">
+                className="hover:bg-transparent data-[state=open]:hover:bg-transparent ">
                 <Link
-                  href="/provider/dashboard"
-                  className="flex items-center gap-2">
-                  <div className="flex justify-center items-center gap-0 relative">
-                    <div className="flex aspect-squar items-center justify-center rounded-md ">
-                      <Image
-                        src="/HSM-logo.png"
-                        alt="ServiceHub Logo"
-                        width={140}
-                        height={70}
-                        className="object-contain"
-                      />
-                    </div>
-                    <span className="absolute bottom-14 -right-8 truncate text-xs font-semibold">
-                      (Admin)
-                    </span>
+                  href="/admin"
+                  className="flex justify-center items-center">
+                  <div className="flex aspect-squar items-center justify-center rounded-md w-full hover:bg-gray-100">
+                    <Image
+                      src="/HSM-logo.png"
+                      alt="ServiceHub Logo"
+                      width={140}
+                      height={70}
+                      className="object-contain"
+                    />
                   </div>
                 </Link>
               </SidebarMenuButton>
@@ -182,7 +177,7 @@ export function AdminLayoutContent({
 
         <SidebarFooter className="border-t border-sidebar-border p-4">
           <p className="text-xs text-muted-foreground text-center">
-            © {new Date().getFullYear()} Fixora Admin
+            © {new Date().getFullYear()} HomHelpers Admin
           </p>
         </SidebarFooter>
         <SidebarRail />

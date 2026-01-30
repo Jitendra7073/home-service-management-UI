@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Manage All Services in Fixora.",
+  description: "Manage All Services in HomHelpers.",
 };
 
 export default function AdminServicesPage() {

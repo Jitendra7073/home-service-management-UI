@@ -6,9 +6,9 @@ import CategoryList from "@/components/customer/business-profile-list";
 import HowItWorks from "@/components/customer/how-it-works";
 
 export const metadata: Metadata = {
-  title: "Fixora - Book Trusted Home Services Online",
+  title: "HomHelpers - Book Trusted Home Services Online",
   description:
-    "Connect with top-rated local professionals for cleaning, repair, maintenance, and more. Fast, reliable, and secure booking with Fixora.",
+    "Connect with top-rated local professionals for cleaning, repair, maintenance, and more. Fast, reliable, and secure booking with HomHelpers.",
   alternates: {
     canonical: "/",
   },
