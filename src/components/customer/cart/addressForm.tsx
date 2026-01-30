@@ -91,9 +91,14 @@ export default function AddAddressForm({
               name="street"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Street</FormLabel>
+                  <FormLabel>
+                    Street <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enacton Solution Pvt. Ltd." {...field} />
+                    <Input
+                      placeholder="Enacton Solution Pvt. Ltd."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,7 +111,9 @@ export default function AddAddressForm({
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City</FormLabel>
+                  <FormLabel>
+                    City <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Surat" {...field} />
                   </FormControl>
@@ -121,7 +128,9 @@ export default function AddAddressForm({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>State</FormLabel>
+                  <FormLabel>
+                    State <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Gujarat" {...field} />
                   </FormControl>
@@ -136,7 +145,9 @@ export default function AddAddressForm({
               name="postalCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Postal Code</FormLabel>
+                  <FormLabel>
+                    Postal Code <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="395005" {...field} />
                   </FormControl>
@@ -151,7 +162,9 @@ export default function AddAddressForm({
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country</FormLabel>
+                  <FormLabel>
+                    Country <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="India" {...field} />
                   </FormControl>
@@ -168,10 +181,7 @@ export default function AddAddressForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Address Type</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
+                <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select address type" />

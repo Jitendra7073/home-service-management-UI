@@ -38,6 +38,11 @@ const QuickCounts = ({
   const totalEarnings =
     typeof data?.totalEarnings === "number" ? data.totalEarnings : 0;
 
+  const totalCancellationFee =
+    typeof data?.totalCancellationFee === "number"
+      ? data.totalCancellationFee
+      : 0;
+
   const bookingStats = {
     completed: data?.stats?.bookings?.completed ?? 0,
     confirmed: data?.stats?.bookings?.confirmed ?? 0,
@@ -94,9 +99,10 @@ const QuickCounts = ({
         {isPlanActive &&
           plan?.features?.allowedRoutes?.includes("total_revenue") && (
             <QuickCountCard
-              title={"Total Active Value"}
+              title={"Total Earnings"}
               value={`₹ ${totalEarnings}`}
-              growth={"Realized + Potential"}
+              growth={"After Platform Fees"}
+              subText={`+ ₹${totalCancellationFee} from Cancellations`}
               icon={Wallet}
               isLoading={isLoading || isPending}
             />

@@ -15,6 +15,7 @@ interface CardProps {
   growth: string;
   icon?: any;
   isLoading?: boolean;
+  subText?: string;
 }
 
 const QuickCountCard: React.FC<CardProps> = ({
@@ -23,6 +24,7 @@ const QuickCountCard: React.FC<CardProps> = ({
   growth,
   icon: Icon,
   isLoading = true,
+  subText,
 }) => {
   if (isLoading) {
     return (
@@ -78,7 +80,7 @@ const QuickCountCard: React.FC<CardProps> = ({
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between items-center ">
+      <CardFooter className="flex flex-col md:flex-row items-start md:items-center md: justify-between gap-1">
         <p
           className={`text-sm flex items-center gap-1 mt-1 ${
             growth.toLowerCase().includes("lost") ||
@@ -88,6 +90,9 @@ const QuickCountCard: React.FC<CardProps> = ({
           }`}>
           {growth}
         </p>
+        {subText && (
+          <p className="text-xs text-muted-foreground font-medium">{subText}</p>
+        )}
       </CardFooter>
     </Card>
   );

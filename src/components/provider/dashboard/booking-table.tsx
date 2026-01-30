@@ -51,6 +51,7 @@ type Booking = {
   serviceId: string;
   dateTime: string;
   amount: number;
+  receivedAmount: number;
   payment: string;
   status: string;
   partnerName?: string | null;
@@ -171,10 +172,21 @@ const columns: ColumnDef<Booking>[] = [
   },
   {
     accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    header: () => <div className="text-right">Total Amount</div>,
     cell: ({ row }) => (
       <div className="text-right font-medium">
         ₹{Number(row.getValue("amount")).toLocaleString("en-IN")}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "receivedAmount",
+    header: () => (
+      <div className="text-right text-emerald-600">Net Earnings</div>
+    ),
+    cell: ({ row }) => (
+      <div className="text-right font-medium text-emerald-600">
+        ₹{Number(row.getValue("receivedAmount")).toLocaleString("en-IN")}
       </div>
     ),
   },
@@ -249,21 +261,42 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
 
     const list = Array.isArray(data) ? data : [data.bookings];
 
-    return list.map((b: any) => ({
-      id: b.id,
-      customer: b.user?.name ?? "Unknown Customer",
-      service: b.service?.name ?? "Unknown Service",
-      serviceId: b.service?.id,
-      dateTime: new Date(b.date || b.createdAt).toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }),
-      amount: b.totalAmount || 0,
-      payment: b.paymentStatus || "PENDING",
-      status: b.bookingStatus || "PENDING",
-      partnerName: b.partner?.name ?? null,
-    }));
+    return list.map((b: any) => {
+      let earnings = b.totalAmount || 0;
+      if (b.providerEarnings !== null && b.providerEarnings !== undefined) {
+        if (b.providerEarnings > 0 || b.platformFee > 0) {
+          earnings = b.providerEarnings;
+        }
+      }
+
+      return {
+        id: b.id,
+        customer: b.user?.name ?? "Unknown Customer",
+        service: b.service?.name ?? "Unknown Service",
+        serviceId: b.service?.id,
+        dateTime: (() => {
+          const dateObj = new Date(b.date || b.createdAt);
+          const dateStr = dateObj.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+          if (b.slot?.time) {
+            return `${dateStr}, ${b.slot.time}`;
+          }
+          return dateStr;
+        })(),
+        amount: b.totalAmount || 0,
+        receivedAmount: b.providerEarnings || 0,
+        payment: b.paymentStatus || "PENDING",
+        status: b.bookingStatus || "PENDING",
+        partnerName: b.partner?.name ?? null,
+      };
+    });
   }, [data]);
+
+  console.log("Data", data);
+  console.log("booking data", bookings);
 
   const table = useReactTable({
     data: bookings,

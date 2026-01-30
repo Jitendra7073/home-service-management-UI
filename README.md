@@ -61,4 +61,4 @@ To start the production server:
 npm dev
 ```
 
-"C:\Users\EnactOn Technologies\Downloads\stripe_1.34.0_windows_x86_64\stripe.exe" listen --forward-to localhost:5000/api/webhooks/stripe
+"C:\Users\EnactOn Technologies\Downloads\stripe_1.34.0_windows_x86_64\stripe.exe" listen --forward-to localhost:5000/api/v1/payment/webhook

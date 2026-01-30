@@ -29,7 +29,7 @@ function PricingHero() {
         Grow Your Business. Get Real Customers.
       </h1>
 
-      <p className="text-sm text-gray-600 max-w-2xl mx-auto">
+      <p className="text-sm text-gray-600 max-w-2xl text-center mx-auto">
         Start with our 7-day free trial on the PREMIUM plan or unlock full power
         with PRO.
       </p>
@@ -141,14 +141,28 @@ function PricingCard({
         )}
       </div>
 
-      {/* Benefits */}
       <ul className="flex-1 space-y-3 mb-10">
         {benefits.map((benefit: string, i: number) => (
           <li key={i} className="flex gap-3 text-sm text-gray-800">
             <Check className="h-4 w-4 text-blue-600 mt-0.5" />
-            {benefit}
+            <span>{benefit}</span>
           </li>
         ))}
+
+        {/* Platform Fee Benefit */}
+        <li className="flex items-center justify-start gap-2 text-sm">
+          <div className="flex items-center gap-3">
+            <Check className="h-4 w-4 text-blue-600 mt-0.5" />
+            <span className="text-gray-800">Platform Fee</span>
+          </div>
+
+          <span className="font-semibold text-gray-900">
+            {plan.commissionRate ?? 10}%
+            <span className="ml-1 text-xs font-normal text-gray-500">
+              / booking
+            </span>
+          </span>
+        </li>
       </ul>
 
       {isCancelAtPeriodEnd && isActive && (
@@ -200,9 +214,7 @@ function PricingCard({
                           disabled={isManageLoading}
                           onClick={onManage}
                           className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                          {isManageLoading
-                            ? "Redirecting..."
-                            : "Manage Subscription"}
+                          {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
                     ) : (
@@ -217,9 +229,7 @@ function PricingCard({
                           disabled={isManageLoading}
                           onClick={onManage}
                           className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                          {isManageLoading
-                            ? "Redirecting..."
-                            : "Manage Subscription"}
+                          {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
                     )}
@@ -234,9 +244,7 @@ function PricingCard({
                         disabled={isManageLoading}
                         onClick={onManage}
                         className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 md:px-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {isManageLoading
-                          ? "Redirecting..."
-                          : "Manage Subscription"}
+                        {isManageLoading ? "Redirecting..." : "Manage"}
                       </button>
                     ) : (
                       <div className="flex md:flex-row flex-col gap-2 justify-between items-center">
@@ -244,17 +252,13 @@ function PricingCard({
                           disabled={isCancelLoading}
                           onClick={onCancel}
                           className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                          {isCancelLoading
-                            ? "Cancelling..."
-                            : "Cancel Subscription"}
+                          {isCancelLoading ? "Cancelling..." : "Cancel"}
                         </button>
                         <button
                           disabled={isManageLoading}
                           onClick={onManage}
                           className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                          {isManageLoading
-                            ? "Redirecting..."
-                            : "Manage Subscription"}
+                          {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
                     )}
@@ -268,9 +272,7 @@ function PricingCard({
                       disabled={isManageLoading}
                       onClick={onManage}
                       className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-                      {isManageLoading
-                        ? "Redirecting..."
-                        : "Manage Subscription"}
+                      {isManageLoading ? "Redirecting..." : "Manage"}
                     </button>
                   )}
               </>
@@ -284,7 +286,7 @@ function PricingCard({
             onClick={() => onSubscribe(plan.stripePriceId)}
             className={`w-full cursor-pointer rounded-md bg-blue-600  hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${
               plan.price === 0 && hasActivePaidSubscription
-                ? "bg-gray-200 text-black border border-gray-200 cursor-not-allowed hover:bg-gray-200" // More distinct disabled style
+                ? "bg-gray-200 text-black border border-gray-200 cursor-not-allowed hover:bg-gray-200"
                 : "text-white"
             }`}>
             {isLoading
@@ -325,6 +327,8 @@ export default function PricingSection() {
     },
     staleTime: Infinity,
   });
+
+  console.log("plans", plans);
 
   const {
     data: profile,
