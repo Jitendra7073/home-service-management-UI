@@ -9,12 +9,14 @@ interface BookingHeaderProps {
   title?: string;
   description?: string;
   isVisibleAddServiceButton?: boolean;
+  isVisibleAddStaffButton?: boolean;
 }
 
 export default function BookingHeader({
   title,
   description,
   isVisibleAddServiceButton = false,
+  isVisibleAddStaffButton = false,
 }: BookingHeaderProps) {
   const setServiceModelOpen = useSetAtom(ServiceModelState);
 
@@ -45,10 +47,21 @@ export default function BookingHeader({
             <Button
               size="sm"
               className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-              onClick={() => setServiceModelOpen(true)}
-            >
+              onClick={() => setServiceModelOpen(true)}>
               <PlusCircleIcon className="w-4 h-4 mr-1" />
               Add New Service
+            </Button>
+          )}
+
+          {isVisibleAddStaffButton && (
+            <Button
+              size="sm"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              onClick={() =>
+                (window.location.href = "/provider/dashboard/staff/new")
+              }>
+              <PlusCircleIcon className="w-4 h-4 mr-1" />
+              Add New Staff
             </Button>
           )}
         </div>

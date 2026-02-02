@@ -6,7 +6,7 @@ import { useUserProfile } from "@/hooks/use-queries";
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  role: "customer" | "provider" | "admin";
+  role: "customer" | "provider" | "admin" | "staff";
 }
 
 export default function AuthGuard({ children, role }: AuthGuardProps) {
@@ -30,6 +30,7 @@ export default function AuthGuard({ children, role }: AuthGuardProps) {
       else if (data.user.role === "customer") router.replace("/customer");
       else if (data.user.role === "provider")
         router.replace("/provider/dashboard");
+      else if (data.user.role === "staff") router.replace("/staff");
       else router.replace("/auth/login");
     }
   }, [data, isLoading, error, role, router]);
