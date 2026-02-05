@@ -76,6 +76,7 @@ export default function BookingDetailsSection({
   const business = booking.business;
   const service = booking.service;
   const slot = booking.slot;
+  const tracking_status = booking.trackingStatus || "NOT_STARTED";
 
   /* ------------------------- FETCH CANCELLATION DETAILS ------------------------- */
   const {
@@ -515,6 +516,10 @@ export default function BookingDetailsSection({
               </div>
             </div>
           )}
+          {/* PREMIUM TRACKING STRIP */}
+          <div className="mt-3">
+            <CustomerTrackingProgress current={tracking_status} />
+          </div>
 
           {/* ------------------------- FOOTER (Only show if NOT cancelled) ------------------------- */}
           {booking.bookingStatus !== "CANCELLED" && (
@@ -596,6 +601,87 @@ export default function BookingDetailsSection({
           )}
         </>
       )}
+    </div>
+  );
+}
+
+/* ---------------- TRACKING CONFIG ---------------- */
+
+const TRACKING_STEPS = [
+  "NOT_STARTED",
+  "BOOKING_STARTED",
+  "PROVIDER_ON_THE_WAY",
+  "SERVICE_STARTED",
+  "COMPLETED",
+] as const;
+
+/* ---------------- PREMIUM TRACKING UI ---------------- */
+
+function CustomerTrackingProgress({ current }: { current: string }) {
+  const currentIndexRaw = TRACKING_STEPS.indexOf(current as any);
+  const currentIndex = currentIndexRaw < 0 ? 0 : currentIndexRaw;
+
+  const percent =
+    TRACKING_STEPS.length <= 1
+      ? 0
+      : (currentIndex / (TRACKING_STEPS.length - 1)) * 100;
+
+  return (
+    <div className="w-full py-3">
+      <div className="relative">
+        {/* base line */}
+        <div className="absolute left-0 right-0 top-[6px] h-[2px] bg-gray-200 rounded-full" />
+
+        {/* active line */}
+        <div
+          className="absolute left-0 top-[6px] h-[2px] bg-green-500 rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${percent}%` }}
+        />
+
+        {/* steps */}
+        <div className="relative flex justify-between">
+          {TRACKING_STEPS.map((step, i) => {
+            const done = i <= currentIndex;
+            const active = i === currentIndex;
+
+            return (
+              <div
+                key={step}
+                className="flex flex-col items-center flex-1 min-w-0 px-1">
+                {/* small connector dot */}
+                <div
+                  className={`
+                    z-10 w-3 h-3 rounded-full border
+                    transition-all duration-300
+                    ${
+                      done
+                        ? "bg-green-500 border-green-500"
+                        : "bg-white border-gray-300"
+                    }
+                    ${active ? "scale-125 shadow-sm" : ""}
+                  `}
+                />
+
+                {/* label */}
+                <div
+                  className={`
+                    mt-2 text-[10px] sm:text-xs font-medium
+                    text-center leading-tight
+                    transition-colors duration-300
+                    ${done ? "text-green-700" : "text-gray-500"}
+                  `}>
+                  <span className="flex items-center justify-center gap-1 flex-wrap">
+                    <span className="break-words">
+                      {step.charAt(0).toUpperCase() +
+                        step.toLocaleLowerCase().slice(1).replaceAll("_", " ")}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

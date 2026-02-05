@@ -243,14 +243,6 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
                 }>
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push(
-                    `/provider/dashboard/staff/${staff.id}/assignments`,
-                  )
-                }>
-                Manage Services
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => handleDeleteStaff(staff.id)}

@@ -109,16 +109,9 @@ export default function AdminStaffDetailPage({
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  {staff.profilePicture ? (
-                    <img
-                      src={staff.profilePicture}
-                      className="w-16 h-16 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
-                      {staff.name?.charAt(0)}
-                    </div>
-                  )}
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                    {staff.name?.charAt(0)}
+                  </div>
                   <div>
                     <CardTitle>{staff.name}</CardTitle>
                     <p className="text-gray-500 text-sm">Staff Member</p>

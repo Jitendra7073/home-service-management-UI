@@ -333,7 +333,9 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
               <div className="flex flex-wrap items-center gap-6">
                 <div className="flex items-center gap-2 text-gray-700">
                   <Calendar className="w-5 h-5 text-gray-500" />
-                  <span className="font-medium">{formatDate(booking.date)}</span>
+                  <span className="font-medium">
+                    {formatDate(booking.date)}
+                  </span>
                 </div>
                 {booking.slot && (
                   <div className="flex items-center gap-2 text-gray-700">
@@ -343,11 +345,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
                     </span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-gray-700 bg-green-50 px-3 py-1 rounded-full">
-                  <span className="text-sm font-medium">
-                    ₹{booking.service.price}
-                  </span>
-                </div>
+                
               </div>
 
               <div className="border-t pt-4">
@@ -383,40 +381,41 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
 
           {/* Status Actions */}
           <Card>
-          <CardHeader>
-            <CardTitle>
-              {booking.trackingStatus === "COMPLETED"
-                ? "Booking Complete"
-                : "Update Status"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {booking.trackingStatus !== "COMPLETED" && (
-              <div className="text-sm text-gray-600">
-                <p>
-                  Current Status:{" "}
-                  <span className="font-semibold text-gray-900">
-                    {STEPS[currentStepIndex].label}
-                  </span>
-                </p>
-                <p className="mt-1">
-                  Click the button below to move to the next step.
-                </p>
-              </div>
-            )}
-            {renderActionButtons()}
-          </CardContent>
-        </Card>
+            <CardHeader>
+              <CardTitle>
+                {booking.trackingStatus === "COMPLETED"
+                  ? "Booking Complete"
+                  : "Update Status"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {booking.trackingStatus !== "COMPLETED" && (
+                <div className="text-sm text-gray-600">
+                  <p>
+                    Current Status:{" "}
+                    <span className="font-semibold text-gray-900">
+                      {STEPS[currentStepIndex].label}
+                    </span>
+                  </p>
+                  <p className="mt-1">
+                    Click the button below to move to the next step.
+                  </p>
+                </div>
+              )}
+              {renderActionButtons()}
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
 
-    {/* Early Start Reason Dialog */}
+      {/* Early Start Reason Dialog */}
       <Dialog open={showReasonDialog} onOpenChange={setShowReasonDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Early Start Reason</DialogTitle>
             <DialogDescription>
-              You're starting this service more than 30 minutes early. Please provide a reason for the customer and provider.
+              You're starting this service more than 30 minutes early. Please
+              provide a reason for the customer and provider.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -460,17 +459,35 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
               Request Payment from Provider
             </DialogTitle>
             <DialogDescription>
-              Submit your payment request for completing this service. The provider will review and approve your payment.
+              Submit your payment request for completing this service. The
+              provider will review and approve your payment.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {/* Booking Summary */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-              <h4 className="font-semibold text-sm text-gray-900">Booking Details</h4>
+              <h4 className="font-semibold text-sm text-gray-900">
+                Booking Details
+              </h4>
               <div className="text-sm">
-                <p className="text-gray-600">Service: <span className="font-medium text-gray-900">{booking?.service?.name}</span></p>
-                <p className="text-gray-600">Date: <span className="font-medium text-gray-900">{formatDate(booking?.date)}</span></p>
-                <p className="text-gray-600">Service Price: <span className="font-bold text-green-600">₹{booking?.service?.price}</span></p>
+                <p className="text-gray-600">
+                  Service:{" "}
+                  <span className="font-medium text-gray-900">
+                    {booking?.service?.name}
+                  </span>
+                </p>
+                <p className="text-gray-600">
+                  Date:{" "}
+                  <span className="font-medium text-gray-900">
+                    {formatDate(booking?.date)}
+                  </span>
+                </p>
+                <p className="text-gray-600">
+                  Service Price:{" "}
+                  <span className="font-bold text-green-600">
+                    ₹{booking?.service?.price}
+                  </span>
+                </p>
               </div>
             </div>
 
@@ -490,13 +507,6 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
               />
               <p className="text-xs text-gray-500">
                 {staffFeedback.length}/500 characters
-              </p>
-            </div>
-
-            {/* Info Note */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-800">
-                <span className="font-semibold">Note:</span> The provider will review your request and set the percentage to pay you. You'll receive a notification once the payment is processed.
               </p>
             </div>
 

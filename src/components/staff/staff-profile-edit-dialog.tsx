@@ -23,7 +23,6 @@ interface StaffProfileEditDialogProps {
     name: string;
     email: string;
     mobile: string;
-    profilePicture?: string;
   };
 }
 
@@ -38,7 +37,6 @@ export function StaffProfileEditDialog({
     name: profile.name || "",
     email: profile.email || "",
     mobile: profile.mobile || "",
-    profilePicture: profile.profilePicture || "",
   });
   const [errors, setErrors] = useState<{
     name?: string;
@@ -96,12 +94,8 @@ export function StaffProfileEditDialog({
           name: formData.name.trim(),
           email: formData.email.trim(),
           mobile: formData.mobile.replace(/\s/g, ""),
-            ...(formData.profilePicture && {
-              profilePicture: formData.profilePicture,
-            }),
-          }),
-        },
-      );
+        }),
+      });
 
       const result = await res.json();
 
@@ -141,7 +135,6 @@ export function StaffProfileEditDialog({
       reader.onloadend = () => {
         setFormData((prev) => ({
           ...prev,
-          profilePicture: reader.result as string,
         }));
       };
       reader.readAsDataURL(file);
@@ -151,7 +144,6 @@ export function StaffProfileEditDialog({
   const removeProfilePicture = () => {
     setFormData((prev) => ({
       ...prev,
-      profilePicture: "",
     }));
   };
 

@@ -15,6 +15,9 @@ import {
   CreditCard,
   User,
   Plus,
+  Disc,
+  IndianRupee,
+  Tag,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,7 +62,9 @@ export default function StaffProfile() {
     }
 
     // Update URL without refreshing
-    router.push(`/staff/profile?${params.toString()}`, { scroll: false });
+    router.push(`/provider/dashboard/profile?${params.toString()}`, {
+      scroll: false,
+    });
   };
 
   // Restore form state from session storage
@@ -89,7 +94,7 @@ export default function StaffProfile() {
   const { data, isLoading } = useQuery({
     queryKey: ["staff-profile-full"],
     queryFn: async () => {
-      const res = await fetch("/api/staff/profile", {
+      const res = await fetch("/api/common/profile", {
         credentials: "include",
       });
       return res.json();
@@ -116,7 +121,7 @@ export default function StaffProfile() {
     },
   });
 
-  const profile = data?.profile;
+  const profile = data?.user;
   const addresses = addressData?.addresses || [];
   const cards = cardsData?.cards || [];
 
@@ -226,13 +231,86 @@ export default function StaffProfile() {
                       <Briefcase className="w-5 h-5 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-500">Role</p>
-                        <Badge variant="secondary">Staff</Badge>
+                        <Badge variant="secondary">{profile.role}</Badge>
                       </div>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            {profile?.providerSubscription && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>
+                      Subscription Details{" "}
+                      {profile?.providerSubscription?.cancelAtPeriodEnd ? (
+                        <Badge variant="destructive">Cancelled</Badge>
+                      ) : (
+                        <Badge>{profile?.providerSubscription?.status}</Badge>
+                      )}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Tag className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">Plan Name</p>
+                          <p className="font-medium">
+                            {profile?.providerSubscription?.plan?.name}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <IndianRupee className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">Price</p>
+                          <p className="font-medium">
+                            {profile?.providerSubscription?.plan?.price}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Disc className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">Interval</p>
+                          <p className="font-medium">
+                            {profile?.providerSubscription?.plan?.interval}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">Started At</p>
+                          <p className="font-medium">
+                            {new Date(
+                              profile?.providerSubscription?.currentPeriodStart,
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">End At</p>
+                          <p className="font-medium">
+                            {new Date(
+                              profile?.providerSubscription?.currentPeriodEnd,
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Business Memberships */}
             {profile.businessMemberships &&

@@ -20,10 +20,10 @@ export default function CustomerBookingsPage() {
   const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
+    searchParams.get("search") || "",
   );
   const [statusFilter, setStatusFilter] = useState(
-    searchParams.get("status") || "all"
+    searchParams.get("status") || "all",
   );
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "date-desc");
 
@@ -188,7 +188,7 @@ export default function CustomerBookingsPage() {
           }`,
           {
             duration: 6000,
-          }
+          },
         );
       } else {
         toast.success("Booking cancelled successfully!");

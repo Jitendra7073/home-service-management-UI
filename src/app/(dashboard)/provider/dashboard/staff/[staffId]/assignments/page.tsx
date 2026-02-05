@@ -192,7 +192,9 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
                   <SelectContent>
                     {availableServices.length > 0 ? (
                       availableServices.map((service: any) => (
-                        <SelectItem key={service.id} value={service.id}>
+                        <SelectItem
+                          key={service.id}
+                          value={service.id as string | "Not yet selected"}>
                           {service.name} - ${service.price}
                         </SelectItem>
                       ))

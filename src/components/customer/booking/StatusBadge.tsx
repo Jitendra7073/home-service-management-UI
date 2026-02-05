@@ -13,7 +13,7 @@ export function BookingStatusBadge({
   status: string;
   size?: "sm" | "md" | "lg";
 }) {
-  const upperStatus = status.toUpperCase() as BookingStatus;
+  const upperStatus = status as BookingStatus;
   const config = BOOKING_STATUS_CONFIG[upperStatus] || {
     label: status,
     color: "text-gray-700",
@@ -44,7 +44,7 @@ export function PaymentStatusBadge({
   status: string;
   size?: "sm" | "md" | "lg";
 }) {
-  const upperStatus = status.toUpperCase() as PaymentStatus;
+  const upperStatus = status as PaymentStatus;
   const config = PAYMENT_STATUS_CONFIG[upperStatus] || {
     label: status,
     color: "text-gray-700",

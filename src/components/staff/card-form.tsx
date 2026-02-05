@@ -175,8 +175,11 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
     },
   };
 
-  const detectedCardType = detectCardType(cardNumber) as keyof typeof CARD_TYPE_CONFIG;
-  const cardConfig = CARD_TYPE_CONFIG[detectedCardType] || CARD_TYPE_CONFIG.unknown;
+  const detectedCardType = detectCardType(
+    cardNumber,
+  ) as keyof typeof CARD_TYPE_CONFIG;
+  const cardConfig =
+    CARD_TYPE_CONFIG[detectedCardType] || CARD_TYPE_CONFIG.unknown;
 
   const onSubmit = async (values: z.infer<typeof cardSchema>) => {
     // Validate card number with Luhn algorithm
@@ -201,7 +204,7 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/staff/cards", {
+      const res = await fetch("/api/common/cards", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -328,7 +331,9 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
           {/* Right: Form Fields */}
           <div className="order-2 lg:order-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4">
                 {/* Card Number */}
                 <FormField
                   control={form.control}
@@ -381,9 +386,7 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
                 <FormField
                   control={form.control}
                   name="cardType"
-                  render={({ field }) => (
-                    <input type="hidden" {...field} />
-                  )}
+                  render={({ field }) => <input type="hidden" {...field} />}
                 />
 
                 {/* Expiry Date & CVV */}

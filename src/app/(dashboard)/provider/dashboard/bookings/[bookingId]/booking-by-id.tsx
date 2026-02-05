@@ -13,6 +13,9 @@ import {
   Calendar,
   Package,
   Loader2,
+  Activity,
+  CheckCircle2,
+  RefreshCw,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,8 +26,14 @@ import { Separator } from "@/components/ui/separator";
 /* ---------------- TYPES ---------------- */
 
 type BookingStatus = "PENDING" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
-
 type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+
+type TrackingStatus =
+  | "NOT_STARTED"
+  | "BOOKING_STARTED"
+  | "PROVIDER_ON_THE_WAY"
+  | "SERVICE_STARTED"
+  | "COMPLETED";
 
 interface BookingData {
   user: {
@@ -50,12 +59,11 @@ interface BookingData {
     coverImage?: string;
     createdAt: string;
   };
-  slot: {
-    time: string;
-  };
+  slot: { time: string };
   date: string;
   bookingStatus: BookingStatus;
   paymentStatus: PaymentStatus;
+  trackingStatus?: TrackingStatus;
   createdAt: string;
   updatedAt: string;
   totalAmount?: number;
@@ -66,7 +74,7 @@ interface BookingData {
   };
 }
 
-/* ---------------- STATUS STYLES ---------------- */
+/* ---------------- STATUS COLORS ---------------- */
 
 const bookingStatusClasses: Record<BookingStatus, string> = {
   PENDING: "bg-yellow-100 text-yellow-800",
@@ -82,7 +90,25 @@ const paymentStatusClasses: Record<PaymentStatus, string> = {
   CANCELLED: "bg-gray-100 text-gray-800",
 };
 
-/* ---------------- COMPONENT ---------------- */
+/* ---------------- TRACKING STEPS ---------------- */
+
+const TRACKING_STEPS: TrackingStatus[] = [
+  "NOT_STARTED",
+  "BOOKING_STARTED",
+  "PROVIDER_ON_THE_WAY",
+  "SERVICE_STARTED",
+  "COMPLETED",
+];
+
+const STEP_COLORS: Record<TrackingStatus, string> = {
+  NOT_STARTED: "bg-gray-500",
+  BOOKING_STARTED: "bg-blue-500",
+  PROVIDER_ON_THE_WAY: "bg-indigo-500",
+  SERVICE_STARTED: "bg-purple-500",
+  COMPLETED: "bg-green-600",
+};
+
+/* ---------------- MAIN COMPONENT ---------------- */
 
 export default function BookingDetailsDashboard({
   bookingId,
@@ -91,14 +117,20 @@ export default function BookingDetailsDashboard({
 }) {
   const router = useRouter();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: ["booking-details", bookingId],
     enabled: Boolean(bookingId),
     queryFn: async () => {
-      const res = await fetch(`/api/provider/bookings/${bookingId}`);
+      const res = await fetch(`/api/provider/bookings/${bookingId}`, {
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to fetch booking");
       return res.json();
     },
+    refetchInterval: 5000, // every 5s
+    refetchIntervalInBackground: true, // even in bg tab
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const booking: BookingData | null = data?.bookings ?? null;
@@ -111,16 +143,19 @@ export default function BookingDetailsDashboard({
     );
   }
 
-  if (!booking) {
+  if (isError || !booking) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
         <p className="text-gray-500">No booking data found</p>
+        <Button variant="outline" onClick={() => refetch()}>
+          Retry
+        </Button>
       </div>
     );
   }
 
   const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString("en-US", {
+    new Date(date).toLocaleDateString("en-IN", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -138,54 +173,42 @@ export default function BookingDetailsDashboard({
             <ArrowLeft className="h-4 w-4" />
           </Button>
 
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Booking Details
-            </h1>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-bold">Booking Details</h1>
 
-            <Badge
-              className={`${
-                bookingStatusClasses[booking.bookingStatus]
-              } px-2 py-1`}>
+            <Badge className={bookingStatusClasses[booking.bookingStatus]}>
               {booking.bookingStatus}
             </Badge>
 
-            <Badge
-              className={`${
-                paymentStatusClasses[booking.paymentStatus]
-              } px-2 py-1`}>
+            <Badge className={paymentStatusClasses[booking.paymentStatus]}>
               {booking.paymentStatus}
             </Badge>
           </div>
         </div>
 
-        {/* CONTENT */}
+        {/* GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* LEFT */}
+          {/* LEFT SIDE */}
           <div className="lg:col-span-2 space-y-4">
             {/* CUSTOMER */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex gap-2 items-center">
                   <User className="w-5 h-5 text-blue-600" />
                   Customer Information
                 </CardTitle>
               </CardHeader>
-
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <InfoBox
-                    icon={User}
-                    label="Full Name"
-                    value={booking.user.name}
-                  />
-                  <InfoBox
-                    icon={Phone}
-                    label="Mobile"
-                    value={booking.user.mobile}
-                  />
-                </div>
-
+                <InfoBox
+                  icon={User}
+                  label="Full Name"
+                  value={booking.user.name}
+                />
+                <InfoBox
+                  icon={Phone}
+                  label="Mobile"
+                  value={booking.user.mobile}
+                />
                 <InfoBox icon={Mail} label="Email" value={booking.user.email} />
               </CardContent>
             </Card>
@@ -193,7 +216,7 @@ export default function BookingDetailsDashboard({
             {/* SERVICE */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex gap-2 items-center">
                   <Package className="w-5 h-5 text-blue-600" />
                   Service Information
                 </CardTitle>
@@ -213,16 +236,8 @@ export default function BookingDetailsDashboard({
                 </h3>
 
                 <div className="flex gap-3">
-                  <Tag
-                    icon={Clock}
-                    text={`${hours ? `${hours}H ` : ""}${minutes}M`}
-                  />
-                  <Tag
-                    icon={Banknote}
-                    text={`${
-                      booking.service.currency ? booking.service.currency : "₹"
-                    } ${booking.service.price.toLocaleString()}`}
-                  />
+                  <Tag icon={Clock} text={`${hours}H ${minutes}M`} />
+                  <Tag icon={Banknote} text={`₹ ${booking.service.price}`} />
                 </div>
 
                 <p className="text-gray-600 text-sm">
@@ -231,128 +246,116 @@ export default function BookingDetailsDashboard({
               </CardContent>
             </Card>
 
-            {/* INVOICE SUMMARY */}
+            {/* INVOICE */}
             <Card className="px-6">
               <CardHeader className="p-0">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex gap-2 items-center">
                   <Banknote className="w-5 h-5 text-blue-600" />
                   Invoice Summary
                 </CardTitle>
               </CardHeader>
+
               <CardContent className="p-0 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Service Price</span>
-                  <span className="font-medium">
-                    ₹{booking.service.price.toLocaleString()}
-                  </span>
+                  <span>Service Price</span>
+                  <span>₹{booking.service.price}</span>
                 </div>
+
                 <Separator />
-                <div className="flex justify-between text-base font-bold">
+
+                <div className="flex justify-between font-bold">
                   <span>Total Amount</span>
-                  <span>
-                    ₹
-                    {booking.totalAmount?.toLocaleString() ??
-                      booking.service.price.toLocaleString()}
-                  </span>
+                  <span>₹{booking.totalAmount ?? booking.service.price}</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* REFUND INFO (If Cancelled) */}
+            {/* REFUND */}
             {booking.cancellation && (
-              <Card className="px-6 border-red-200 bg-red-50">
+              <Card className="border-red-200 bg-red-50 px-6">
                 <CardHeader className="p-0">
-                  <CardTitle className="flex items-center gap-2 text-red-700">
-                    <Banknote className="w-5 h-5" />
-                    Refund Details
-                  </CardTitle>
+                  <CardTitle className="text-red-700">Refund Details</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 space-y-2 text-sm">
+
+                <CardContent className="p-0 text-sm space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-red-800">Refund Amount</span>
-                    <span className="font-bold text-red-900">
-                      ₹{booking.cancellation.refundAmount}
-                    </span>
+                    <span>Refund Amount</span>
+                    <span>₹{booking.cancellation.refundAmount}</span>
                   </div>
+
                   <div className="flex justify-between">
-                    <span className="text-red-800">Status</span>
-                    <span className="capitalize text-red-900">
-                      {booking.cancellation.refundStatus}
-                    </span>
+                    <span>Status</span>
+                    <span>{booking.cancellation.refundStatus}</span>
                   </div>
+
                   {booking.cancellation.reason && (
-                    <div className="pt-2">
-                      <p className="text-xs text-red-600 font-semibold">
-                        Reason:
-                      </p>
-                      <p className="text-red-800 italic">
-                        {booking.cancellation.reason}
-                      </p>
-                    </div>
+                    <p className="italic text-red-700">
+                      {booking.cancellation.reason}
+                    </p>
                   )}
                 </CardContent>
               </Card>
             )}
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT SIDE */}
           <div className="space-y-4">
-            {/* SLOT */}
-            <Card className="px-6">
-              <CardHeader className="p-0">
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                  Appointment Slot
+            {/* TRACKING PROGRESS */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex justify-between gap-2 items-center">
+                  <div className="flex gap-2 items-center">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    Tracking Progress
+                  </div>
+                  {isFetching && (
+                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                  )}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 bg-blue-50 rounded-md">
-                <p className="font-semibold">{booking.slot.time}</p>
+              <CardContent>
+                <TrackingProgress
+                  current={booking.trackingStatus || "NOT_STARTED"}
+                />
+              </CardContent>
+            </Card>
+
+            {/* SLOT */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Appointment Slot</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>{booking.slot.time}</p>
                 <p>{formatDate(booking.date)}</p>
               </CardContent>
             </Card>
 
             {/* ADDRESS */}
-            <Card className="px-6">
-              <CardHeader className="p-0">
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                  Location
-                </CardTitle>
+            <Card>
+              <CardHeader>
+                <CardTitle>Location</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-gray-600 p-0">
-                <p className="font-semibold text-gray-900">
-                  {booking.address.street}
-                </p>
+              <CardContent>
+                <p>{booking.address.street}</p>
                 <p>
-                  {booking.address.city}, {booking.address.state}{" "}
-                  {booking.address.postalCode}
+                  {booking.address.city}, {booking.address.state}
                 </p>
                 <p>{booking.address.country}</p>
-                {booking.address.landmark && (
-                  <p className="text-xs mt-2">
-                    Landmark: {booking.address.landmark}
-                  </p>
-                )}
               </CardContent>
             </Card>
 
             {/* META */}
             <Card className="bg-gray-50 border-dashed">
-              <CardContent className="pt-6 space-y-3 text-xs">
+              <CardContent className="pt-6 space-y-2 text-xs">
                 <MetaRow label="Service ID" value={booking.service.id} />
-                <Separator />
                 <MetaRow
-                  label="Booking Created"
+                  label="Created"
                   value={formatDate(booking.createdAt)}
                 />
                 <MetaRow
-                  label="Last Updated"
+                  label="Updated"
                   value={formatDate(booking.updatedAt)}
-                />
-                <Separator />
-                <MetaRow
-                  label="Service Created"
-                  value={formatDate(booking.service.createdAt)}
                 />
               </CardContent>
             </Card>
@@ -363,32 +366,62 @@ export default function BookingDetailsDashboard({
   );
 }
 
+/* ---------------- TRACKING PROGRESS COMPONENT ---------------- */
+
+function TrackingProgress({ current }: { current: TrackingStatus }) {
+  const currentIndex = TRACKING_STEPS.indexOf(current);
+
+  return (
+    <div className="relative">
+      {TRACKING_STEPS.map((step, i) => {
+        const done = i <= currentIndex;
+        const color = STEP_COLORS[step];
+
+        return (
+          <div key={step} className="flex gap-3 pb-6 relative">
+            {i !== TRACKING_STEPS.length - 1 && (
+              <div
+                className={`absolute left-3 top-7 w-1 h-full rounded
+                ${i < currentIndex ? color : "bg-gray-200"}`}
+              />
+            )}
+
+            <div
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-white shadow
+              ${done ? color : "bg-gray-300"}`}>
+              {done ? <CheckCircle2 size={16} /> : i + 1}
+            </div>
+
+            <div>
+              <p className={done ? "font-semibold" : "text-gray-500"}>
+                {step.replaceAll("_", " ")}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ---------------- SMALL COMPONENTS ---------------- */
 
-function InfoBox({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-}) {
+function InfoBox({ icon: Icon, label, value }: any) {
   return (
     <div className="flex gap-3 p-3 border rounded-md">
       <Icon className="w-5 h-5 text-gray-600" />
       <div>
         <p className="text-xs text-gray-500">{label}</p>
-        <p className="font-semibold text-gray-900">{value}</p>
+        <p className="font-semibold">{value}</p>
       </div>
     </div>
   );
 }
 
-function Tag({ icon: Icon, text }: { icon: any; text: string }) {
+function Tag({ icon: Icon, text }: any) {
   return (
-    <span className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 rounded-full">
-      <Icon className="w-4 h-4 text-gray-600" />
+    <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm">
+      <Icon className="w-4 h-4" />
       {text}
     </span>
   );
@@ -398,7 +431,7 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
       <span className="text-gray-500">{label}</span>
-      <span className="text-gray-700">{value}</span>
+      <span>{value}</span>
     </div>
   );
 }

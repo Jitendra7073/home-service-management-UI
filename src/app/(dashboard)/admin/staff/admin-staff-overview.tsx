@@ -211,17 +211,9 @@ export default function AdminStaffOverview() {
                     <TableRow key={staff.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {staff.profilePicture ? (
-                            <img
-                              src={staff.profilePicture}
-                              alt={staff.name}
-                              className="h-8 w-8 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                              {staff.name.charAt(0)}
-                            </div>
-                          )}
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                            {staff.name.charAt(0)}
+                          </div>
                           <span className="font-medium">{staff.name}</span>
                         </div>
                       </TableCell>

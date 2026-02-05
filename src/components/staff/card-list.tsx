@@ -77,7 +77,7 @@ export function StaffCardList({ cards, onRefresh }: StaffCardListProps) {
   const deleteMutation = useMutation({
     mutationFn: async (cardId: string) => {
       setDeleteId(cardId);
-      const res = await fetch(`/api/staff/cards/${cardId}`, {
+      const res = await fetch(`/api/common/cards/${cardId}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -105,7 +105,7 @@ export function StaffCardList({ cards, onRefresh }: StaffCardListProps) {
   const setDefaultMutation = useMutation({
     mutationFn: async (cardId: string) => {
       setSetDefaultId(cardId);
-      const res = await fetch(`/api/staff/cards/${cardId}`, {
+      const res = await fetch(`/api/common/cards/${cardId}`, {
         method: "PATCH",
         credentials: "include",
       });

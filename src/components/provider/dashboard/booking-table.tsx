@@ -11,6 +11,11 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import {
   ArrowUpDown,
@@ -66,6 +71,7 @@ type Booking = {
   amount: number;
   receivedAmount: number;
   payment: string;
+  staffPayment: string;
   status: string;
   partnerName?: string | null;
   assignedStaffName?: string | null;
@@ -209,10 +215,46 @@ const columns: ColumnDef<Booking>[] = [
     accessorKey: "payment",
     header: "Payment",
     cell: ({ row }) => {
-      const v = row.getValue("payment") as string;
-      return <PaymentStatusBadge status={v} size="sm" />;
+      const payment = row.original.payment;
+      const staffPayment = row.original.staffPayment;
+      const bookingStatus = row.original.status;
+      const trackingStatus = row.original.trackingStatus;
+
+      return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="cursor-pointer">
+              <PaymentStatusBadge status={payment} size="sm" />
+            </div>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-64 text-sm">
+            <div className="space-y-3">
+              <div className="font-semibold text-gray-800">Payment Details</div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-500">Customer Payment</span>
+                <PaymentStatusBadge status={payment} size="sm" />
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-gray-500">Staff Payment</span>
+                <PaymentStatusBadge status={staffPayment} size="sm" />
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500">Tracking Status</span>
+                <span className="text-xs font-medium bg-gray-100 px-2 py-1 rounded">
+                  {trackingStatus?.replaceAll("_", " ")}
+                </span>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
     },
   },
+
   {
     header: "Status",
     cell: ({ row, table }) => {
@@ -330,9 +372,10 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
         receivedAmount: b.providerEarnings || 0,
         payment: b.paymentStatus || "PENDING",
         status: b.bookingStatus || "PENDING",
+        staffPayment: b.staffPaymentStatus || "PENDING",
+        trackingStatus: b.trackingStatus || "NOT_STARTED",
         partnerName: b.partner?.name ?? null,
         assignedStaffName: assignedStaff ? assignedStaff.name : null,
-        trackingStatus: b.trackingStatus || "NOT_STARTED",
       };
     });
   }, [data]);
@@ -358,7 +401,6 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
     },
     meta: { queryClient, openAssignModal },
   });
-
   const adminColumns = table.getHeaderGroups()[0].headers.map((header) => ({
     header: flexRender(header.column.columnDef.header, header.getContext()),
   }));

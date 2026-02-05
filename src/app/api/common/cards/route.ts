@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 // -------------------- GET --------------------
 export async function GET() {
   try {
-    const { ok, data } = await backend("/api/v1/staff/cards", {
+    const { ok, data } = await backend("/api/v1/cards", {
       method: "GET",
     });
 
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { ok, data } = await backend("/api/v1/staff/cards", {
+    const { ok, data } = await backend("/api/v1/cards", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -10,6 +10,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Loader2,
   Check,
@@ -17,6 +19,8 @@ import {
   RefreshCw,
   AlertCircle,
   Circle,
+  DollarSign,
+  Percent,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,6 +37,11 @@ export function AssignStaffModal({
 }: AssignStaffModalProps) {
   const [selectedStaffId, setSelectedStaffId] = useState<string>("");
   const [showReassign, setShowReassign] = useState(false);
+
+  // Payment configuration state
+  const [paymentType, setPaymentType] = useState<"PERCENTAGE" | "FIXED_AMOUNT">("PERCENTAGE");
+  const [paymentValue, setPaymentValue] = useState<string>("50");
+
   const queryClient = useQueryClient();
 
   // Reset state when modal opens/closes
@@ -40,6 +49,8 @@ export function AssignStaffModal({
     if (isOpen) {
       setShowReassign(false);
       setSelectedStaffId("");
+      setPaymentType("PERCENTAGE");
+      setPaymentValue("50");
     }
   }, [isOpen]);
 
@@ -86,6 +97,8 @@ export function AssignStaffModal({
           body: JSON.stringify({
             bookingId,
             staffId: selectedStaffId,
+            staffPaymentType: paymentType,
+            staffPaymentValue: parseFloat(paymentValue),
           }),
         },
       );
@@ -115,6 +128,19 @@ export function AssignStaffModal({
       toast.error("Please select a staff member");
       return;
     }
+
+    // Validate payment value
+    const value = parseFloat(paymentValue);
+    if (isNaN(value) || value < 0) {
+      toast.error("Please enter a valid payment amount");
+      return;
+    }
+
+    if (paymentType === "PERCENTAGE" && value > 100) {
+      toast.error("Percentage cannot exceed 100%");
+      return;
+    }
+
     assignMutation.mutate();
   };
 
@@ -267,6 +293,90 @@ export function AssignStaffModal({
             {isAlreadyAssigned ? "Assigned Staff" : "Assign Staff"}
           </DialogTitle>
         </DialogHeader>
+
+        {/* Payment Configuration Section - Only show when assigning/reassigning */}
+        {(!isAlreadyAssigned || showReassign) && (
+          <div className="px-6 py-4 border-b bg-gray-50">
+            <p className="text-sm font-semibold text-gray-700 mb-3">
+              Staff Payment Configuration
+            </p>
+
+            {/* Payment Type Selector */}
+            <div className="flex gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentType("PERCENTAGE");
+                  setPaymentValue("50");
+                }}
+                className={`
+                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
+                  ${
+                    paymentType === "PERCENTAGE"
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  }
+                `}>
+                <Percent className="w-4 h-4" />
+                <span className="font-medium text-sm">Percentage</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentType("FIXED_AMOUNT");
+                  setPaymentValue("0");
+                }}
+                className={`
+                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
+                  ${
+                    paymentType === "FIXED_AMOUNT"
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  }
+                `}>
+                <DollarSign className="w-4 h-4" />
+                <span className="font-medium text-sm">Fixed Amount</span>
+              </button>
+            </div>
+
+            {/* Payment Value Input */}
+            <div className="space-y-2">
+              <Label htmlFor="paymentValue" className="text-sm text-gray-600">
+                {paymentType === "PERCENTAGE"
+                  ? "Percentage of provider earnings"
+                  : "Fixed amount (in currency)"}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="paymentValue"
+                  type="number"
+                  value={paymentValue}
+                  onChange={(e) => setPaymentValue(e.target.value)}
+                  min={paymentType === "PERCENTAGE" ? "0" : "0"}
+                  max={paymentType === "PERCENTAGE" ? "100" : undefined}
+                  step={paymentType === "PERCENTAGE" ? "1" : "0.01"}
+                  className="pr-12"
+                  placeholder={
+                    paymentType === "PERCENTAGE" ? "50" : "0.00"
+                  }
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  {paymentType === "PERCENTAGE" ? "%" : "₹"}
+                </div>
+              </div>
+
+              {/* Preview calculation */}
+              {bookingData?.booking && (
+                <p className="text-xs text-gray-500 mt-2">
+                  {paymentType === "PERCENTAGE"
+                    ? `Staff will receive ${paymentValue}% of provider earnings`
+                    : `Staff will receive ₹${parseFloat(paymentValue || 0).toFixed(2)} fixed amount`}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {isLoading ? (

@@ -1,5 +1,4 @@
 import { backend } from "@/lib/backend";
-import { getAuthToken } from "@/lib/get-token";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -10,7 +9,7 @@ export async function GET() {
   if (!ok) {
     return NextResponse.json(
       { error: "Failed to fetch profile data" },
-      { status }
+      { status },
     );
   }
   return NextResponse.json(data);
@@ -23,7 +22,7 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json(
         { success: false, msg: "User ID required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +32,7 @@ export async function DELETE(req: Request) {
 
     const res = NextResponse.json(
       { message: "Profile Deleted Successfully" },
-      { status: ok ? 200 : status }
+      { status: ok ? 200 : status },
     );
 
     res.cookies.set("token", "", {
@@ -46,10 +45,9 @@ export async function DELETE(req: Request) {
     });
     return res;
   } catch (err) {
-
     return NextResponse.json(
       { success: false, msg: "Something went wrong" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

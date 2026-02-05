@@ -47,7 +47,7 @@ const Address: React.FC<AddressProps> = ({
     retry: false,
   });
 
-  const addresses = data?.address ?? [];
+  const addresses = data?.addresses ?? [];
 
   const deleteAddress = useMutation({
     mutationFn: async (addressId: string) => {
@@ -56,17 +56,17 @@ const Address: React.FC<AddressProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(addressId),
+        body: JSON.stringify({ addressId }),
       });
-      const data = await res.json()
-      if (!res.ok){
-        toast.error(data?.msg || "Failed to Delete!")
-      };
-      if(!data.success){
-        toast.warning(data?.msg)
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data?.msg || "Failed to Delete!");
       }
-      if(data.success){
-        toast.success(data?.msg)
+      if (!data.success) {
+        toast.warning(data?.msg);
+      }
+      if (data.success) {
+        toast.success(data?.msg);
       }
     },
     onSuccess: () => {

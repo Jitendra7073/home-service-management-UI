@@ -104,7 +104,7 @@ export function EditCardDialog({
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`/api/staff/cards/${card.id}`, {
+      const res = await fetch(`/api/common/cards/${card.id}`, {
         method: "PUT",
         credentials: "include",
         headers: {
