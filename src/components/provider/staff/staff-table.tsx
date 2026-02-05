@@ -8,7 +8,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
@@ -50,11 +49,16 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
+  const [search, setSearch] = useState("");
+
   // Fetch staff data
   const { data, isLoading } = useQuery({
-    queryKey: ["staff"],
+    queryKey: ["staff", search],
     queryFn: async () => {
-      const res = await fetch("/api/provider/staff", {
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+
+      const res = await fetch(`/api/provider/staff?${params.toString()}`, {
         method: "GET",
       });
       return res.json();
@@ -176,19 +180,35 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
       },
     },
     {
-      accessorKey: "isActive",
-      header: "Status",
+      accessorKey: "availability",
+      header: "Availability",
       cell: ({ row }) => {
-        const isActive = row.original.isActive;
+        const staff = row.original;
+        const availability = staff.availability || "AVAILABLE";
+
+        if (availability === "BUSY") {
+          return (
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+              </span>
+              <span className="px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full border border-orange-200">
+                Busy
+              </span>
+            </div>
+          );
+        }
+
         return (
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${
-              isActive
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}>
-            {isActive ? "Active" : "Inactive"}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+              Available
+            </span>
+          </div>
         );
       },
     },
@@ -221,15 +241,7 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
                 onClick={() =>
                   router.push(`/provider/dashboard/staff/${staff.id}`)
                 }>
-                <Eye className="mr-2 h-4 w-4" />
                 View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push(`/provider/dashboard/staff/${staff.id}/edit`)
-                }>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Staff
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
@@ -237,14 +249,12 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
                     `/provider/dashboard/staff/${staff.id}/assignments`,
                   )
                 }>
-                <Briefcase className="mr-2 h-4 w-4" />
                 Manage Services
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => handleDeleteStaff(staff.id)}
                 className="text-red-600">
-                <Trash2 className="mr-2 h-4 w-4" />
                 Delete Staff
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -260,18 +270,12 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       rowSelection,
-    },
-    initialState: {
-      pagination: {
-        pageSize: NumberOfRows,
-      },
     },
   });
 
@@ -288,7 +292,6 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
 
       if (data.success) {
         alert("Staff deleted successfully");
-        // Refresh the table
         window.location.reload();
       } else {
         alert(data.msg || "Failed to delete staff");
@@ -301,20 +304,6 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
 
   return (
     <div className="space-y-4">
-      {/* Search and Filter */}
-      <div className="flex items-center justify-between">
-        <input
-          placeholder="Search staff..."
-          value={
-            (table.getColumn("user.name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("user.name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
       {/* Table */}
       <div className="rounded-md border">
         <Table>

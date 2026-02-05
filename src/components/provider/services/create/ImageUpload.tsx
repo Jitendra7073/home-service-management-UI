@@ -12,14 +12,14 @@ interface ImagePreviewProps {
 export function ImagePreview({ image, onRemove }: ImagePreviewProps) {
   const [removing, setRemoving] = useState(false);
   const handleRemoveImage = async () => {
-  if (image.uploading) return;
-  setRemoving(true);
-  await onRemove();
-  setRemoving(false);
-};
+    if (image.uploading) return;
+    setRemoving(true);
+    await onRemove();
+    setRemoving(false);
+  };
 
   return (
-    <div className="relative border rounded-md overflow-hidden bg-gray-50">
+    <div className="relative border rounded-md overflow-hidden">
       <img
         src={image.preview}
         alt="Preview"
@@ -49,11 +49,11 @@ export function ImagePreview({ image, onRemove }: ImagePreviewProps) {
           className={`absolute top-1 flex item-center justify-center right-1 bg-black/60  text-white rounded p-1 transition-colors ${
             removing ? "bg-red-600" : "hover:bg-red-600"
           }`}>
-         {removing ? 
+          {removing ? (
             <Loader2 className="w-4 h-4 animate-spin text-white" />
-          :
-          <X size={14} />
-          }
+          ) : (
+            <X size={14} />
+          )}
         </button>
       )}
     </div>

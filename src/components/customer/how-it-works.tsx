@@ -43,11 +43,7 @@ const steps = [
     shortDesc: "Confirm securely",
     description:
       "Review your booking details and complete the process with instant confirmation.",
-    features: [
-      "Secure booking",
-      "Instant confirmation",
-      "Verified details",
-    ],
+    features: ["Secure booking", "Instant confirmation", "Verified details"],
     icon: Check,
   },
   {
@@ -56,11 +52,7 @@ const steps = [
     shortDesc: "Share your experience",
     description:
       "Rate your service and help others by sharing honest feedback.",
-    features: [
-      "Easy ratings",
-      "Helpful reviews",
-      "Community trust",
-    ],
+    features: ["Easy ratings", "Helpful reviews", "Community trust"],
     icon: Star,
   },
 ];
@@ -99,15 +91,12 @@ export default function StepsLayout() {
                     isActive
                       ? " border bg-slate-900 text-white"
                       : " border border-gray-300  hover:bg-slate-50"
-                  }`}
-                >
+                  }`}>
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
                       <Icon
                         className={`w-6 h-6 ${
-                          isActive
-                            ? "text-blue-600"
-                            : "text-slate-400"
+                          isActive ? "text-blue-600" : "text-slate-400"
                         }`}
                       />
                     </div>
@@ -116,17 +105,11 @@ export default function StepsLayout() {
                       <div className="text-xs uppercase font-medium opacity-70">
                         Step {step.id}
                       </div>
-                      <h3 className="font-semibold text-lg">
-                        {step.title}
-                      </h3>
-                      <p className="text-sm opacity-80">
-                        {step.shortDesc}
-                      </p>
+                      <h3 className="font-semibold text-lg">{step.title}</h3>
+                      <p className="text-sm opacity-80">{step.shortDesc}</p>
                     </div>
 
-                    {isActive && (
-                      <CheckCircle className="w-5 h-5 text-white" />
-                    )}
+                    {isActive && <CheckCircle className="w-5 h-5 text-white" />}
                   </div>
                 </button>
               );
@@ -135,14 +118,12 @@ export default function StepsLayout() {
 
           {/* Details */}
           <div className="flex-1">
-            <div className=" border border-gray-300 bg-gray-50 rounded-md p-10 h-full">
+            <div className=" border border-gray-300 rounded-md p-10 h-full">
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 bg-slate-100 rounded-md">
                   {(() => {
                     const Icon = steps[activeStep].icon;
-                    return (
-                      <Icon className="w-7 h-7 text-blue-600" />
-                    );
+                    return <Icon className="w-7 h-7 text-blue-600" />;
                   })()}
                 </div>
                 <h3 className="text-2xl font-semibold text-slate-900">
@@ -158,9 +139,7 @@ export default function StepsLayout() {
                 {steps[activeStep].features.map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3">
                     <CheckCircle className="w-4 h-4 text-blue-600" />
-                    <span className="text-slate-700 text-sm">
-                      {feature}
-                    </span>
+                    <span className="text-slate-700 text-sm">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -177,8 +156,7 @@ export default function StepsLayout() {
             return (
               <div
                 key={step.id}
-                className="bg-white border border-slate-200 rounded-md overflow-hidden"
-              >
+                className="bg-white border border-slate-200 rounded-md overflow-hidden">
                 <button
                   onClick={() => {
                     setActiveStep(index);
@@ -188,19 +166,14 @@ export default function StepsLayout() {
                     isOpen
                       ? "bg-slate-900 text-white"
                       : "bg-white hover:bg-slate-50"
-                  }`}
-                >
+                  }`}>
                   <div className="flex items-center gap-3">
                     <Icon
                       className={`w-5 h-5 ${
-                        isOpen
-                          ? "text-blue-400"
-                          : "text-slate-400"
+                        isOpen ? "text-blue-400" : "text-slate-400"
                       }`}
                     />
-                    <span className="font-medium">
-                      {step.title}
-                    </span>
+                    <span className="font-medium">{step.title}</span>
                   </div>
 
                   <ChevronDown
@@ -216,20 +189,14 @@ export default function StepsLayout() {
                     isOpen
                       ? "grid-rows-[1fr] opacity-100"
                       : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
+                  }`}>
                   <div className="overflow-hidden">
                     <div className="p-5 border-t border-slate-200">
-                      <p className="text-slate-600 mb-4">
-                        {step.description}
-                      </p>
+                      <p className="text-slate-600 mb-4">{step.description}</p>
 
                       <div className="space-y-3">
                         {step.features.map((feature, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-3"
-                          >
+                          <div key={idx} className="flex items-center gap-3">
                             <CheckCircle className="w-4 h-4 text-blue-600" />
                             <span className="text-sm text-slate-700">
                               {feature}

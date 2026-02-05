@@ -1,14 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, CheckCircle, Clock, DollarSign } from "lucide-react";
+import { Calendar, CheckCircle, Clock, IndianRupee } from "lucide-react";
 
 interface StaffStatsCardsProps {
   stats: {
-    totalBookings: number;
     pendingBookings: number;
-    completedBookings: number;
     inProgressBookings: number;
+    completedBookings: number;
     totalEarnings: number;
-    pendingPayments: number;
   };
   isLoading?: boolean;
 }
@@ -41,8 +39,8 @@ export default function StaffStatsCards({
     },
     {
       title: "Total Earnings",
-      value: `$${stats.totalEarnings}`,
-      icon: DollarSign,
+      value: `₹${stats.totalEarnings}`,
+      icon: IndianRupee,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
     },

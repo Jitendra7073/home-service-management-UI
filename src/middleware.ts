@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import authMiddleware from "./lib/middlewares/auth-middleware";
 
-export async function proxy(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   try {
     return await authMiddleware(req);
   } catch (error) {
@@ -10,7 +10,6 @@ export async function proxy(req: NextRequest) {
 
     const loginUrl = new URL("/auth/login", req.url);
     const response = NextResponse.redirect(loginUrl);
-    // response.cookies.delete("accessToken");
     return response;
   }
 }

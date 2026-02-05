@@ -13,18 +13,16 @@ const DASHBOARD = "/provider/dashboard";
 export const providerOnboardingMiddleware = async (
   req: NextRequest,
   role?: string,
-  userId?: string,
-  token?: string
 ) => {
   const { pathname, searchParams } = req.nextUrl;
 
-  // Only apply onboarding logic for provider role
+  // Only provider
   if (role !== "provider") return null;
 
-  // Skip API calls
+  // Skip APIs
   if (pathname.startsWith("/api")) return null;
 
-  // Skip non-provider routes
+  // Only provider routes
   if (!pathname.startsWith("/provider")) return null;
 
   const currentStep = searchParams.get("step");
@@ -35,38 +33,44 @@ export const providerOnboardingMiddleware = async (
     getProviderSlots(req),
   ]);
 
-  const profile = {
-    hasAddress: address.length == 0 ? false : true,
-    hasBusiness: !!business,
-    hasSlots: Array.isArray(slots) && slots.length > 0,
-  };
+  const hasAddress = address?.length > 0;
+  const hasBusiness = !!business;
+  const hasSlots = Array.isArray(slots) && slots.length > 0;
 
-  // Determine next step
-  const nextStep = !profile.hasAddress
+  console.log("(middleware) Address", hasAddress);
+  console.log("(middleware) Business", hasBusiness);
+  console.log("(middleware) Slots", hasSlots);
+
+  // Determine next required step
+  const nextStep = !hasAddress
     ? "address"
-    : !profile.hasBusiness
+    : !hasBusiness
     ? "business"
-    : !profile.hasSlots
+    : !hasSlots
     ? "slots"
     : null;
 
-  // All steps completed
+  console.log("nextStep", nextStep);
+  // ✅ Fully completed → block onboarding route
   if (!nextStep) {
+    console.log("(middleware) Redirecting on the dashbaord...", pathname);
     if (pathname.startsWith(ONBOARD)) {
       return NextResponse.redirect(new URL(DASHBOARD, req.url));
     }
-    return null;
+    return null; // allow dashboard + other provider routes
   }
 
-  // User is not on onboarding page
+  // ✅ Not completed yet → force onboarding
   if (!pathname.startsWith(ONBOARD)) {
+    console.log("(middleware) Not completed yet → force onboarding");
     const redirect = new URL(ONBOARD, req.url);
     redirect.searchParams.set("step", nextStep);
     return NextResponse.redirect(redirect);
   }
 
-  // User is on onboarding but wrong step
+  // ✅ On onboarding but wrong step → correct it
   if (currentStep !== nextStep) {
+    console.log("(middleware) Onboarding but wrong step → correct it");
     const redirect = new URL(ONBOARD, req.url);
     redirect.searchParams.set("step", nextStep);
     return NextResponse.redirect(redirect);

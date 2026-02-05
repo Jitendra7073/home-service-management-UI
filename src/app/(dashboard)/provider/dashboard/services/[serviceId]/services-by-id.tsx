@@ -114,7 +114,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
 
   const [coverImageState, setCoverImageState] = useState<UploadedImage[]>([]);
   const [galleryImageState, setGalleryImageState] = useState<UploadedImage[]>(
-    []
+    [],
   );
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   useEffect(() => {
     if (isEditing && formData) {
       setCoverImageState(
-        formData.coverImage ? [urlToImageState(formData.coverImage)] : []
+        formData.coverImage ? [urlToImageState(formData.coverImage)] : [],
       );
       setGalleryImageState(formData.images.map(urlToImageState));
     }
@@ -184,10 +184,10 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
               type === "cover" ? setCoverImageState : setGalleryImageState;
             setter((prev) =>
               prev.map((p) =>
-                p.preview === imgObj.preview ? { ...p, progress } : p
-              )
+                p.preview === imgObj.preview ? { ...p, progress } : p,
+              ),
             );
-          }
+          },
         );
 
         const setter =
@@ -196,8 +196,8 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
           prev.map((p) =>
             p.preview === imgObj.preview
               ? { ...p, uploading: false, url, publicId }
-              : p
-          )
+              : p,
+          ),
         );
       } catch (error) {
         toast.error("Failed to upload image");
@@ -259,7 +259,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
   const handleDelete = async () => {
     if (
       !confirm(
-        "Are you sure you want to delete this service? This action cannot be undone."
+        "Are you sure you want to delete this service? This action cannot be undone.",
       )
     ) {
       return;
@@ -583,7 +583,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                 <CardTitle className="text-base">Availability Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md border">
+                <div className="flex items-center justify-between p-3 rounded-md border">
                   <div className="flex items-center gap-3">
                     <ShieldCheck
                       className={`w-5 h-5 ${

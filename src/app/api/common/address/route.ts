@@ -48,17 +48,33 @@ export async function POST(req: Request) {
   }
 }
 
-export async function DELETE(req:Request) {
-  const addressId = await req.json();
+export async function DELETE(req: Request) {
   try {
+    const { addressId } = await req.json();
+
+    if (!addressId) {
+      return NextResponse.json(
+        { success: false, msg: "Address ID is required" },
+        { status: 400 }
+      );
+    }
+
     const { ok, data } = await backend(`/api/v1/address/${addressId}`, {
       method: "DELETE",
     });
+
     if (!ok) {
-      return NextResponse.json(data || "Unable to DELETE this address!");
+      return NextResponse.json(
+        data || { success: false, msg: "Unable to delete this address!" }
+      );
     }
+
     return NextResponse.json(data);
   } catch (err) {
-    return NextResponse.json({ err });
+    console.error("Delete address error:", err);
+    return NextResponse.json(
+      { success: false, msg: "Server error" },
+      { status: 500 }
+    );
   }
 }

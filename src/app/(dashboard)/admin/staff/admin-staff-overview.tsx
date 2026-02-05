@@ -34,52 +34,43 @@ export default function AdminStaffOverview() {
       const params = new URLSearchParams();
       if (employmentTypeFilter)
         params.append("employmentType", employmentTypeFilter);
-      if (approvalFilter) params.append("isApproved", approvalFilter);
+      if (approvalFilter) params.append("status", approvalFilter);
 
-      const res = await fetch(`/api/admin/staff?${params}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/staff?${params}`,
+        {
+          credentials: "include",
+        },
+      );
       return res.json();
     },
   });
 
-  const staffProfiles = data?.staffProfiles || [];
+  const staffMembers = data?.data || [];
 
   // Calculate stats
-  const totalStaff = staffProfiles.length;
-  const activeStaff = staffProfiles.filter((s: any) => s.isActive).length;
-  const businessBased = staffProfiles.filter(
-    (s: any) => s.employmentType === "BUSINESS_BASED",
+  const totalStaff = data?.pagination?.total || 0;
+  const activeStaff = staffMembers.filter((s: any) => !s.isRestricted).length;
+  // Note: Backend doesn't distinguish "Business Based" vs "Freelance" easily without more schema info
+  // Assuming all are "Business Based" for now if they have applications.
+  const businessBased = staffMembers.filter(
+    (s: any) => s.associatedBusinesses > 0,
   ).length;
-  const globalFreelancers = staffProfiles.filter(
-    (s: any) => s.employmentType === "GLOBAL_FREELANCE",
-  ).length;
-  const pendingApproval = staffProfiles.filter(
-    (s: any) => s.employmentType === "GLOBAL_FREELANCE" && !s.isApproved,
-  ).length;
+  const globalFreelancers = totalStaff - businessBased; // Fallback
+  const pendingApproval = 0; // Backend doesn't return pending apps count per staff yet easily
 
-  const getStatusColor = (
-    isActive: boolean,
-    isApproved: boolean,
-    employmentType: string,
-  ) => {
-    if (!isActive) return "bg-red-100 text-red-700";
-    if (employmentType === "GLOBAL_FREELANCE" && !isApproved)
-      return "bg-yellow-100 text-yellow-700";
+  const getStatusColor = (isRestricted: boolean) => {
+    if (isRestricted) return "bg-red-100 text-red-700";
     return "bg-green-100 text-green-700";
   };
 
-  const getStatusText = (
-    isActive: boolean,
-    isApproved: boolean,
-    employmentType: string,
-  ) => {
-    if (!isActive) return "Inactive";
-    if (employmentType === "GLOBAL_FREELANCE" && !isApproved)
-      return "Pending Approval";
+  const getStatusText = (isRestricted: boolean) => {
+    if (isRestricted) return "Restricted";
     return "Active";
   };
 
   return (
-    <div className="flex w-full justify-center min-h-screen bg-gray-50">
+    <div className="flex w-full justify-center min-h-screen">
       <div className="w-full max-w-[1600px] px-2 md:px-6 py-8 space-y-8">
         {/* Header */}
         <div>
@@ -132,7 +123,7 @@ export default function AdminStaffOverview() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-purple-700 mb-1">
-                    Business-Based
+                    Business-Associated
                   </p>
                   <p className="text-3xl font-bold text-purple-900">
                     {businessBased}
@@ -150,16 +141,11 @@ export default function AdminStaffOverview() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-orange-700 mb-1">
-                    Global Freelancers
+                    Independent
                   </p>
                   <p className="text-3xl font-bold text-orange-900">
                     {globalFreelancers}
                   </p>
-                  {pendingApproval > 0 && (
-                    <span className="text-sm text-orange-600">
-                      ({pendingApproval} pending)
-                    </span>
-                  )}
                 </div>
                 <div className="p-3 bg-orange-100 rounded-full">
                   <Globe className="h-6 w-6 text-orange-600" />
@@ -168,34 +154,6 @@ export default function AdminStaffOverview() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Pending Approval Alert */}
-        {pendingApproval > 0 && (
-          <Card className="bg-yellow-50 border-yellow-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-5 h-5 text-yellow-700" />
-                  <div>
-                    <p className="font-semibold text-yellow-900">
-                      {pendingApproval} Global Freelancer
-                      {pendingApproval > 1 ? "s" : ""} Pending Approval
-                    </p>
-                    <p className="text-sm text-yellow-700">
-                      Review and approve global freelancer applications
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/admin/staff/pending")}
-                  className="bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200">
-                  Review Applications
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Filters */}
         <div className="flex items-center gap-4">
@@ -208,10 +166,7 @@ export default function AdminStaffOverview() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Types</SelectItem>
-              <SelectItem value="BUSINESS_BASED">Business-Based</SelectItem>
-              <SelectItem value="GLOBAL_FREELANCE">
-                Global Freelancers
-              </SelectItem>
+              {/* Note: Filtering by type not fully supported in backend getAllStaff yet without schema update */}
             </SelectContent>
           </Select>
 
@@ -221,10 +176,8 @@ export default function AdminStaffOverview() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Status</SelectItem>
-              <SelectItem value="true">Active</SelectItem>
-              <SelectItem value="false">Inactive</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="pending">Pending Approval</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="restricted">Restricted</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -237,11 +190,10 @@ export default function AdminStaffOverview() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Business</TableHead>
-                  <TableHead>Specializations</TableHead>
-                  <TableHead>Applications</TableHead>
-                  <TableHead>Bookings</TableHead>
+                  <TableHead>Associated Businesses</TableHead>
+                  <TableHead>Total Bookings</TableHead>
+                  <TableHead>Completion Rate</TableHead>
+                  <TableHead>Rating</TableHead>
                   <TableHead>Earnings</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
@@ -250,112 +202,66 @@ export default function AdminStaffOverview() {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8">
+                    <TableCell colSpan={9} className="text-center py-8">
                       Loading staff data...
                     </TableCell>
                   </TableRow>
-                ) : staffProfiles.length > 0 ? (
-                  staffProfiles.map((staff: any) => (
+                ) : staffMembers.length > 0 ? (
+                  staffMembers.map((staff: any) => (
                     <TableRow key={staff.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {staff.photo ? (
+                          {staff.profilePicture ? (
                             <img
-                              src={staff.photo}
-                              alt={staff.user.name}
+                              src={staff.profilePicture}
+                              alt={staff.name}
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (
                             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                              {staff.user.name.charAt(0)}
+                              {staff.name.charAt(0)}
                             </div>
                           )}
-                          <span className="font-medium">{staff.user.name}</span>
+                          <span className="font-medium">{staff.name}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{staff.user.email}</TableCell>
+                      <TableCell>{staff.email}</TableCell>
                       <TableCell>
-                        <Badge
-                          className={
-                            staff.employmentType === "BUSINESS_BASED"
-                              ? "bg-purple-100 text-purple-700"
-                              : "bg-orange-100 text-orange-700"
-                          }>
-                          {staff.employmentType === "BUSINESS_BASED"
-                            ? "Business"
-                            : "Freelancer"}
-                        </Badge>
+                        <span className="text-sm">
+                          {staff.associatedBusinesses || "-"}
+                        </span>
+                      </TableCell>
+                      <TableCell>{staff.totalBookings || 0}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`font-medium ${
+                            staff.completionRate >= 80
+                              ? "text-green-600"
+                              : staff.completionRate >= 50
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                          }`}>
+                          {staff.completionRate || 0}%
+                        </span>
                       </TableCell>
                       <TableCell>
-                        {staff.businessProfile?.businessName || "-"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {staff.specialization
-                            ?.slice(0, 2)
-                            .map((spec: string, i: number) => (
-                              <Badge
-                                key={i}
-                                variant="outline"
-                                className="text-xs">
-                                {spec}
-                              </Badge>
-                            ))}
-                          {(staff.specialization?.length || 0) > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{staff.specialization.length - 2}
-                            </Badge>
-                          )}
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">
+                            {staff.averageRating || 0}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            ({staff.reviewCount || 0})
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">
-                            {staff.analytics?.applicationsCount || 0}
-                          </div>
-                          {staff.employmentType === "GLOBAL_FREELANCE" && (
-                            <div className="text-xs text-muted-foreground">
-                              applied
-                            </div>
-                          )}
-                        </div>
+                        <span className="font-medium">
+                          ₹{staff.totalEarnings || 0}
+                        </span>
                       </TableCell>
                       <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">
-                            {staff._count?.bookings || 0}
-                          </div>
-                          {(staff.analytics?.completedBookings || 0) > 0 && (
-                            <div className="text-xs text-green-600">
-                              {staff.analytics.completedBookings} completed
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div className="font-medium">
-                            ${(staff.analytics?.totalEarnings || 0) / 100}
-                          </div>
-                          {(staff.analytics?.pendingEarnings || 0) > 0 && (
-                            <div className="text-xs text-orange-600">
-                              ${staff.analytics.pendingEarnings / 100} pending
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={getStatusColor(
-                            staff.isActive,
-                            staff.isApproved,
-                            staff.employmentType,
-                          )}>
-                          {getStatusText(
-                            staff.isActive,
-                            staff.isApproved,
-                            staff.employmentType,
-                          )}
+                        <Badge className={getStatusColor(staff.isRestricted)}>
+                          {getStatusText(staff.isRestricted)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -372,7 +278,7 @@ export default function AdminStaffOverview() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8">
+                    <TableCell colSpan={9} className="text-center py-8">
                       No staff found
                     </TableCell>
                   </TableRow>

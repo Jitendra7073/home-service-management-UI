@@ -17,11 +17,13 @@ interface Booking {
     name: string;
     mobile: string;
   };
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    landmark?: string;
+    addressType?: string;
   };
   bookingStatus: string;
 }
@@ -99,10 +101,18 @@ export default function StaffBookingsList({
                   <span>{booking.user.mobile}</span>
                 </div>
                 <div className="flex items-start gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 mt-0.5" />
-                  <span>
-                    {booking.address.street}, {booking.address.city},{" "}
-                    {booking.address.state} {booking.address.postalCode}
+                  <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span className="break-words">
+                    {booking.address ? (
+                      <>
+                        {booking.address.street}
+                        {booking.address.landmark && ` (Landmark: ${booking.address.landmark})`}
+                        <br />
+                        {booking.address.city}, {booking.address.state} {booking.address.postalCode || ""}
+                      </>
+                    ) : (
+                      "Address not provided"
+                    )}
                   </span>
                 </div>
               </div>

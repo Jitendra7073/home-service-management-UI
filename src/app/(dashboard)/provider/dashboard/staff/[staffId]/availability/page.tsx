@@ -36,26 +36,24 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
       startTime: "9:00 AM",
       endTime: "5:00 PM",
       isAvailable: false,
-    }))
+    })),
   );
 
   const handleDayToggle = (dayIndex: number) => {
     setWeeklySchedule((prev) =>
       prev.map((day, i) =>
-        i === dayIndex ? { ...day, isAvailable: !day.isAvailable } : day
-      )
+        i === dayIndex ? { ...day, isAvailable: !day.isAvailable } : day,
+      ),
     );
   };
 
   const handleTimeChange = (
     dayIndex: number,
     field: "startTime" | "endTime",
-    value: string
+    value: string,
   ) => {
     setWeeklySchedule((prev) =>
-      prev.map((day, i) =>
-        i === dayIndex ? { ...day, [field]: value } : day
-      )
+      prev.map((day, i) => (i === dayIndex ? { ...day, [field]: value } : day)),
     );
   };
 
@@ -89,15 +87,14 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
   };
 
   return (
-    <div className="flex w-full justify-center min-h-screen bg-gray-50">
+    <div className="flex w-full justify-center min-h-screen">
       <div className="w-full max-w-4xl px-4 py-8 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <button
               onClick={() => router.back()}
-              className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
-            >
+              className="flex items-center text-gray-600 hover:text-gray-900 mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Staff Details
             </button>
@@ -121,8 +118,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
               return (
                 <div
                   key={day.value}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg"
-                >
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
                   <div className="flex items-center h-11">
                     <Checkbox
                       id={`day-${index}`}
@@ -130,10 +126,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
                       onCheckedChange={() => handleDayToggle(index)}
                     />
                   </div>
-                  <Label
-                    htmlFor={`day-${index}`}
-                    className="w-32 font-medium"
-                  >
+                  <Label htmlFor={`day-${index}`} className="w-32 font-medium">
                     {day.label}
                   </Label>
                   {schedule.isAvailable && (
@@ -144,11 +137,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
                           type="time"
                           value={schedule.startTime.replace(" ", "")}
                           onChange={(e) =>
-                            handleTimeChange(
-                              index,
-                              "startTime",
-                              e.target.value
-                            )
+                            handleTimeChange(index, "startTime", e.target.value)
                           }
                           className="text-sm"
                         />
@@ -160,11 +149,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
                           type="time"
                           value={schedule.endTime.replace(" ", "")}
                           onChange={(e) =>
-                            handleTimeChange(
-                              index,
-                              "endTime",
-                              e.target.value
-                            )
+                            handleTimeChange(index, "endTime", e.target.value)
                           }
                           className="text-sm"
                         />
@@ -186,7 +171,10 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• Check the days this staff member is available to work</li>
               <li>• Set working hours for each day</li>
-              <li>• Staff will only be assigned to bookings during their available hours</li>
+              <li>
+                • Staff will only be assigned to bookings during their available
+                hours
+              </li>
               <li>• Customers will see availability when booking services</li>
             </ul>
           </CardContent>
@@ -198,8 +186,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            disabled={isSaving}
-          >
+            disabled={isSaving}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isSaving}>

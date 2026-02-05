@@ -38,13 +38,6 @@ export default function StaffStatsCards({
       color: "text-purple-600",
       bgColor: "bg-purple-50",
     },
-    {
-      title: "Global Freelancers",
-      value: globalFreelance,
-      icon: Globe,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-    },
   ];
 
   return (
@@ -54,8 +47,7 @@ export default function StaffStatsCards({
         return (
           <Card
             key={index}
-            className={`${stat.bgColor} border-0 shadow-sm hover:shadow-md transition-shadow`}
-          >
+            className={`${stat.bgColor} border-0 shadow-sm hover:shadow-md transition-shadow`}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>

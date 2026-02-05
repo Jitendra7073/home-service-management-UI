@@ -93,7 +93,7 @@ export default function BookingDetailsSection({
       }
 
       const res = await fetch(
-        `/api/customer/booking/${booking.id}/cancellation`
+        `/api/customer/booking/${booking.id}/cancellation`,
       );
 
       if (!res.ok) {
@@ -266,7 +266,7 @@ export default function BookingDetailsSection({
                             day: "numeric",
                             month: "short",
                             year: "numeric",
-                          }
+                          },
                         )}
                         . Check your account statement.
                       </span>
@@ -444,6 +444,51 @@ export default function BookingDetailsSection({
                   </div>
                 </div>
               </div>
+
+              {/* ASSIGNED STAFF & TRACKING (IF AVAILABLE) */}
+              {(booking.assignedStaff ||
+                (booking.trackingStatus &&
+                  booking.trackingStatus !== "NOT_STARTED")) && (
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+                    <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
+                    Service Tracking
+                  </h4>
+                  <div className="space-y-3 pl-3">
+                    {booking.assignedStaff && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">
+                          Assigned Staff
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold uppercase">
+                            {booking.assignedStaff.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {booking.assignedStaff.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {booking.assignedStaff.mobile}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {booking.trackingStatus && (
+                      <div>
+                        <p className="text-xs text-gray-500 mb-1">
+                          Current Status
+                        </p>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                          {booking.trackingStatus.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* ADDRESS DETAILS */}
               <div className="space-y-4">

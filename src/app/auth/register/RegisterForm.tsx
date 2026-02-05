@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registrationSchema } from "@/lib/validator/auth-validator";
@@ -15,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,6 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 // Require field symbol
 const RequireField = () => {
@@ -30,8 +29,9 @@ const RequireField = () => {
 };
 
 export default function RegisterForm() {
-  const router = useRouter();
-  const [role, setRole] = useState<"customer" | "provider">("customer");
+  const [role, setRole] = useState<"customer" | "provider" | "staff">(
+    "customer",
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -51,7 +51,9 @@ export default function RegisterForm() {
     },
   });
 
-  const handleRoleChange = (newRole: "customer" | "provider") => {
+  const router = useRouter();
+
+  const handleRoleChange = (newRole: "customer" | "provider" | "staff") => {
     setRole(newRole);
     setValue("role", newRole);
   };
@@ -82,9 +84,17 @@ export default function RegisterForm() {
         toast.success(
           result.message || "Registration successful! Auto-logging in...",
         );
-        // Auto-redirect to dashboard based on role
-        const redirectPath =
-          data.role === "provider" ? "/provider/dashboard" : "/customer";
+        // Redirect based on role returned from backend
+        let redirectPath = "";
+        if (result?.role === "admin") {
+          redirectPath = "/admin";
+        } else if (result?.role === "provider") {
+          redirectPath = "/provider/dashboard";
+        } else if (result?.role === "staff") {
+          redirectPath = "/staff";
+        } else {
+          redirectPath = "/customer";
+        }
         // Small delay to ensure cookies are set
         setTimeout(() => {
           router.push(redirectPath);
@@ -128,7 +138,7 @@ export default function RegisterForm() {
                     handleRoleChange(value as "customer" | "provider")
                   }
                   className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger
                       value="customer"
                       className="flex items-center gap-2">
@@ -140,6 +150,12 @@ export default function RegisterForm() {
                       className="flex items-center gap-2">
                       <Wrench className="w-4 h-4" />
                       Provider
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="staff"
+                      className="flex items-center gap-2">
+                      <Wrench className="w-4 h-4" />
+                      Staff
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>

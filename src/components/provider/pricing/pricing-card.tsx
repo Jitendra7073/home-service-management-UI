@@ -38,7 +38,7 @@ function PricingHero() {
         {highlights.map((item, i) => (
           <li
             key={i}
-            className="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-medium text-gray-700">
+            className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-700">
             <Check className="h-4 w-4 text-blue-600" />
             {item}
           </li>
@@ -327,8 +327,6 @@ export default function PricingSection() {
     },
     staleTime: Infinity,
   });
-
-  console.log("plans", plans);
 
   const {
     data: profile,

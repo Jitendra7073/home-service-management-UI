@@ -15,8 +15,8 @@ interface BookingHeaderProps {
 export default function BookingHeader({
   title,
   description,
-  isVisibleAddServiceButton = false,
-  isVisibleAddStaffButton = false,
+  isVisibleAddServiceButton,
+  isVisibleAddStaffButton,
 }: BookingHeaderProps) {
   const setServiceModelOpen = useSetAtom(ServiceModelState);
 
@@ -34,15 +34,6 @@ export default function BookingHeader({
 
         {/* Actions */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            className="border-border text-foreground hover:bg-muted"
-          >
-            <Download className="w-4 h-4 mr-1" />
-            Export
-          </Button> */}
-
           {isVisibleAddServiceButton && (
             <Button
               size="sm"

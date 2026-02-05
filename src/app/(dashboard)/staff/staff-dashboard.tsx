@@ -12,11 +12,13 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import StaffStatsCards from "@/components/staff/staff-stats-cards";
 import StaffBookingsList from "@/components/staff/staff-bookings-list";
+import { StaffDashboardSkeleton } from "@/components/staff/skeletons";
+import { StaffProfileCompletionAlert } from "@/components/staff/profile-completion-alert";
 import Link from "next/link";
 
 export default function StaffDashboard() {
   // Fetch user profile
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: profileLoading } = useQuery({
     queryKey: ["staff-profile"],
     queryFn: async () => {
       const res = await fetch("/api/common/profile");
@@ -30,25 +32,24 @@ export default function StaffDashboard() {
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["staff-dashboard-stats"],
     queryFn: async () => {
-      const res = await fetch("/api/staff/dashboard/stats");
+      const res = await fetch("/api/staff/dashboard/stats", {
+        credentials: "include",
+      });
       return res.json();
     },
     enabled: !!user,
   });
 
-  // Fetch upcoming bookings
-  const { data: bookings, isLoading: bookingsLoading } = useQuery({
-    queryKey: ["staff-bookings", "upcoming"],
-    queryFn: async () => {
-      const res = await fetch("/api/staff/bookings?status=CONFIRMED&limit=5");
-      return res.json();
-    },
-    enabled: !!user,
-  });
+  // Show skeleton while loading profile or stats
+  if (profileLoading || statsLoading) {
+    return <StaffDashboardSkeleton />;
+  }
 
   return (
-    <div className="flex w-full justify-center min-h-screen">
-      <div className="w-full max-w-7xl px-2 md:px-6 py-8 space-y-8">
+    <>
+      <StaffProfileCompletionAlert />
+      <div className="flex w-full justify-center min-h-screen">
+        <div className="w-full max-w-7xl px-2 md:px-6 py-8 space-y-8">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -72,7 +73,7 @@ export default function StaffDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    Upcoming Assignments
+                    Upcoming Bookings
                   </h2>
                   <Link
                     href="/staff/bookings"
@@ -81,7 +82,7 @@ export default function StaffDashboard() {
                   </Link>
                 </div>
 
-                {bookingsLoading ? (
+                {statsLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
                       <div
@@ -90,12 +91,12 @@ export default function StaffDashboard() {
                       />
                     ))}
                   </div>
-                ) : bookings?.bookings?.length > 0 ? (
-                  <StaffBookingsList bookings={bookings.bookings} />
+                ) : stats?.stats?.upcomingBookings?.length > 0 ? (
+                  <StaffBookingsList bookings={stats.stats.upcomingBookings} />
                 ) : (
                   <div className="text-center py-12">
                     <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No upcoming assignments</p>
+                    <p className="text-gray-600">No upcoming Bookings</p>
                     <p className="text-sm text-gray-500 mt-2">
                       You'll see your assigned bookings here
                     </p>
@@ -122,7 +123,7 @@ export default function StaffDashboard() {
                   ₹{stats?.stats?.totalEarnings || 0}
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
-                  ₹{stats?.stats?.pendingPayments || 0} pending
+                  From {stats?.stats?.completedBookings || 0} completed bookings
                 </p>
                 <Link
                   href="/staff/earnings"
@@ -162,7 +163,8 @@ export default function StaffDashboard() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

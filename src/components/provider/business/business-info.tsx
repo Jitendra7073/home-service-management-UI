@@ -37,7 +37,7 @@ import ManageBusinessSkeleton from "./businessSkeleton";
 /* ---------------- REUSABLE ---------------- */
 function LabelAndValue({ label, value, icon: Icon }: any) {
   return (
-    <div className="p-4 border rounded-md bg-gray-50 space-y-1">
+    <div className="p-4 border rounded-md space-y-1">
       <div className="flex items-center gap-2 text-gray-600">
         {Icon && <Icon className="w-4 h-4" />}
         <Label>{label}</Label>
@@ -50,7 +50,7 @@ function LabelAndValue({ label, value, icon: Icon }: any) {
 /* ---------------- SLOT CARD ---------------- */
 function SlotCard({ slot, onDelete, isDeleting }: any) {
   return (
-    <div className="flex justify-between items-center p-4 border rounded-md bg-gray-50">
+    <div className="flex justify-between items-center p-4 border rounded-md">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4" />
         <span>{slot.time}</span>
@@ -125,31 +125,31 @@ function EditBusinessDialog({
         </div>
 
         <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isSaving}
-              className="flex-1">
-              Cancel
-            </Button>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSaving}
+            className="flex-1">
+            Cancel
+          </Button>
 
-            <Button
-              onClick={() => onSave(form)}
-              disabled={isSaving}
-              className="flex-1">
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Changes
-                </>
-              )}
-            </Button>
-          </DialogFooter>
+          <Button
+            onClick={() => onSave(form)}
+            disabled={isSaving}
+            className="flex-1">
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Changes
+              </>
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -210,11 +210,7 @@ function CreateSlotDialog({
 
   return (
     <>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-[40]"
-        />
-      )}
+      {open && <div className="fixed inset-0 bg-black/50 z-[40]" />}
 
       <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
         <DialogContent className="max-w-md z-[50]">
@@ -382,7 +378,7 @@ export default function BusinessInfo() {
   const deleteBusiness = useMutation({
     mutationFn: async () => {
       const sure = confirm(
-        "This will permanently delete your business and account. Continue?"
+        "This will permanently delete your business and account. Continue?",
       );
       if (!sure) throw new Error("Cancelled");
       await fetch("/api/provider/business", { method: "DELETE" });
@@ -505,13 +501,12 @@ export default function BusinessInfo() {
         isDeleting={deleteSlot.isPending}
       />
 
-       {/* DELETE BUSINESS */}
+      {/* DELETE BUSINESS */}
       <Button
         variant="destructive"
         className="mb-6"
         onClick={() => deleteBusiness.mutate()}
-        disabled={deleteBusiness.isPending}
-      >
+        disabled={deleteBusiness.isPending}>
         {deleteBusiness.isPending && (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         )}

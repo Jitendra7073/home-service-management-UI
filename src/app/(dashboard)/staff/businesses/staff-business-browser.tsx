@@ -20,6 +20,7 @@ import {
   Map,
   PinIcon,
   MapPin,
+  CircleCheckBig,
 } from "lucide-react";
 import {
   Dialog,
@@ -32,6 +33,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { StaffBusinessesSkeleton } from "@/components/staff/skeletons";
 
 export default function StaffBusinessBrowser() {
   const [search, setSearch] = useState("");
@@ -45,16 +47,20 @@ export default function StaffBusinessBrowser() {
   const { data, isLoading } = useQuery({
     queryKey: ["businesses"],
     queryFn: async () => {
-      const res = await fetch("/api/staff/businesses");
+      const res = await fetch("/api/staff/businesses", {
+        credentials: "include",
+      });
       const result = await res.json();
-
-      console.log("STAFF BUSINESS API RESPONSE:", result);
-
       return result.providers;
     },
   });
 
   const businesses = data || [];
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <StaffBusinessesSkeleton />;
+  }
 
   // ================= SEARCH FILTER =================
 
@@ -66,20 +72,20 @@ export default function StaffBusinessBrowser() {
 
   // ================= APPLY HANDLER =================
 
-  const handleApply = async () => {
+  const handleApply = async (businessId: string) => {
     if (!selectedBusiness) return;
 
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/staff/businesses/apply", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/applications/apply`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          providerId: selectedBusiness.id,
-          coverLetter: coverLetter || undefined,
+          businessProfileId: businessId,
         }),
       });
 
@@ -167,11 +173,11 @@ export default function StaffBusinessBrowser() {
       ) : (
         /* ================= BUSINESS GRID ================= */
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {filteredBusinesses.map((provider: any) => {
-            const business = provider.businessProfile;
+            const business = provider?.businessProfile;
             const services = business?.services || [];
-            const address = provider.addresses?.[0];
+            const address = provider?.addresses?.[0];
 
             return (
               <Card key={provider.id} className="flex flex-col">
@@ -238,12 +244,22 @@ export default function StaffBusinessBrowser() {
 
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button
-                        onClick={() => setSelectedBusiness(provider)}
-                        className="w-full">
-                        <Send className="mr-2 h-4 w-4" />
-                        Apply to Join
-                      </Button>
+                      {provider.isApplied ? (
+                        <Button
+                          onClick={() => setSelectedBusiness(provider)}
+                          disabled
+                          className="w-full bg-transparent border border-green-700 rounded-md text-green-700 hover:bg-transparent">
+                          <CircleCheckBig className="mr-2 h-4 w-4 text-green-700" />
+                          Already Applied
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => setSelectedBusiness(provider)}
+                          className="w-full">
+                          <Send className="mr-2 h-4 w-4" />
+                          Apply to Join
+                        </Button>
+                      )}
                     </DialogTrigger>
 
                     <DialogContent>
@@ -284,8 +300,10 @@ export default function StaffBusinessBrowser() {
                             Cancel
                           </Button>
 
-                          <Button onClick={handleApply} disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit"}
+                          <Button
+                            onClick={() => handleApply(business.id)}
+                            disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting..." : "Submit"}{" "}
                           </Button>
                         </div>
                       </div>

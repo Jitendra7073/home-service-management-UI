@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { staffAPI, type BusinessApplication } from "@/lib/api/staff";
 import {
   Card,
   CardContent,
@@ -37,6 +36,23 @@ import { toast } from "sonner";
 
 type ApplicationStatus = "ALL" | "PENDING" | "APPROVED" | "REJECTED";
 
+interface BusinessApplication {
+  id: string;
+  status: string;
+  appliedAt: string;
+  respondedAt?: string;
+  coverLetter?: string;
+  rejectionReason?: string;
+  staffProfileId: string;
+  staffProfile?: {
+    user: {
+      name: string;
+      email: string;
+      mobile: string;
+    };
+  };
+}
+
 export default function ProviderApplications() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] =
@@ -52,12 +68,14 @@ export default function ProviderApplications() {
   const { data, isLoading } = useQuery({
     queryKey: ["business-applications", statusFilter],
     queryFn: async () => {
-      const res = await staffAPI.getBusinessApplications({
-        status: statusFilter === "ALL" ? undefined : statusFilter,
-        page: 1,
-        limit: 50,
+      const res = await fetch("/api/v1/provider/staff-applications", {
+        method: "GET",
+        credentials: "include",
       });
-      return res.data;
+      if (!res.ok) {
+        throw new Error("Failed to fetch applications");
+      }
+      return res.json();
     },
   });
 
@@ -71,11 +89,18 @@ export default function ProviderApplications() {
       status: "APPROVED" | "REJECTED";
       rejectionReason?: string;
     }) => {
-      const res = await staffAPI.respondToApplication(applicationId, {
-        status,
-        rejectionReason,
+      const res = await fetch(`/api/v1/provider/staff-applications/${applicationId}`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status, rejectionReason }),
       });
-      return res.data;
+      if (!res.ok) {
+        throw new Error("Failed to respond to application");
+      }
+      return res.json();
     },
     onSuccess: (data) => {
       toast.success(data.msg || "Application updated successfully");

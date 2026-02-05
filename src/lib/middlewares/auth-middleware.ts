@@ -6,8 +6,6 @@ import {
   hasRouteAccess,
   getRoleBasedRedirect,
   isProviderOnboardingRoute,
-  isRestrictedRoute,
-  isPendingApprovalRoute,
 } from "./middleware-helpers";
 
 import { providerOnboardingMiddleware } from "./provider-onboard-checks";
@@ -39,7 +37,10 @@ async function refreshSession(req: any) {
   }
 }
 
-function attachSetCookieHeader(response: NextResponse, setCookie: string | null) {
+function attachSetCookieHeader(
+  response: NextResponse,
+  setCookie: string | null,
+) {
   if (!setCookie) return;
   // Forward raw Set-Cookie header from backend refresh route
   response.headers.set("set-cookie", setCookie);
@@ -102,42 +103,22 @@ const authMiddleware = async (req: any) => {
       }
 
       if (user.role === "customer") {
-        // Check if customer is restricted
-        if (user.isRestricted) {
-          const res = NextResponse.redirect(new URL("/restricted", req.url));
-          attachSetCookieHeader(res, refreshedSetCookie);
-          return res;
-        }
         const res = NextResponse.redirect(new URL("/customer", req.url));
         attachSetCookieHeader(res, refreshedSetCookie);
         return res;
       }
 
+      if (user.role === "staff") {
+        const res = NextResponse.redirect(new URL("/staff", req.url));
+        attachSetCookieHeader(res, refreshedSetCookie);
+        return res;
+      }
+
       if (user.role === "provider") {
-        // Check if provider is restricted
-        if (user.isRestricted) {
-          const res = NextResponse.redirect(new URL("/restricted", req.url));
-          attachSetCookieHeader(res, refreshedSetCookie);
-          return res;
-        }
-
-        // Check if provider has pending business approval
-        const hasPendingBusiness = user.businesses?.some(
-          (b: any) => !b.isApproved && !b.isRejected
-        );
-
-        if (hasPendingBusiness && !isPendingApprovalRoute(pathname)) {
-          const res = NextResponse.redirect(new URL("/provider/pending-approval", req.url));
-          attachSetCookieHeader(res, refreshedSetCookie);
-          return res;
-        }
-
         // Check provider onboarding status
         const onboardRedirect = await providerOnboardingMiddleware(
           req,
           user.role,
-          user.id,
-          token || undefined
         );
 
         if (onboardRedirect) {
@@ -145,7 +126,9 @@ const authMiddleware = async (req: any) => {
           return onboardRedirect;
         }
 
-        const res = NextResponse.redirect(new URL("/provider/dashboard", req.url));
+        const res = NextResponse.redirect(
+          new URL("/provider/dashboard", req.url),
+        );
         attachSetCookieHeader(res, refreshedSetCookie);
         return res;
       }
@@ -162,7 +145,7 @@ const authMiddleware = async (req: any) => {
 
         if (!error && user) {
           return NextResponse.redirect(
-            new URL(getRoleBasedRedirect(user.role), req.url)
+            new URL(getRoleBasedRedirect(user.role), req.url),
           );
         }
 
@@ -175,7 +158,7 @@ const authMiddleware = async (req: any) => {
             const retry = await getUserByToken(token);
             if (retry.user && !retry.error) {
               const res = NextResponse.redirect(
-                new URL(getRoleBasedRedirect(retry.user.role), req.url)
+                new URL(getRoleBasedRedirect(retry.user.role), req.url),
               );
               attachSetCookieHeader(res, refreshed.setCookie);
               return res;
@@ -235,62 +218,21 @@ const authMiddleware = async (req: any) => {
 
       // ============ ROLE-BASED ACCESS CONTROL ============
       if (!hasRouteAccess(pathname, user.role)) {
-        // User trying to access wrong role's route
-        // Redirect to their own dashboard
         const res = NextResponse.redirect(
-          new URL(getRoleBasedRedirect(user.role), req.url)
+          new URL(getRoleBasedRedirect(user.role), req.url),
         );
         attachSetCookieHeader(res, refreshedSetCookie);
         return res;
-      }
-
-      // ============ RESTRICTED USER CHECK ============
-      if (user.isRestricted && !isRestrictedRoute(pathname)) {
-        // Redirect to restricted page
-        const res = NextResponse.redirect(new URL("/restricted", req.url));
-        attachSetCookieHeader(res, refreshedSetCookie);
-        return res;
-      }
-
-      // ============ PROVIDER PENDING APPROVAL CHECK ============
-      if (user.role === "provider" && !isPendingApprovalRoute(pathname) && !isProviderOnboardingRoute(pathname)) {
-        const hasPendingBusiness = user.businesses?.some(
-          (b: any) => !b.isApproved && !b.isRejected
-        );
-
-        if (hasPendingBusiness) {
-          const res = NextResponse.redirect(new URL("/provider/pending-approval", req.url));
-          attachSetCookieHeader(res, refreshedSetCookie);
-          return res;
-        }
       }
 
       // ============ PROVIDER ONBOARDING CHECK ============
-      if (user.role === "provider" && !isProviderOnboardingRoute(pathname) && !isPendingApprovalRoute(pathname)) {
+      if (user.role === "provider" && !isProviderOnboardingRoute(pathname)) {
         const onboardRedirect = await providerOnboardingMiddleware(
           req,
           user.role,
-          user.id,
-          token || undefined
         );
 
         // If onboarding incomplete, redirect to onboarding
-        if (onboardRedirect) {
-          attachSetCookieHeader(onboardRedirect, refreshedSetCookie);
-          return onboardRedirect;
-        }
-      }
-
-      // ============ PROVIDER ON ONBOARDING PAGE ============
-      if (user.role === "provider" && isProviderOnboardingRoute(pathname)) {
-        const onboardRedirect = await providerOnboardingMiddleware(
-          req,
-          user.role,
-          user.id,
-          token || undefined
-        );
-
-        // Check if they should be on correct step
         if (onboardRedirect) {
           attachSetCookieHeader(onboardRedirect, refreshedSetCookie);
           return onboardRedirect;

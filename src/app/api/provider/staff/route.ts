@@ -20,19 +20,25 @@ export async function GET(request: Request) {
       ...(isApproved && { isApproved }),
     });
 
-    const { ok, data } = await backend(`/api/v1/staff/profiles?${queryParams}`, {
-      method: "GET",
-    });
+    const { ok, data } = await backend(
+      `/api/v1/provider/staff?${queryParams}`,
+      {
+        method: "GET",
+      },
+    );
 
     if (!ok) {
-      return NextResponse.json({ message: data?.msg || "Failed to fetch staff" }, { status: 500 });
+      return NextResponse.json(
+        { message: data?.msg || "Failed to fetch staff" },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -48,14 +54,17 @@ export async function POST(req: Request) {
     });
 
     if (!ok) {
-      return NextResponse.json({ message: data?.msg || "Failed to create staff" }, { status: data?.status || 500 });
+      return NextResponse.json(
+        { message: data?.msg || "Failed to create staff" },
+        { status: data?.status || 500 },
+      );
     }
 
     return NextResponse.json(data);
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -24,7 +24,7 @@ async function fetchJSON(req: NextRequest, endpoint: string) {
 
 export async function getProviderAddress(req: NextRequest) {
   const res = await fetchJSON(req, "/api/common/address");
-  return res?.address ?? null;
+  return res?.addresses ?? null;
 }
 
 export async function getProviderBusiness(req: NextRequest) {

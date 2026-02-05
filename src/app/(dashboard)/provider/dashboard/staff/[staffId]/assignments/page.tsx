@@ -93,9 +93,12 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
     setIsRemoving(assignmentId);
 
     try {
-      const res = await fetch(`/api/provider/staff/assignment/${assignmentId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/provider/staff/assignment/${assignmentId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       const result = await res.json();
 
@@ -118,12 +121,12 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
   };
 
   const availableServices = services.filter(
-    (s: any) => !getAssignedServiceIds().has(s.id)
+    (s: any) => !getAssignedServiceIds().has(s.id),
   );
 
   if (staffLoading) {
     return (
-      <div className="flex w-full justify-center min-h-screen bg-gray-50">
+      <div className="flex w-full justify-center min-h-screen">
         <div className="w-full max-w-6xl px-4 py-8">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-gray-200 rounded w-1/3" />
@@ -136,7 +139,7 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
 
   if (!staff) {
     return (
-      <div className="flex w-full justify-center min-h-screen bg-gray-50">
+      <div className="flex w-full justify-center min-h-screen">
         <div className="w-full max-w-6xl px-4 py-8">
           <p className="text-gray-600">Staff member not found.</p>
           <Button onClick={() => router.back()} className="mt-4">
@@ -149,15 +152,14 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex w-full justify-center min-h-screen bg-gray-50">
+    <div className="flex w-full justify-center min-h-screen">
       <div className="w-full max-w-6xl px-4 py-8 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <button
               onClick={() => router.back()}
-              className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
-            >
+              className="flex items-center text-gray-600 hover:text-gray-900 mb-4">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Staff Details
             </button>
@@ -181,7 +183,9 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select Service
                 </label>
-                <Select value={selectedService} onValueChange={setSelectedService}>
+                <Select
+                  value={selectedService}
+                  onValueChange={setSelectedService}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a service to assign" />
                   </SelectTrigger>
@@ -202,8 +206,7 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
               </div>
               <Button
                 onClick={handleAssignService}
-                disabled={!selectedService || isAssigning}
-              >
+                disabled={!selectedService || isAssigning}>
                 {isAssigning ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
@@ -228,8 +231,7 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
                 {assignments.map((assignment: any) => (
                   <div
                     key={assignment.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
-                  >
+                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <h3 className="font-semibold text-gray-900">
@@ -256,8 +258,7 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
                       size="sm"
                       onClick={() => handleRemoveAssignment(assignment.id)}
                       disabled={isRemoving === assignment.id}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50">
                       {isRemoving === assignment.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (

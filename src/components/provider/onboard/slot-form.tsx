@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import ConfettiBurst from "./ConfettiBurst";
+import { Route } from "lucide-react";
 
 const Required = () => <span className="text-red-500">*</span>;
 
@@ -44,7 +45,7 @@ function calculateSlotsCount(
   endTime: string,
   breakStart: string,
   breakEnd: string,
-  durationMin: number
+  durationMin: number,
 ) {
   const start = toMinutes(startTime);
   const end = toMinutes(endTime);
@@ -98,7 +99,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
         watchValues.endTime,
         watchValues.breakStartTime,
         watchValues.breakEndTime,
-        15
+        15,
       ),
     },
     {
@@ -109,7 +110,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
         watchValues.endTime,
         watchValues.breakStartTime,
         watchValues.breakEndTime,
-        30
+        30,
       ),
     },
     {
@@ -120,7 +121,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
         watchValues.endTime,
         watchValues.breakStartTime,
         watchValues.breakEndTime,
-        45
+        45,
       ),
     },
     {
@@ -131,7 +132,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
         watchValues.endTime,
         watchValues.breakStartTime,
         watchValues.breakEndTime,
-        60
+        60,
       ),
     },
   ];

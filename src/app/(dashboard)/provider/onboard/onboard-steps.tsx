@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Check, Building2, MapPin, Clock } from "lucide-react";
 
@@ -43,6 +43,8 @@ export default function OnboardSteps() {
         setLoading(true);
         const stepParam = searchParams.get("step");
 
+        console.log("(onboard-steps) stepParam", stepParam);
+
         // Fetch current profile completion status
         const [addressRes, businessRes, slotRes] = await Promise.all([
           fetch("/api/common/address").then((r) => r.json()),
@@ -50,43 +52,71 @@ export default function OnboardSteps() {
           fetch("/api/provider/slots").then((r) => r.json()),
         ]);
 
-        const hasAddress = addressRes && addressRes.address.length > 0 ? true : false;
+        console.log("(onboard-steps) addressRes", addressRes);
+        console.log("(onboard-steps) businessRes", businessRes);
+        console.log("(onboard-steps) slotRes", slotRes);
+
+        const hasAddress =
+          addressRes && addressRes.address.length > 0 ? true : false;
         const hasBusiness = businessRes && businessRes.business ? true : false;
         const hasSlots =
           slotRes && Array.isArray(slotRes.slots) && slotRes.slots.length > 0
             ? true
             : false;
 
+        console.log("(onboard-steps) hasAddress", hasAddress);
+        console.log("(onboard-steps) hasBusiness", hasBusiness);
+        console.log("(onboard-steps) hasSlots", hasSlots);
+
         let nextIncompleteStep = 1;
         if (hasAddress) nextIncompleteStep = 2;
         if (hasAddress && hasBusiness) nextIncompleteStep = 3;
         if (hasAddress && hasBusiness && hasSlots) nextIncompleteStep = 4;
 
+        console.log("(onboard-steps) nextIncompleteStep", nextIncompleteStep);
+
         const requestedStepId = stepParam ? STEP_MAP[stepParam] : null;
 
+        console.log("(onboard-steps) requestedStepId", requestedStepId);
+
         if (requestedStepId && requestedStepId < nextIncompleteStep) {
+          console.log(
+            "(onboard-steps) requestedStepId < nextIncompleteStep",
+            requestedStepId < nextIncompleteStep,
+          );
+          console.log(
+            `(onboard-step) A - /provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`,
+          );
           router.push(
-            `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+            `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`,
           );
           return;
         }
 
         // If valid step parameter, use it
         if (requestedStepId && requestedStepId <= nextIncompleteStep) {
+          console.log(
+            "(onboard-steps) requestedStepId < nextIncompleteStep",
+            requestedStepId < nextIncompleteStep,
+          );
           setStep(requestedStepId);
         } else {
           // Otherwise go to next incomplete step
+          console.log(
+            `(onboard-step) B - /provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`,
+          );
           setStep(nextIncompleteStep);
           if (!stepParam) {
             router.push(
-              `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`
+              `/provider/onboard?step=${REVERSE_STEP_MAP[nextIncompleteStep]}`,
             );
           }
         }
 
         setError(null);
       } catch (err) {
-        setError("Failed to load onboarding status");
+        console.error("Onboarding validation error:", err);
+        setError("Failed to load onboarding status. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -97,7 +127,9 @@ export default function OnboardSteps() {
 
   const handleNext = () => {
     const nextStepId = step + 1;
+    console.log("(handleNext) nextStepId", nextStepId);
     const nextStepName = REVERSE_STEP_MAP[nextStepId];
+    console.log("(handleNext) nextStepName", nextStepName);
 
     router.push(`/provider/onboard?step=${nextStepName}`);
   };
@@ -149,9 +181,10 @@ export default function OnboardSteps() {
                         className={`
                           w-11 h-11 rounded-full flex items-center justify-center
                           mb-2 transition-all duration-300
-                          ${active
-                            ? "bg-blue-600 text-white shadow-lg scale-110"
-                            : completed
+                          ${
+                            active
+                              ? "bg-blue-600 text-white shadow-lg scale-110"
+                              : completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-200 text-gray-400"
                           }
@@ -166,9 +199,10 @@ export default function OnboardSteps() {
                       <span
                         className={`
                           text-xs sm:text-sm font-medium text-center whitespace-nowrap
-                          ${active
-                            ? "text-blue-600"
-                            : completed
+                          ${
+                            active
+                              ? "text-blue-600"
+                              : completed
                               ? "text-green-600"
                               : "text-gray-500"
                           }

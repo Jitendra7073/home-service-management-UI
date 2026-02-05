@@ -11,8 +11,9 @@ export function isPublicRoute(path: string) {
 export function isProtectedRoute(path: string) {
   return (
     path.startsWith("/admin") ||
-    path.startsWith("/restricted") ||
-    path.startsWith("/provider/pending-approval")
+    path.startsWith("/provider") ||
+    path.startsWith("/customer") ||
+    path.startsWith("/staff")
   );
 }
 
@@ -27,6 +28,9 @@ export function hasRouteAccess(path: string, role: string) {
   if (path.startsWith("/admin")) {
     return role === "admin";
   }
+  if (path.startsWith("/staff")) {
+    return role === "staff";
+  }
   return true;
 }
 
@@ -34,19 +38,12 @@ export function getRoleBasedRedirect(role: string) {
   if (role === "admin") return "/admin";
   if (role === "provider") return "/provider/dashboard";
   if (role === "customer") return "/customer";
+  if (role === "staff") return "/staff";
   return "/auth/login";
 }
 
 export function isProviderOnboardingRoute(path: string) {
   return path.startsWith("/provider/onboard");
-}
-
-export function isRestrictedRoute(path: string) {
-  return path === "/restricted";
-}
-
-export function isPendingApprovalRoute(path: string) {
-  return path === "/provider/pending-approval";
 }
 
 export function isAdminRoute(path: string) {

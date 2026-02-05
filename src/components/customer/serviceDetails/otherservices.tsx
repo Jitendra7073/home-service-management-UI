@@ -15,16 +15,14 @@ const OtherServicesGrid = ({
   currentServiceId: string;
 }) => {
   const otherServices = business.services.filter(
-    (s: any) => s.id !== currentServiceId
+    (s: any) => s.id !== currentServiceId,
   );
   if (otherServices.length === 0) return null;
 
   const router = useRouter();
 
   const handleRedirecting = (service: any) => {
-    router.push(
-      `/customer/explore/${providerId.id}?serviceId=${service.id}`
-    );
+    router.push(`/customer/explore/${providerId.id}?serviceId=${service.id}`);
   };
 
   return (
@@ -36,7 +34,7 @@ const OtherServicesGrid = ({
         {otherServices.map((s: any) => (
           <div
             key={s.id}
-            className="group border rounded-md bg-gray-50 cursor-pointer p-5  border-gray-200 hover:border-blue-200
+            className="group border rounded-md cursor-pointer p-5  border-gray-200 hover:border-blue-200
                    hover:shadow-lg transition-all "
             onClick={() => handleRedirecting(s)}>
             <div className="flex items-center gap-3 mb-2">
@@ -57,19 +55,13 @@ const OtherServicesGrid = ({
               </span>
               <div className="flex items-center gap-1 text-xs text-gray-800">
                 <Clock className="w-4 h-4" />
-                <span>{
-                  (s.durationInMinutes / 60)
-                    .toFixed(2)
-                    .split(".")[0]
-                }{s.durationInMinutes < 60 ? "Min" : "Hrs"} {
-                    (s.durationInMinutes / 60)
-                      .toFixed(2)
-                      .split(".")[1] == "00"
-                      ? ""
-                      : (s.durationInMinutes / 60)
-                        .toFixed(2)
-                        .split(".")[1] + " Min"
-                  }
+                <span>
+                  {(s.durationInMinutes / 60).toFixed(2).split(".")[0]}
+                  {s.durationInMinutes < 60 ? "Min" : "Hrs"}{" "}
+                  {(s.durationInMinutes / 60).toFixed(2).split(".")[1] == "00"
+                    ? ""
+                    : (s.durationInMinutes / 60).toFixed(2).split(".")[1] +
+                      " Min"}
                 </span>
               </div>
             </div>

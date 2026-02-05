@@ -36,7 +36,7 @@ export default function ProviderBlockScreen({
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-md shadow-xl p-8 text-center space-y-6">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
           {status === "pending" ? (

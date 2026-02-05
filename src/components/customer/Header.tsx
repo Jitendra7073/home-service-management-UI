@@ -21,7 +21,13 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import NotificationSideBar from "../common/notification-sidebar";
 import { useQuery } from "@tanstack/react-query";
 // import { ThemeToggle } from "@/components/theme-toggle";
@@ -45,14 +51,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-background border-b border-border">
       <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-
         {/* LOGO */}
         <Link
           href="/customer"
-          className="text-lg font-bold tracking-tight text-primary"
-        >
-          
-          <Image 
+          className="text-lg font-bold tracking-tight text-primary">
+          <Image
             src="/HSM-logo.png"
             alt="ServiceHub Logo"
             width={160}
@@ -65,25 +68,29 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-2">
           <NavigationMenu>
             <NavigationMenuList>
-
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/explore">Explore</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/booking">Booking</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/cart" className="relative">
-                    <ShoppingCart className="text-primary"/>
+                    <ShoppingCart className="text-primary" />
                     {cartCount > 0 && (
-
                       <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
                         {cartCount}
                       </span>
@@ -93,9 +100,11 @@ export default function Header() {
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}>
                   <Link href="/customer/profile">
-                    <User2 className="text-primary"/>
+                    <User2 className="text-primary" />
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -103,18 +112,15 @@ export default function Header() {
               <NavigationMenuItem>
                 <NotificationSideBar />
               </NavigationMenuItem>
-
             </NavigationMenuList>
           </NavigationMenu>
         </nav>
 
         {/* MOBILE ACTIONS */}
         <div className="flex md:hidden items-center gap-1">
-
           <Link
             href="/customer/cart"
-            className="relative p-2 rounded-md hover:bg-muted"
-          >
+            className="relative p-2 rounded-md hover:bg-muted">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
@@ -130,7 +136,11 @@ export default function Header() {
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
-                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {open ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </Button>
             </SheetTrigger>
 
@@ -140,7 +150,6 @@ export default function Header() {
             {/* MOBILE MENU */}
             <SheetContent side="right" className="w-[330px] p-0">
               <div className="flex flex-col h-full">
-
                 {/* MENU LINKS */}
                 <div className="px-4 pt-10 space-y-1">
                   <MobileNavItem
@@ -186,21 +195,14 @@ function MobileNavItem({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-3 rounded-md hover:bg-muted"
-    >
+      className="flex items-center gap-3 px-3 py-3 rounded-md hover:bg-muted">
       <Icon className="h-5 w-5 text-primary" />
       <span className="text-base font-medium">{label}</span>
     </Link>
   );
 }
 
-function PromoCard({
-  title,
-  image,
-}: {
-  title: string;
-  image: string;
-}) {
+function PromoCard({ title, image }: { title: string; image: string }) {
   return (
     <div className="relative overflow-hidden rounded-md border">
       <Image
@@ -211,7 +213,7 @@ function PromoCard({
         className="h-24 w-full object-cover"
       />
       <div className="absolute inset-0 bg-black/20 flex items-end p-2">
-        <span className="text-white text-sm font-semibold bg-gray-500 px-3 rounded">
+        <span className="text-white text-sm font-semibold0 px-3 rounded">
           {title}
         </span>
       </div>

@@ -85,7 +85,7 @@ const password = yup.string().required("Password is required");
 // });
 
 export const registrationSchema = yup.object().shape({
-  role: yup.string().oneOf(["customer", "provider"]).required(),
+  role: yup.string().oneOf(["customer", "provider", "staff"]).required(),
   name: yup.string().min(3).required("Full name is required"),
   email: email,
   mobile: yup

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Calendar, Clock, Filter, IndianRupee } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -19,17 +20,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StaffEarningsSkeleton } from "@/components/staff/skeletons";
 
 export default function StaffEarnings() {
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get("status") || "";
+
+  // Initialize filter from URL
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(statusParam);
+
+  // Handle filter change and update URL
+  const handleFilterChange = (value: string) => {
+    setPaymentStatusFilter(value);
+
+    // Update URL params
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "" || value === "ALL") {
+      params.delete("status");
+    } else {
+      params.set("status", value);
+    }
+
+    // Update URL without refreshing
+    router.push(`/staff/earnings?${params.toString()}`, { scroll: false });
+  };
 
   // Fetch earnings data
   const { data, isLoading } = useQuery({
     queryKey: ["staff-earnings", paymentStatusFilter],
     queryFn: async () => {
-      const queryParams = new URLSearchParams({
-        ...(paymentStatusFilter && { paymentStatus: paymentStatusFilter }),
-      });
+      const queryParams = new URLSearchParams();
+      if (paymentStatusFilter && paymentStatusFilter !== "ALL") {
+        queryParams.set("paymentStatus", paymentStatusFilter);
+      }
       const res = await fetch(`/api/staff/earnings?${queryParams}`, {
         method: "GET",
       });
@@ -38,6 +62,11 @@ export default function StaffEarnings() {
   });
 
   const earnings = data?.earnings || [];
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <StaffEarningsSkeleton />;
+  }
 
   const totalEarnings = earnings
     .filter((e: any) => e.paymentStatus === "PAID")
@@ -123,8 +152,8 @@ export default function StaffEarnings() {
             <Filter className="w-5 h-5 text-gray-600" />
             <div className="flex-1">
               <Select
-                value={paymentStatusFilter}
-                onValueChange={setPaymentStatusFilter}>
+                value={paymentStatusFilter || "ALL"}
+                onValueChange={handleFilterChange}>
                 <SelectTrigger className="w-full max-w-xs">
                   <SelectValue placeholder="Filter by payment status" />
                 </SelectTrigger>

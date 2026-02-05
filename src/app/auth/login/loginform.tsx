@@ -62,11 +62,13 @@ export default function LoginForm() {
 
       toast.success("Login successful!");
       // Redirect based on role returned from backend
-      let redirectPath = "/customer";
+      let redirectPath = "";
       if (json?.role === "admin") {
         redirectPath = "/admin";
       } else if (json?.role === "provider") {
         redirectPath = "/provider/dashboard";
+      } else if (json?.role === "staff") {
+        redirectPath = "/staff";
       } else {
         redirectPath = "/customer";
       }

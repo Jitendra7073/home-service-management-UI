@@ -375,7 +375,7 @@ function InfoBox({
   value: string;
 }) {
   return (
-    <div className="flex gap-3 p-3 bg-gray-50 border rounded-md">
+    <div className="flex gap-3 p-3 border rounded-md">
       <Icon className="w-5 h-5 text-gray-600" />
       <div>
         <p className="text-xs text-gray-500">{label}</p>

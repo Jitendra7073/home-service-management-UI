@@ -34,7 +34,11 @@ import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AdminDataTable } from "@/components/admin/ui/admin-data-table";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -43,6 +47,15 @@ import {
   PaymentStatusBadge,
 } from "@/components/customer/booking/StatusBadge";
 import { BookingStatus, getAllowedTransitions } from "@/types/booking.types";
+import { AssignStaffModal } from "./assign-staff-modal";
+
+// Extend meta type for our table
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData = unknown> {
+    queryClient?: QueryClient;
+    openAssignModal?: (id: string) => void;
+  }
+}
 
 type Booking = {
   id: string;
@@ -55,6 +68,8 @@ type Booking = {
   payment: string;
   status: string;
   partnerName?: string | null;
+  assignedStaffName?: string | null;
+  trackingStatus?: string;
 };
 
 type TeamMember = {
@@ -71,7 +86,7 @@ function StatusDropdown({
   bookingId: string;
   status: string;
   payment: string;
-  queryClient: ReturnType<typeof useQueryClient>;
+  queryClient: QueryClient;
 }) {
   const [isUpdating, setIsUpdating] = React.useState(false);
 
@@ -215,8 +230,19 @@ const columns: ColumnDef<Booking>[] = [
     },
   },
   {
+    header: "Assigned To",
+    cell: ({ row }) => {
+      const assigned = row.original.assignedStaffName;
+      return assigned ? (
+        <span className="text-sm font-medium text-gray-700">{assigned}</span>
+      ) : (
+        <span className="text-xs text-gray-400 italic">Unassigned</span>
+      );
+    },
+  },
+  {
     id: "actions",
-    cell: ({ row }) => (
+    cell: ({ row, table }) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -229,6 +255,16 @@ const columns: ColumnDef<Booking>[] = [
             <Link href={`/provider/dashboard/bookings/${row.original.id}`}>
               View Details
             </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              table.options.meta?.openAssignModal?.(row.original.id)
+            }
+            disabled={
+              !!row.original.assignedStaffName &&
+              row.original.trackingStatus !== "NOT_STARTED"
+            }>
+            Assign Staff
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -244,6 +280,8 @@ const columns: ColumnDef<Booking>[] = [
 export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const [assignModalOpen, setAssignModalOpen] = React.useState(false);
+  const [selectedBookingId, setSelectedBookingId] = React.useState<string>("");
   const queryClient = useQueryClient();
 
   const { data, isLoading, isFetching, refetch, error } = useQuery({
@@ -269,6 +307,8 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
         }
       }
 
+      const assignedStaff = b.StaffAssignBooking?.[0]?.assignedStaff;
+
       return {
         id: b.id,
         customer: b.user?.name ?? "Unknown Customer",
@@ -291,28 +331,32 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
         payment: b.paymentStatus || "PENDING",
         status: b.bookingStatus || "PENDING",
         partnerName: b.partner?.name ?? null,
+        assignedStaffName: assignedStaff ? assignedStaff.name : null,
+        trackingStatus: b.trackingStatus || "NOT_STARTED",
       };
     });
   }, [data]);
 
-  console.log("Data", data);
-  console.log("booking data", bookings);
+  const openAssignModal = (id: string) => {
+    setSelectedBookingId(id);
+    setAssignModalOpen(true);
+  };
 
   const table = useReactTable({
     data: bookings,
     columns,
-    meta: { queryClient },
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
       globalFilter,
       pagination: { pageIndex: 0, pageSize: NumberOfRows },
     },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    meta: { queryClient, openAssignModal },
   });
 
   const adminColumns = table.getHeaderGroups()[0].headers.map((header) => ({
@@ -383,6 +427,14 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
         totalPages={table.getPageCount()}
         emptyMessage="New Booking will appear here"
       />
+
+      {selectedBookingId && (
+        <AssignStaffModal
+          isOpen={assignModalOpen}
+          onClose={() => setAssignModalOpen(false)}
+          bookingId={selectedBookingId}
+        />
+      )}
     </div>
   );
 }
