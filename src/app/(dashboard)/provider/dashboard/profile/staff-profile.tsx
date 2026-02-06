@@ -18,12 +18,15 @@ import {
   Disc,
   IndianRupee,
   Tag,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StaffProfileSkeleton } from "@/components/staff/skeletons";
+import { toast } from "sonner";
 import { StaffProfileEditDialog } from "@/components/staff/staff-profile-edit-dialog";
 import { StaffAddressList } from "@/components/staff/address-list";
 import { StaffCardForm } from "@/components/staff/card-form";
@@ -41,10 +44,14 @@ export default function StaffProfile() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [showAddAddress, setShowAddAddress] = useState(false);
   const [showAddCard, setShowAddCard] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Initialize active tab from URL or default to "details"
   const [activeTab, setActiveTab] = useState(
-    tabParam === "details" || tabParam === "addresses" || tabParam === "payment"
+    tabParam === "details" ||
+      tabParam === "addresses" ||
+      tabParam === "payment" ||
+      tabParam === "bank-account"
       ? tabParam
       : "details",
   );
@@ -121,9 +128,53 @@ export default function StaffProfile() {
     },
   });
 
+  const { data: bankAccountData, refetch: refetchBankAccount } = useQuery({
+    queryKey: ["provider-bank-account"],
+    queryFn: async () => {
+      const res = await fetch("/api/provider/bank-accounts", {
+        credentials: "include",
+      });
+      return res.json();
+    },
+  });
+
+  const { data: stripeStatusData } = useQuery({
+    queryKey: ["provider-stripe-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/provider/payments/stripe/status", {
+        credentials: "include",
+      });
+      return res.json();
+    },
+  });
+
   const profile = data?.user;
+  const bankAccounts = bankAccountData?.bankAccounts || [];
+  const hasConnected = stripeStatusData?.hasConnected || false;
   const addresses = addressData?.addresses || [];
   const cards = cardsData?.cards || [];
+
+  const handleSyncBankAccounts = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/provider/bank-accounts/sync", {
+        method: "POST",
+        credentials: "include",
+      });
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success(result.msg || "Bank accounts synced successfully!");
+        refetchBankAccount();
+      } else {
+        toast.error(result.msg || "Failed to sync bank accounts");
+      }
+    } catch (error) {
+      toast.error("Error syncing bank accounts");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // ---------------- LOADING STATE ----------------
   if (isLoading) {
@@ -158,7 +209,7 @@ export default function StaffProfile() {
           value={activeTab}
           onValueChange={handleTabChange}
           className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-4 lg:w-[800px]">
             <TabsTrigger value="details">Profile Details</TabsTrigger>
             <TabsTrigger value="addresses">
               Addresses
@@ -176,6 +227,7 @@ export default function StaffProfile() {
                 </Badge>
               )}
             </TabsTrigger>
+            <TabsTrigger value="bank-account">Bank Account</TabsTrigger>
           </TabsList>
 
           {/* Profile Details Tab */}
@@ -454,6 +506,260 @@ export default function StaffProfile() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Bank Account Tab */}
+          <TabsContent value="bank-account" className="space-y-6 mt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Bank Account
+                </h2>
+                <p className="text-gray-500 mt-1">
+                  Manage your bank account for receiving payments from customers
+                </p>
+              </div>
+              {!hasConnected && (
+                <Button
+                  onClick={() => {
+                    toast.info("Redirecting to Stripe...", {
+                      description:
+                        "You'll be redirected to complete your account setup",
+                    });
+                    fetch("/api/provider/payments/stripe/onboarding", {
+                      credentials: "include",
+                    })
+                      .then((res) => res.json())
+                      .then((data) => {
+                        if (data.success && data.onboardingUrl) {
+                          setTimeout(() => {
+                            window.location.href = data.onboardingUrl;
+                          }, 1500);
+                        } else {
+                          toast.error(
+                            data.msg || "Failed to generate onboarding link",
+                          );
+                        }
+                      })
+                      .catch(() => {
+                        toast.error("Error connecting to Stripe");
+                      });
+                  }}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg">
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Connect Account
+                </Button>
+              )}
+            </div>
+
+            {!hasConnected ? (
+              <div className="text-center py-16 px-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl mb-6">
+                  <CreditCard className="w-10 h-10 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Connect Your Bank Account
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Connect your bank account to receive payments from customers
+                  for your services
+                </p>
+                <Button
+                  onClick={() => {
+                    fetch("/api/provider/payments/stripe/onboarding", {
+                      credentials: "include",
+                    })
+                      .then((res) => res.json())
+                      .then((data) => {
+                        if (data.success && data.onboardingUrl) {
+                          toast.info("Redirecting to Stripe...");
+                          setTimeout(() => {
+                            window.location.href = data.onboardingUrl;
+                          }, 1500);
+                        } else {
+                          toast.error(
+                            data.msg || "Failed to generate onboarding link",
+                          );
+                        }
+                      })
+                      .catch(() => {
+                        toast.error("Error connecting to Stripe");
+                      });
+                  }}
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-xl">
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Connect Bank Account
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Bank Accounts List */}
+                {bankAccounts.length > 0 ? (
+                  <div className="grid gap-4">
+                    {bankAccounts.map((account: any) => (
+                      <div
+                        key={account.id}
+                        className="relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+                        {/* Gradient accent bar */}
+                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-600 to-blue-600" />
+
+                        <div className="p-6 pl-8">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl">
+                                  <Building2 className="w-6 h-6 text-purple-600" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-gray-900 text-lg">
+                                    {account.bankName}
+                                  </h4>
+                                  {account.isDefault && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
+                                      Default Account
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                                    Account Number
+                                  </p>
+                                  <p className="font-mono text-lg font-semibold text-gray-900">
+                                    •••• •••• •••• {account.last4}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                                    Currency
+                                  </p>
+                                  <p className="font-semibold text-gray-900">
+                                    {account.currency?.toUpperCase()}
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                                    Status
+                                  </p>
+                                  <span
+                                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                      account.status === "new" ||
+                                      account.status === "validated"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-gray-100 text-gray-800"
+                                    }`}>
+                                    {account.status === "new" ||
+                                    account.status === "validated"
+                                      ? "✓"
+                                      : "○"}{" "}
+                                    {account.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  account.status === "new" ||
+                                  account.status === "validated"
+                                    ? "bg-green-500"
+                                    : "bg-gray-400"
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 px-8 bg-gray-50 rounded-2xl">
+                    <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 mb-4">
+                      No bank accounts found in our database.
+                    </p>
+                    {hasConnected && (
+                      <div className="space-y-3">
+                        <p className="text-sm text-gray-500 mb-4">
+                          If you've completed the Stripe onboarding and added a bank account, click below to sync.
+                        </p>
+                        <Button
+                          onClick={handleSyncBankAccounts}
+                          disabled={isSyncing}
+                          variant="outline"
+                          className="shadow-sm">
+                          {isSyncing ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Syncing...
+                            </>
+                          ) : (
+                            <>
+                              <RefreshCw className="w-4 h-4 mr-2" />
+                              Sync Bank Accounts
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                    {!hasConnected && (
+                      <p className="text-sm text-gray-500">
+                        Complete your Stripe setup to add a bank account.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Stripe Account Status Card */}
+                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm">
+                      <CreditCard className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-4">
+                        Stripe Account Status
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center justify-between p-3 bg-white rounded-xl">
+                          <span className="text-sm text-gray-600">
+                            Account Status
+                          </span>
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                              stripeStatusData?.stripeAccountStatus ===
+                              "VERIFIED"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-amber-100 text-amber-800"
+                            }`}>
+                            {stripeStatusData?.stripeAccountStatus || "Unknown"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-white rounded-xl">
+                          <span className="text-sm text-gray-600">
+                            Payouts Enabled
+                          </span>
+                          <span
+                            className={`inline-flex items-center text-sm font-medium ${
+                              stripeStatusData?.payoutsEnabled
+                                ? "text-green-700"
+                                : "text-gray-500"
+                            }`}>
+                            {stripeStatusData?.payoutsEnabled
+                              ? "✓ Active"
+                              : "○ Inactive"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 

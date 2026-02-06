@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  DollarSign,
+  IndianRupee,
   Clock,
   CheckCircle2,
   XCircle,
@@ -147,7 +147,7 @@ export function ProviderPaymentStatisticsClient() {
                 <CardTitle className="text-sm font-medium text-blue-900">
                   Total Payments
                 </CardTitle>
-                <DollarSign className="w-8 h-8 text-blue-600" />
+                <IndianRupee className="w-8 h-8 text-blue-600" />
               </div>
             </CardHeader>
             <CardContent>

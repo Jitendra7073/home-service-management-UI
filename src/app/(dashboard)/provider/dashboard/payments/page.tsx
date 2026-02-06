@@ -9,7 +9,7 @@ import {
   User,
   Calendar,
   MapPin,
-  DollarSign,
+  IndianRupee,
   Send,
   X,
   Loader2,
@@ -18,7 +18,6 @@ import {
   Users,
   Download,
   ArrowLeft,
-  IndianRupee,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -622,7 +621,7 @@ export default function ProviderPaymentsPage() {
                   <CardContent>
                     {requests.length === 0 ? (
                       <div className="text-center py-12">
-                        <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
                           No payment requests found
                         </h3>
@@ -791,7 +790,7 @@ export default function ProviderPaymentsPage() {
                   <CardContent>
                     {payments.length === 0 ? (
                       <div className="text-center py-12">
-                        <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
                           No payments found
                         </h3>
@@ -847,7 +846,7 @@ export default function ProviderPaymentsPage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center gap-2 text-gray-600">
-                                    <DollarSign className="w-4 h-4" />
+                                    <IndianRupee className="w-4 h-4" />
                                     <span>
                                       Transfer:{" "}
                                       {payment.stripeTransferId || "N/A"}

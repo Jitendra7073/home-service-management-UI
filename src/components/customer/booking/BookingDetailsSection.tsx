@@ -14,6 +14,7 @@ import {
   Cross,
   AlertTriangle,
   Info,
+  XCircle,
 } from "lucide-react";
 import CopyField from "@/components/customer/booking/CopyField";
 import { PaymentStatusBadge } from "./StatusBadge";
@@ -151,7 +152,21 @@ export default function BookingDetailsSection({
       case "PENDING":
       case "PENDING_PAYMENT":
       case "CONFIRMED":
-        return { canCancel: true, canCall: true, canGiveFeedback: false };
+        // Check if staff is assigned and tracking is in last 2 steps
+        const restrictedTrackingStatuses = ["SERVICE_STARTED", "COMPLETED"];
+        const cannotCancelDueToTracking =
+          booking.assignedStaff &&
+          booking.trackingStatus &&
+          restrictedTrackingStatuses.includes(booking.trackingStatus);
+
+        return {
+          canCancel: !cannotCancelDueToTracking,
+          canCall: true,
+          canGiveFeedback: false,
+          cancelReason: cannotCancelDueToTracking
+            ? "Booking is almost at completion state and cannot be cancelled"
+            : undefined,
+        };
 
       case "CANCEL_REQUESTED":
         return { canCancel: false, canCall: true, canGiveFeedback: false };
@@ -518,7 +533,10 @@ export default function BookingDetailsSection({
           )}
           {/* PREMIUM TRACKING STRIP */}
           <div className="mt-3">
-            <CustomerTrackingProgress current={tracking_status} />
+            <CustomerTrackingProgress
+              current={tracking_status}
+              bookingStatus={booking.bookingStatus}
+            />
           </div>
 
           {/* ------------------------- FOOTER (Only show if NOT cancelled) ------------------------- */}
@@ -546,6 +564,14 @@ export default function BookingDetailsSection({
                             <X className="w-4 h-4" />
                             Cancel Booking
                           </Button>
+                        )}
+
+                        {/* Show reason if cancel is not allowed */}
+                        {!actions.canCancel && actions.cancelReason && (
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-md text-xs text-orange-800">
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                            <span className="font-medium">{actions.cancelReason}</span>
+                          </div>
                         )}
 
                         {/* Call Provider */}
@@ -617,25 +643,38 @@ const TRACKING_STEPS = [
 
 /* ---------------- PREMIUM TRACKING UI ---------------- */
 
-function CustomerTrackingProgress({ current }: { current: string }) {
+function CustomerTrackingProgress({
+  current,
+  bookingStatus,
+}: {
+  current: string;
+  bookingStatus: any;
+}) {
+  const isCancelled = bookingStatus === "CANCELLED";
+
   const currentIndexRaw = TRACKING_STEPS.indexOf(current as any);
   const currentIndex = currentIndexRaw < 0 ? 0 : currentIndexRaw;
 
-  const percent =
-    TRACKING_STEPS.length <= 1
-      ? 0
-      : (currentIndex / (TRACKING_STEPS.length - 1)) * 100;
+  // For cancelled bookings, show progress up to the point where it was cancelled
+  // For active/completed bookings, show normal progress
+  const displayPercent = isCancelled
+    ? (currentIndex / (TRACKING_STEPS.length - 1)) * 100
+    : TRACKING_STEPS.length <= 1
+    ? 0
+    : (currentIndex / (TRACKING_STEPS.length - 1)) * 100;
 
   return (
     <div className="w-full py-3">
       <div className="relative">
-        {/* base line */}
+        {/* base line - always gray */}
         <div className="absolute left-0 right-0 top-[6px] h-[2px] bg-gray-200 rounded-full" />
 
-        {/* active line */}
+        {/* active line - green for active, red line for cancelled */}
         <div
-          className="absolute left-0 top-[6px] h-[2px] bg-green-500 rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${percent}%` }}
+          className={`absolute left-0 top-[6px] h-[2px] rounded-full transition-all duration-700 ease-out ${
+            isCancelled ? "bg-red-400" : "bg-green-500"
+          }`}
+          style={{ width: `${displayPercent}%` }}
         />
 
         {/* steps */}
@@ -654,11 +693,15 @@ function CustomerTrackingProgress({ current }: { current: string }) {
                     z-10 w-3 h-3 rounded-full border
                     transition-all duration-300
                     ${
-                      done
+                      isCancelled
+                        ? done
+                          ? "bg-red-400 border-red-400"
+                          : "bg-white border-gray-300"
+                        : done
                         ? "bg-green-500 border-green-500"
                         : "bg-white border-gray-300"
                     }
-                    ${active ? "scale-125 shadow-sm" : ""}
+                    ${active && !isCancelled ? "scale-125 shadow-sm" : ""}
                   `}
                 />
 
@@ -668,7 +711,15 @@ function CustomerTrackingProgress({ current }: { current: string }) {
                     mt-2 text-[10px] sm:text-xs font-medium
                     text-center leading-tight
                     transition-colors duration-300
-                    ${done ? "text-green-700" : "text-gray-500"}
+                    ${
+                      isCancelled
+                        ? done
+                          ? "text-red-700"
+                          : "text-gray-500"
+                        : done
+                        ? "text-green-700"
+                        : "text-gray-500"
+                    }
                   `}>
                   <span className="flex items-center justify-center gap-1 flex-wrap">
                     <span className="break-words">
@@ -680,7 +731,41 @@ function CustomerTrackingProgress({ current }: { current: string }) {
               </div>
             );
           })}
+
+          {/* Cancellation indicator - only show when cancelled */}
+          {isCancelled && (
+            <div className="flex flex-col items-center flex-1 min-w-0 px-1">
+              {/* X icon for cancellation */}
+              <div className="z-10 w-3 h-3 rounded-full bg-red-600 border-2 border-red-600 flex items-center justify-center">
+                <X className="w-2 h-2 text-white" strokeWidth={3} />
+              </div>
+
+              {/* Cancelled label */}
+              <div className="mt-2 text-[10px] sm:text-xs font-semibold text-center leading-tight text-red-700">
+                Cancelled
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Cancellation message - show below stepper when cancelled */}
+        {isCancelled && (
+          <div className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
+            <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+            <p className="text-xs sm:text-sm font-medium text-red-800 text-center">
+              Service was cancelled at{" "}
+              <span className="font-bold">
+                {current === "NOT_STARTED"
+                  ? "the beginning"
+                  : current
+                      .charAt(0)
+                      .toUpperCase() +
+                    current.toLocaleLowerCase().slice(1).replaceAll("_", " ").toLowerCase()}
+              </span>{" "}
+              stage
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

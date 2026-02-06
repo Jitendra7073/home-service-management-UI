@@ -16,6 +16,8 @@ import {
   Activity,
   CheckCircle2,
   RefreshCw,
+  X,
+  XCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -176,9 +178,19 @@ export default function BookingDetailsDashboard({
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-2xl font-bold">Booking Details</h1>
 
-            <Badge className={bookingStatusClasses[booking.bookingStatus]}>
-              {booking.bookingStatus}
-            </Badge>
+            {/* Cancellation alert in header */}
+            {booking.bookingStatus === "CANCELLED" ? (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-100 border border-red-300 rounded-full">
+                <XCircle className="w-4 h-4 text-red-600" />
+                <span className="text-sm font-semibold text-red-800">
+                  Cancelled by Customer
+                </span>
+              </div>
+            ) : (
+              <Badge className={bookingStatusClasses[booking.bookingStatus]}>
+                {booking.bookingStatus}
+              </Badge>
+            )}
 
             <Badge className={paymentStatusClasses[booking.paymentStatus]}>
               {booking.paymentStatus}
@@ -316,6 +328,7 @@ export default function BookingDetailsDashboard({
               <CardContent>
                 <TrackingProgress
                   current={booking.trackingStatus || "NOT_STARTED"}
+                  bookingStatus={booking.bookingStatus}
                 />
               </CardContent>
             </Card>
@@ -368,38 +381,103 @@ export default function BookingDetailsDashboard({
 
 /* ---------------- TRACKING PROGRESS COMPONENT ---------------- */
 
-function TrackingProgress({ current }: { current: TrackingStatus }) {
+function TrackingProgress({
+  current,
+  bookingStatus,
+}: {
+  current: TrackingStatus;
+  bookingStatus: BookingStatus;
+}) {
   const currentIndex = TRACKING_STEPS.indexOf(current);
+  const isCancelled = bookingStatus === "CANCELLED";
 
   return (
-    <div className="relative">
-      {TRACKING_STEPS.map((step, i) => {
-        const done = i <= currentIndex;
-        const color = STEP_COLORS[step];
+    <div className="space-y-4">
+      {/* Cancellation message - show when cancelled */}
+      {isCancelled && (
+        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+          <p className="text-sm font-medium text-red-800 text-center">
+            Service was cancelled by customer at{" "}
+            <span className="font-bold">
+              {current === "NOT_STARTED"
+                ? "the beginning"
+                : current.charAt(0).toUpperCase() +
+                  current
+                    .toLocaleLowerCase()
+                    .slice(1)
+                    .replaceAll("_", " ")
+                    .toLowerCase()}
+            </span>{" "}
+            stage
+          </p>
+        </div>
+      )}
 
-        return (
-          <div key={step} className="flex gap-3 pb-6 relative">
-            {i !== TRACKING_STEPS.length - 1 && (
+      {/* Tracking timeline */}
+      <div className="relative">
+        {TRACKING_STEPS.map((step, i) => {
+          const done = i <= currentIndex;
+
+          // For cancelled bookings, use red color instead of step colors
+          const displayColor = isCancelled ? "bg-red-500" : STEP_COLORS[step];
+
+          return (
+            <div key={step} className="flex gap-3 pb-6 relative">
+              {i !== TRACKING_STEPS.length - 1 && (
+                <div
+                  className={`absolute left-3 top-7 w-1 h-full rounded ${
+                    i < currentIndex ? displayColor : "bg-gray-200"
+                  }`}
+                />
+              )}
+
+              {/* Step circle - show X icon for cancelled state beyond current step */}
               <div
-                className={`absolute left-3 top-7 w-1 h-full rounded
-                ${i < currentIndex ? color : "bg-gray-200"}`}
-              />
-            )}
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-white shadow ${
+                  done ? displayColor : "bg-gray-300"
+                }`}>
+                {done ? (
+                  isCancelled ? (
+                    <X size={16} strokeWidth={3} />
+                  ) : (
+                    <CheckCircle2 size={16} />
+                  )
+                ) : (
+                  i + 1
+                )}
+              </div>
 
-            <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-white shadow
-              ${done ? color : "bg-gray-300"}`}>
-              {done ? <CheckCircle2 size={16} /> : i + 1}
+              <div>
+                <p
+                  className={`${
+                    done
+                      ? isCancelled
+                        ? "font-semibold text-red-700"
+                        : "font-semibold"
+                      : "text-gray-500"
+                  }`}>
+                  {step.replaceAll("_", " ")}
+                </p>
+              </div>
             </div>
+          );
+        })}
 
+        {/* Cancelled indicator at the end */}
+        {isCancelled && (
+          <div className="flex gap-3 relative">
+            <div className="absolute left-3 top-7 w-1 h-6 rounded bg-gray-200" />
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white shadow bg-red-600 border-2 border-red-600">
+              <X size={16} strokeWidth={3} />
+            </div>
             <div>
-              <p className={done ? "font-semibold" : "text-gray-500"}>
-                {step.replaceAll("_", " ")}
-              </p>
+              <p className="font-semibold text-red-700">Cancelled</p>
+              <p className="text-xs text-gray-500">By Customer</p>
             </div>
           </div>
-        );
-      })}
+        )}
+      </div>
     </div>
   );
 }

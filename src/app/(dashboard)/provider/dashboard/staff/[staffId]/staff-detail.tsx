@@ -15,6 +15,11 @@ import {
   UserCircle,
   ToggleLeft,
   ToggleRight,
+  CalendarClock,
+  FileText,
+  XCircle,
+  Check,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UnlinkStaffModal } from "@/components/provider/staff/unlink-staff-modal";
 import { useState } from "react";
 import { toast } from "sonner";
+import { StaffLeaveManagement } from "./staff-leave-management";
 
 interface StaffDetailProps {
   staffId: string;
@@ -126,22 +132,6 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
             Back to Staff
           </button>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={handleToggleAvailability}
-              disabled={updateAvailabilityMutation.isPending}>
-              {staff.availability === "AVAILABLE" ? (
-                <>
-                  <ToggleRight className="w-4 h-4 mr-2" />
-                  Set as Busy
-                </>
-              ) : (
-                <>
-                  <ToggleLeft className="w-4 h-4 mr-2" />
-                  Set as Available
-                </>
-              )}
-            </Button>
             <Button variant="destructive" onClick={handleUnlinkStaff}>
               <UserCircle className="w-4 h-4 mr-2" />
               Unlink from Business
@@ -298,10 +288,11 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
 
         {/* Tabs for detailed info */}
         <Tabs defaultValue="activity" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="activity">Recent Activity</TabsTrigger>
             <TabsTrigger value="bookings">Booking History</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="leave">Leave Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="activity" className="mt-6">
@@ -380,13 +371,17 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                         <div className="flex items-center gap-2">
                           <Badge
                             className={
-                              booking.trackingStatus === "COMPLETED"
+                              booking.bookingStatus === "CANCELLED"
+                                ? "bg-red-100 text-red-700"
+                                : booking.trackingStatus === "COMPLETED"
                                 ? "bg-green-100 text-green-700"
                                 : booking.trackingStatus === "SERVICE_STARTED"
                                 ? "bg-blue-100 text-blue-700"
                                 : "bg-gray-100 text-gray-700"
                             }>
-                            {booking.trackingStatus || booking.bookingStatus}
+                            {booking.bookingStatus === "CANCELLED"
+                              ? "Cancelled"
+                              : booking.trackingStatus || booking.bookingStatus}
                           </Badge>
                         </div>
                       </div>
@@ -486,6 +481,10 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="leave" className="mt-6">
+            <StaffLeaveManagement staffId={staffId} />
           </TabsContent>
         </Tabs>
 

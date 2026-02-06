@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  DollarSign,
+  IndianRupee,
   Calendar,
   Building2,
   CheckCircle2,
   Clock,
   XCircle,
   Filter,
+  CreditCard,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,13 +53,24 @@ export function StaffPaymentsClient() {
       params.append("limit", "20");
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/payments/history?${params}`,
+        `/api/staff/payments/history?${params}`,
         {
           credentials: "include",
         },
       );
       const result = await res.json();
       return result;
+    },
+  });
+
+  // Check Stripe account status
+  const { data: stripeData } = useQuery({
+    queryKey: ["staff-stripe-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/staff/payments/stripe/status", {
+        credentials: "include",
+      });
+      return res.json();
     },
   });
 
@@ -83,7 +95,9 @@ export function StaffPaymentsClient() {
         <div className="w-full max-w-6xl px-4 py-8">
           <Card className="border-red-200 bg-red-50">
             <CardContent className="pt-6">
-              <p className="text-red-800">Error loading payment history. Please try again later.</p>
+              <p className="text-red-800">
+                Error loading payment history. Please try again later.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -97,26 +111,34 @@ export function StaffPaymentsClient() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Payment History</h1>
-          <p className="text-gray-600 mt-2">Track your earnings and payment history</p>
+          <p className="text-gray-600 mt-2">
+            Track your earnings and payment history
+          </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-green-900">Total Earnings</CardTitle>
+              <CardTitle className="text-sm font-medium text-green-900">
+                Total Earnings
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <DollarSign className="w-8 h-8 text-green-600" />
-                <span className="text-3xl font-bold text-green-900">₹{totalEarnings}</span>
+                <IndianRupee className="w-8 h-8 text-green-600" />
+                <span className="text-3xl font-bold text-green-900">
+                  ₹{totalEarnings}
+                </span>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-blue-900">Total Payments</CardTitle>
+              <CardTitle className="text-sm font-medium text-blue-900">
+                Total Payments
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
@@ -130,7 +152,9 @@ export function StaffPaymentsClient() {
 
           <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-yellow-900">Pending</CardTitle>
+              <CardTitle className="text-sm font-medium text-yellow-900">
+                Pending
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
@@ -143,13 +167,87 @@ export function StaffPaymentsClient() {
           </Card>
         </div>
 
+        {/* Stripe Account Status */}
+        {stripeData?.success && (
+          <Card
+            className={
+              stripeData.hasConnected
+                ? "border-green-200 bg-green-50"
+                : "border-amber-200 bg-amber-50"
+            }
+          >
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`p-2 rounded-lg ${
+                      stripeData.hasConnected
+                        ? "bg-green-100"
+                        : "bg-amber-100"
+                    }`}
+                  >
+                    <CreditCard
+                      className={`w-6 h-6 ${
+                        stripeData.hasConnected
+                          ? "text-green-600"
+                          : "text-amber-600"
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <h3
+                      className={`font-semibold ${
+                        stripeData.hasConnected
+                          ? "text-green-900"
+                          : "text-amber-900"
+                      }`}
+                    >
+                      Stripe Account Status
+                    </h3>
+                    <p
+                      className={`text-sm ${
+                        stripeData.hasConnected
+                          ? "text-green-700"
+                          : "text-amber-700"
+                      }`}
+                    >
+                      {stripeData.hasConnected
+                        ? "Connected - Ready to receive payments"
+                        : "Not Connected - Connect to receive payments"}
+                    </p>
+                  </div>
+                </div>
+                {!stripeData.hasConnected && (
+                  <Button
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    onClick={() => {
+                      toast.info("Redirecting to Stripe...", {
+                        description:
+                          "You'll be redirected to complete your account setup",
+                      });
+                      setTimeout(() => {
+                        window.location.href = "/staff/profile?tab=payment";
+                      }, 1000);
+                    }}
+                  >
+                    Connect Account
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Filters */}
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <Filter className="w-5 h-5 text-gray-500" />
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700">Status:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Status:
+                </span>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Filter by status" />
@@ -175,8 +273,10 @@ export function StaffPaymentsClient() {
           <CardContent>
             {payments.length === 0 ? (
               <div className="text-center py-12">
-                <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No payments found</h3>
+                <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No payments found
+                </h3>
                 <p className="text-gray-600">
                   {statusFilter === "all"
                     ? "You haven't received any payments yet."
@@ -186,7 +286,8 @@ export function StaffPaymentsClient() {
             ) : (
               <div className="space-y-4">
                 {payments.map((payment: any) => {
-                  const StatusIcon = STATUS_ICONS[payment.status as keyof typeof STATUS_ICONS];
+                  const StatusIcon =
+                    STATUS_ICONS[payment.status as keyof typeof STATUS_ICONS];
                   return (
                     <div
                       key={payment.id}
@@ -199,7 +300,11 @@ export function StaffPaymentsClient() {
                             </h3>
                             <Badge
                               variant="outline"
-                              className={STATUS_COLORS[payment.status as keyof typeof STATUS_COLORS]}>
+                              className={
+                                STATUS_COLORS[
+                                  payment.status as keyof typeof STATUS_COLORS
+                                ]
+                              }>
                               <StatusIcon className="w-3 h-3 mr-1" />
                               {payment.status}
                             </Badge>
@@ -214,7 +319,9 @@ export function StaffPaymentsClient() {
                               <Calendar className="w-4 h-4" />
                               <span>
                                 {payment.paidAt
-                                  ? new Date(payment.paidAt).toLocaleDateString()
+                                  ? new Date(
+                                      payment.paidAt,
+                                    ).toLocaleDateString()
                                   : "Pending"}
                               </span>
                             </div>
@@ -223,19 +330,31 @@ export function StaffPaymentsClient() {
                           <div className="mt-3 flex items-center justify-between">
                             <div className="flex gap-4 text-sm">
                               <div>
-                                <span className="text-gray-500">Requested:</span>
-                                <span className="ml-2 font-semibold">₹{payment.requestedAmount}</span>
+                                <span className="text-gray-500">
+                                  Requested:
+                                </span>
+                                <span className="ml-2 font-semibold">
+                                  ₹{payment.requestedAmount}
+                                </span>
                               </div>
                               {payment.percentage && (
                                 <div>
-                                  <span className="text-gray-500">Percentage:</span>
-                                  <span className="ml-2 font-semibold">{payment.percentage}%</span>
+                                  <span className="text-gray-500">
+                                    Percentage:
+                                  </span>
+                                  <span className="ml-2 font-semibold">
+                                    {payment.percentage}%
+                                  </span>
                                 </div>
                               )}
                             </div>
                             <div className="text-right">
-                              <p className="text-sm text-gray-500">You Received</p>
-                              <p className="text-2xl font-bold text-green-600">₹{payment.staffAmount}</p>
+                              <p className="text-sm text-gray-500">
+                                You Received
+                              </p>
+                              <p className="text-2xl font-bold text-green-600">
+                                ₹{payment.staffAmount}
+                              </p>
                             </div>
                           </div>
 
@@ -268,7 +387,9 @@ export function StaffPaymentsClient() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.totalPages, p + 1))
+                  }
                   disabled={page === pagination.totalPages}>
                   Next
                 </Button>

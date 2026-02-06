@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Calendar, User, Building2, FileText, IndianRupee } from "lucide-react";
+import { Calendar, User, Building2, FileText, IndianRupee, CalendarClock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Sidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/common/sidebar/app-sidebar";
@@ -17,6 +17,11 @@ const staffNavMain = [
     title: "My Bookings",
     url: "/staff/bookings",
     icon: Calendar,
+  },
+  {
+    title: "Leave Management",
+    url: "/staff/leave",
+    icon: CalendarClock,
   },
   {
     title: "Earnings",

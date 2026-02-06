@@ -170,7 +170,15 @@ export default function CustomerBookingsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || "Unable to cancel booking.");
+        // Check if cancellation is not allowed due to tracking status
+        if (data.cannotCancel && data.trackingStatus) {
+          toast.error(
+            "You are not eligible to cancel this booking because the booking is almost at completion state.",
+            { duration: 6000 }
+          );
+          return;
+        }
+        toast.error(data.msg || data.error || "Unable to cancel booking.");
         return;
       }
 

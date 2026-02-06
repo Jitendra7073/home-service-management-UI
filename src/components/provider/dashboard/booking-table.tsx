@@ -23,6 +23,7 @@ import {
   Loader,
   MoreHorizontal,
   RefreshCw,
+  XCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -180,6 +181,55 @@ function StatusDropdown({
   );
 }
 
+/* ---------------- TRACKING STATUS BADGE COMPONENT ---------------- */
+
+function TrackingStatusBadge({
+  trackingStatus,
+  bookingStatus,
+}: {
+  trackingStatus?: string;
+  bookingStatus?: string;
+}) {
+  const isCancelled = bookingStatus === "CANCELLED";
+
+  // Get badge color based on tracking status
+  const getBadgeColor = (status: string) => {
+    if (isCancelled) {
+      return "bg-red-100 text-red-700 border-red-200";
+    }
+    switch (status) {
+      case "NOT_STARTED":
+        return "bg-gray-100 text-gray-700 border-gray-200";
+      case "BOOKING_STARTED":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "PROVIDER_ON_THE_WAY":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
+      case "SERVICE_STARTED":
+        return "bg-purple-100 text-purple-700 border-purple-200";
+      case "COMPLETED":
+        return "bg-green-100 text-green-700 border-green-200";
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200";
+    }
+  };
+
+  // Format status text
+  const formatStatus = (status: string) => {
+    return status?.replaceAll("_", " ") || "Not Started";
+  };
+
+  return (
+    <span
+      className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
+        isCancelled
+          ? "bg-red-100 text-red-700 border-red-200"
+          : getBadgeColor(trackingStatus || "NOT_STARTED")
+      }`}>
+      {isCancelled ? "Cancelled" : formatStatus(trackingStatus || "NOT_STARTED")}
+    </span>
+  );
+}
+
 const columns: ColumnDef<Booking>[] = [
   { accessorKey: "customer", header: "Customer" },
   { accessorKey: "service", header: "Service" },
@@ -228,25 +278,45 @@ const columns: ColumnDef<Booking>[] = [
             </div>
           </PopoverTrigger>
 
-          <PopoverContent className="w-64 text-sm">
+          <PopoverContent className="w-72 text-sm">
             <div className="space-y-3">
               <div className="font-semibold text-gray-800">Payment Details</div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-500">Customer Payment</span>
                 <PaymentStatusBadge status={payment} size="sm" />
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-gray-500">Staff Payment</span>
                 <PaymentStatusBadge status={staffPayment} size="sm" />
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500">Tracking Status</span>
-                <span className="text-xs font-medium bg-gray-100 px-2 py-1 rounded">
-                  {trackingStatus?.replaceAll("_", " ")}
-                </span>
+              <div className="border-t pt-2 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 text-xs">Tracking Status</span>
+                  <TrackingStatusBadge
+                    trackingStatus={trackingStatus}
+                    bookingStatus={bookingStatus}
+                  />
+                </div>
+
+                {/* Cancellation message */}
+                {bookingStatus === "CANCELLED" && (
+                  <div className="flex items-start gap-2 text-xs bg-red-50 border border-red-200 rounded p-2">
+                    <XCircle className="w-3 h-3 text-red-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-red-800">
+                      Cancelled at{" "}
+                      <span className="font-semibold">
+                        {trackingStatus === "NOT_STARTED"
+                          ? "the beginning"
+                          : trackingStatus
+                              ?.replaceAll("_", " ")
+                              .toLowerCase()}
+                      </span>
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </PopoverContent>

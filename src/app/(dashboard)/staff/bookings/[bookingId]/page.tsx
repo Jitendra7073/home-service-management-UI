@@ -12,8 +12,12 @@ import {
   CheckCircle2,
   Circle,
   Loader2,
-  DollarSign,
+  IndianRupee,
   Send,
+  AlertTriangle,
+  XCircle,
+  Hourglass,
+  BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { StaffBookingDetailSkeleton } from "@/components/staff/skeletons";
+import { StripeConnectModal } from "@/components/staff/stripe-connect-modal";
 
 interface PageProps {
   params: Promise<{ bookingId: string }>;
@@ -49,6 +54,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showReasonDialog, setShowReasonDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showStripeModal, setShowStripeModal] = useState(false);
   const [earlyStartReason, setEarlyStartReason] = useState("");
   const [staffFeedback, setStaffFeedback] = useState("");
   const [isRequestingPayment, setIsRequestingPayment] = useState(false);
@@ -72,6 +78,34 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
   });
 
   const booking = data;
+
+  // Fetch payment status for this booking
+  const { data: paymentStatusData } = useQuery({
+    queryKey: ["booking-payment-status", resolvedParams.bookingId],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/staff/payments/booking/${resolvedParams.bookingId}/status`,
+        {
+          credentials: "include",
+        },
+      );
+      return res.json();
+    },
+    enabled:
+      !!resolvedParams.bookingId && booking?.trackingStatus === "COMPLETED",
+  });
+
+  // Check staff's Stripe account status
+  const { data: stripeStatusData } = useQuery({
+    queryKey: ["staff-stripe-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/staff/payments/stripe/status", {
+        credentials: "include",
+      });
+      return res.json();
+    },
+    enabled: !!booking,
+  });
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -106,6 +140,13 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
       if (result.success) {
         toast.success(`Status updated successfully`);
         window.location.reload();
+      } else if (result.bookingCancelled) {
+        // Booking is cancelled by customer
+        toast.error(
+          result.msg ||
+            "Cannot update tracking status. This booking has been cancelled by the customer.",
+        );
+        setIsUpdating(false);
       } else if (result.requireReason) {
         // Show reason dialog
         setPendingStatus(nextStatus);
@@ -155,6 +196,10 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
         setStaffFeedback("");
         // Optional: reload page to update UI state
         setTimeout(() => window.location.reload(), 1000);
+      } else if (result.requirement === "stripeAccount") {
+        // Show Stripe connection modal if account not connected
+        setShowPaymentDialog(false);
+        setShowStripeModal(true);
       } else {
         toast.error(result.msg || "Failed to submit payment request");
       }
@@ -174,6 +219,28 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
   );
 
   const renderStepper = () => {
+    const isBookingCancelled = booking?.bookingStatus === "CANCELLED";
+
+    // If booking is cancelled, show a special cancellation stepper
+    if (isBookingCancelled) {
+      return (
+        <div className="mb-8">
+          <div className="flex items-center justify-center p-6 bg-red-50 border-2 border-red-200 rounded-lg">
+            <XCircle className="w-12 h-12 text-red-600 mr-4" />
+            <div>
+              <h3 className="text-lg font-bold text-red-900 mb-1">
+                Booking Cancelled
+              </h3>
+              <p className="text-sm text-red-700">
+                This booking has been cancelled by the customer. Tracking
+                updates are disabled.
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="mb-8">
         <div className="flex items-center justify-between relative">
@@ -223,8 +290,107 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
 
   const renderActionButtons = () => {
     const currentStatus = booking?.trackingStatus || "NOT_STARTED";
+    const isBookingCancelled = booking?.bookingStatus === "CANCELLED";
+    const paymentStatus = paymentStatusData?.paymentRequest;
+    const payment = paymentStatusData?.payment;
+    const hasRequested = paymentStatusData?.hasRequested;
+    const isPaid = paymentStatusData?.isPaid;
+
+    // Show cancellation alert if booking is cancelled
+    if (isBookingCancelled) {
+      return (
+        <div className="space-y-3">
+          <div className="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
+            <XCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-red-900 mb-2">
+              Booking Cancelled by Customer
+            </h3>
+            <p className="text-red-700">
+              This booking has been cancelled by the customer. You cannot update
+              the tracking status.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
     if (currentStatus === "COMPLETED") {
+      // Payment status display
+      if (isPaid || payment?.status === "PAID") {
+        return (
+          <div className="space-y-3">
+            <div className="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
+              <BadgeCheck className="w-12 h-12 text-green-600 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-green-900 mb-2">
+                Payment Received!
+              </h3>
+              <p className="text-green-700 font-medium text-xl mb-2">
+                ₹{payment?.staffAmount || 0}
+              </p>
+              <p className="text-sm text-green-600">
+                Paid on {new Date(payment?.paidAt || "").toLocaleDateString()}
+              </p>
+              {payment?.stripeTransferId && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Transfer ID: {payment.stripeTransferId}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      // Payment pending
+      if (paymentStatus?.requestStatus === "PENDING") {
+        return (
+          <div className="space-y-3">
+            <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <Hourglass className="w-12 h-12 text-yellow-600 mx-auto mb-3 animate-pulse" />
+              <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+                Payment Request Pending
+              </h3>
+              <p className="text-yellow-700">
+                You have already sent a payment request for ₹
+                {paymentStatus?.requestedAmount}
+              </p>
+              <p className="text-sm text-yellow-600 mt-2">
+                The provider is reviewing your request. You'll be notified once
+                it's approved.
+              </p>
+            </div>
+          </div>
+        );
+      }
+
+      // Payment rejected
+      if (paymentStatus?.requestStatus === "REJECTED") {
+        return (
+          <div className="space-y-3">
+            <div className="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
+              <XCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-red-900 mb-2">
+                Payment Request Rejected
+              </h3>
+              <p className="text-red-700">
+                {paymentStatus?.rejectionReason ||
+                  "The provider rejected your payment request."}
+              </p>
+            </div>
+            <Button
+              onClick={() => setShowPaymentDialog(true)}
+              size="lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <IndianRupee className="w-5 h-5 mr-2" />
+              Request Payment Again
+            </Button>
+            <p className="text-sm text-gray-600 text-center">
+              Submit a new payment request with updated feedback
+            </p>
+          </div>
+        );
+      }
+
+      // No payment request yet - show request button
       return (
         <div className="space-y-3">
           <div className="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
@@ -239,8 +405,8 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
           <Button
             onClick={() => setShowPaymentDialog(true)}
             size="lg"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-            <DollarSign className="w-5 h-5 mr-2" />
+            className="w-full ">
+            <IndianRupee className="w-5 h-5 mr-2" />
             Request Payment
           </Button>
           <p className="text-sm text-gray-600 text-center">
@@ -345,7 +511,6 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
                     </span>
                   </div>
                 )}
-                
               </div>
 
               <div className="border-t pt-4">
@@ -383,25 +548,28 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
           <Card>
             <CardHeader>
               <CardTitle>
-                {booking.trackingStatus === "COMPLETED"
+                {booking.bookingStatus === "CANCELLED"
+                  ? "Booking Cancelled"
+                  : booking.trackingStatus === "COMPLETED"
                   ? "Booking Complete"
                   : "Update Status"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {booking.trackingStatus !== "COMPLETED" && (
-                <div className="text-sm text-gray-600">
-                  <p>
-                    Current Status:{" "}
-                    <span className="font-semibold text-gray-900">
-                      {STEPS[currentStepIndex].label}
-                    </span>
-                  </p>
-                  <p className="mt-1">
-                    Click the button below to move to the next step.
-                  </p>
-                </div>
-              )}
+              {booking.bookingStatus !== "CANCELLED" &&
+                booking.trackingStatus !== "COMPLETED" && (
+                  <div className="text-sm text-gray-600">
+                    <p>
+                      Current Status:{" "}
+                      <span className="font-semibold text-gray-900">
+                        {STEPS[currentStepIndex].label}
+                      </span>
+                    </p>
+                    <p className="mt-1">
+                      Click the button below to move to the next step.
+                    </p>
+                  </div>
+                )}
               {renderActionButtons()}
             </CardContent>
           </Card>
@@ -455,7 +623,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <DollarSign className="w-6 h-6 text-green-600" />
+              <IndianRupee className="w-6 h-6 text-green-600" />
               Request Payment from Provider
             </DialogTitle>
             <DialogDescription>
@@ -541,6 +709,19 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Stripe Connect Modal */}
+      <StripeConnectModal
+        isOpen={showStripeModal}
+        onClose={() => setShowStripeModal(false)}
+        onConnected={() => {
+          // After connecting Stripe, staff can try payment request again
+          setShowStripeModal(false);
+          toast.success("Stripe account connected!", {
+            description: "You can now request payments for your services",
+          });
+        }}
+      />
     </>
   );
 }

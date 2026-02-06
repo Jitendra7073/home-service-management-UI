@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Calendar, Clock, CheckCircle2, Circle } from "lucide-react";
+import { Calendar, Clock, CheckCircle2, Circle, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StaffBookingsSkeleton } from "@/components/staff/skeletons";
 import { StaffProfileCompletionAlert } from "@/components/staff/profile-completion-alert";
 
-type TabType = "all" | "upcoming" | "ongoing" | "completed";
+type TabType = "all" | "upcoming" | "ongoing" | "completed" | "cancelled";
 
 export default function StaffBookings() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function StaffBookings() {
 
   // Initialize activeTab from URL or default to "all"
   const [activeTab, setActiveTab] = useState<TabType>(
-    (statusParam === "upcoming" || statusParam === "ongoing" || statusParam === "completed")
+    (statusParam === "upcoming" || statusParam === "ongoing" || statusParam === "completed" || statusParam === "cancelled")
       ? statusParam
       : "all"
   );
@@ -67,6 +67,7 @@ export default function StaffBookings() {
     { key: "upcoming", label: "Upcoming", icon: Calendar },
     { key: "ongoing", label: "Ongoing", icon: Clock },
     { key: "completed", label: "Completed", icon: CheckCircle2 },
+    { key: "cancelled", label: "Cancelled", icon: XCircle },
   ];
 
   const getTrackingStatusColor = (status: string) => {
@@ -83,6 +84,33 @@ export default function StaffBookings() {
         return "bg-green-100 text-green-700";
       default:
         return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getBookingStatusColor = (status: string) => {
+    switch (status) {
+      case "CANCELLED":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return null;
+    }
+  };
+
+  const getBookingStatusIcon = (status: string) => {
+    switch (status) {
+      case "CANCELLED":
+        return <XCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return null;
+    }
+  };
+
+  const getBookingStatusLabel = (status: string) => {
+    switch (status) {
+      case "CANCELLED":
+        return "Cancelled by Customer";
+      default:
+        return null;
     }
   };
 
@@ -186,11 +214,16 @@ export default function StaffBookings() {
                   {/* Status & Date */}
                   <div className="flex items-center gap-3 mb-3 flex-wrap">
                     <Badge
-                      className={getTrackingStatusColor(booking.trackingStatus)}
+                      className={
+                        getBookingStatusColor(booking.bookingStatus) ||
+                        getTrackingStatusColor(booking.trackingStatus)
+                      }
                       variant="outline">
                       <div className="flex items-center gap-2">
-                        {getTrackingStatusIcon(booking.trackingStatus)}
-                        {getTrackingStatusLabel(booking.trackingStatus)}
+                        {getBookingStatusIcon(booking.bookingStatus) ||
+                          getTrackingStatusIcon(booking.trackingStatus)}
+                        {getBookingStatusLabel(booking.bookingStatus) ||
+                          getTrackingStatusLabel(booking.trackingStatus)}
                       </div>
                     </Badge>
                     <span className="text-sm text-gray-600">

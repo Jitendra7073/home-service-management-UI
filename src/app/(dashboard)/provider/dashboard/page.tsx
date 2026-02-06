@@ -1,6 +1,7 @@
 "use client";
 import DashboardComponents from "./dashboard";
 import { BusinessStatusBanner } from "@/components/provider/BusinessStatusBanner";
+import { StripeAlertBanner } from "@/components/shared/stripe-alert-banner";
 import { useUserProfile } from "@/hooks/use-queries";
 
 export default function Dashboard() {
@@ -18,6 +19,10 @@ export default function Dashboard() {
           />
         </div>
       )}
+      <StripeAlertBanner
+        userType="provider"
+        apiPath="/api/provider/payments/stripe/status"
+      />
       <DashboardComponents />
     </>
   );

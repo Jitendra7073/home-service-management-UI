@@ -10,6 +10,7 @@ import {
   User,
   CreditCard,
   Wallet,
+  CalendarClock,
 } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
@@ -54,6 +55,16 @@ const navMain = [
     title: "Payments",
     url: "/provider/dashboard/payments",
     icon: Wallet,
+  },
+  {
+    title: "Staff Leaves",
+    url: "/provider/dashboard/staff-leaves",
+    icon: CalendarClock,
+  },
+  {
+    title: "Staff Bookings",
+    url: "/provider/dashboard/staff-bookings",
+    icon: TicketCheck,
   },
 ];
 

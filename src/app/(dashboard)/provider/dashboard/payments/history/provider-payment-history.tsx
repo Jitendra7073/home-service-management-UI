@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  DollarSign,
+  IndianRupee,
   Calendar,
   User,
   CheckCircle2,
@@ -88,7 +88,9 @@ export function ProviderPaymentHistoryClient() {
         <div className="w-full max-w-6xl px-4 py-8">
           <Card className="border-red-200 bg-red-50">
             <CardContent className="pt-6">
-              <p className="text-red-800">Error loading payment history. Please try again later.</p>
+              <p className="text-red-800">
+                Error loading payment history. Please try again later.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -117,7 +119,9 @@ export function ProviderPaymentHistoryClient() {
 
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Payment History</h1>
-          <p className="text-gray-600 mt-2">View all processed staff payments</p>
+          <p className="text-gray-600 mt-2">
+            View all processed staff payments
+          </p>
         </div>
 
         {/* Stats */}
@@ -125,36 +129,48 @@ export function ProviderPaymentHistoryClient() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-green-900">Total Paid</CardTitle>
+                <CardTitle className="text-sm font-medium text-green-900">
+                  Total Paid
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-8 h-8 text-green-600" />
-                  <span className="text-3xl font-bold text-green-900">₹{stats.totalPaid}</span>
+                  <IndianRupee className="w-8 h-8 text-green-600" />
+                  <span className="text-3xl font-bold text-green-900">
+                    ₹{stats.totalPaid}
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-yellow-900">Pending</CardTitle>
+                <CardTitle className="text-sm font-medium text-yellow-900">
+                  Pending
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-8 h-8 text-yellow-600" />
-                  <span className="text-3xl font-bold text-yellow-900">₹{stats.totalPending}</span>
+                  <IndianRupee className="w-8 h-8 text-yellow-600" />
+                  <span className="text-3xl font-bold text-yellow-900">
+                    ₹{stats.totalPending}
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-blue-900">Transactions</CardTitle>
+                <CardTitle className="text-sm font-medium text-blue-900">
+                  Transactions
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-8 h-8 text-blue-600" />
-                  <span className="text-3xl font-bold text-blue-900">{stats.totalTransactions}</span>
+                  <span className="text-3xl font-bold text-blue-900">
+                    {stats.totalTransactions}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -167,7 +183,9 @@ export function ProviderPaymentHistoryClient() {
             <div className="flex items-center gap-6 flex-wrap">
               <div className="flex items-center gap-3">
                 <Filter className="w-5 h-5 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700">Filters:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Filters:
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <Label htmlFor="status">Status:</Label>
@@ -206,8 +224,10 @@ export function ProviderPaymentHistoryClient() {
           <CardContent>
             {payments.length === 0 ? (
               <div className="text-center py-12">
-                <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No payments found</h3>
+                <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  No payments found
+                </h3>
                 <p className="text-gray-600">
                   {staffFilter || statusFilter !== "all"
                     ? "Try adjusting your filters."
@@ -228,7 +248,11 @@ export function ProviderPaymentHistoryClient() {
                           </h3>
                           <Badge
                             variant="outline"
-                            className={STATUS_COLORS[payment.status as keyof typeof STATUS_COLORS]}>
+                            className={
+                              STATUS_COLORS[
+                                payment.status as keyof typeof STATUS_COLORS
+                              ]
+                            }>
                             {payment.status}
                           </Badge>
                         </div>
@@ -250,25 +274,37 @@ export function ProviderPaymentHistoryClient() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-gray-600">
-                            <DollarSign className="w-4 h-4" />
-                            <span>Transfer: {payment.stripeTransferId || "N/A"}</span>
+                            <IndianRupee className="w-4 h-4" />
+                            <span>
+                              Transfer: {payment.stripeTransferId || "N/A"}
+                            </span>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
                           <div className="flex gap-6 text-sm">
                             <div>
-                              <span className="text-gray-500">Service Price:</span>
-                              <span className="ml-2 font-semibold">₹{payment.requestedAmount}</span>
+                              <span className="text-gray-500">
+                                Service Price:
+                              </span>
+                              <span className="ml-2 font-semibold">
+                                ₹{payment.requestedAmount}
+                              </span>
                             </div>
                             <div>
                               <span className="text-gray-500">Percentage:</span>
-                              <span className="ml-2 font-semibold">{payment.percentage}%</span>
+                              <span className="ml-2 font-semibold">
+                                {payment.percentage}%
+                              </span>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-gray-500">Staff Received</p>
-                            <p className="text-2xl font-bold text-green-600">₹{payment.staffAmount}</p>
+                            <p className="text-sm text-gray-500">
+                              Staff Received
+                            </p>
+                            <p className="text-2xl font-bold text-green-600">
+                              ₹{payment.staffAmount}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -294,7 +330,9 @@ export function ProviderPaymentHistoryClient() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.totalPages, p + 1))
+                  }
                   disabled={page === pagination.totalPages}>
                   Next
                 </Button>

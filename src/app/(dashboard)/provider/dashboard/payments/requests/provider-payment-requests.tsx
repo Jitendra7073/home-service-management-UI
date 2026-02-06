@@ -10,7 +10,7 @@ import {
   User,
   Calendar,
   MapPin,
-  DollarSign,
+  IndianRupee,
   Send,
   X,
   Loader2,
@@ -100,7 +100,9 @@ export function ProviderPaymentRequestsClient() {
         setShowApproveDialog(false);
         setSelectedRequest(null);
         setPercentage(50);
-        queryClient.invalidateQueries({ queryKey: ["provider-payment-requests"] });
+        queryClient.invalidateQueries({
+          queryKey: ["provider-payment-requests"],
+        });
       } else {
         toast.error(data.msg || "Failed to approve payment");
       }
@@ -131,7 +133,9 @@ export function ProviderPaymentRequestsClient() {
         setShowRejectDialog(false);
         setSelectedRequest(null);
         setRejectionReason("");
-        queryClient.invalidateQueries({ queryKey: ["provider-payment-requests"] });
+        queryClient.invalidateQueries({
+          queryKey: ["provider-payment-requests"],
+        });
       } else {
         toast.error(data.msg || "Failed to reject payment");
       }
@@ -158,7 +162,10 @@ export function ProviderPaymentRequestsClient() {
     rejectMutation.mutate(selectedRequest.id);
   };
 
-  const calculateStaffAmount = (requestedAmount: number, percentage: number) => {
+  const calculateStaffAmount = (
+    requestedAmount: number,
+    percentage: number,
+  ) => {
     return Math.round(requestedAmount * 0.9 * (percentage / 100));
   };
 
@@ -189,8 +196,12 @@ export function ProviderPaymentRequestsClient() {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Payment Requests</h1>
-            <p className="text-gray-600 mt-2">Review and approve payment requests from your staff</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Payment Requests
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Review and approve payment requests from your staff
+            </p>
           </div>
 
           {/* Filters */}
@@ -199,7 +210,9 @@ export function ProviderPaymentRequestsClient() {
               <div className="flex items-center gap-4">
                 <Filter className="w-5 h-5 text-gray-500" />
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-700">Status:</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Status:
+                  </span>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue />
@@ -232,8 +245,10 @@ export function ProviderPaymentRequestsClient() {
             <CardContent>
               {requests.length === 0 ? (
                 <div className="text-center py-12">
-                  <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No payment requests found</h3>
+                  <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No payment requests found
+                  </h3>
                   <p className="text-gray-600">
                     {statusFilter === "PENDING"
                       ? "No pending payment requests at the moment."
@@ -243,7 +258,10 @@ export function ProviderPaymentRequestsClient() {
               ) : (
                 <div className="space-y-4">
                   {requests.map((request: any) => {
-                    const StatusIcon = STATUS_ICONS[request.requestStatus as keyof typeof STATUS_ICONS];
+                    const StatusIcon =
+                      STATUS_ICONS[
+                        request.requestStatus as keyof typeof STATUS_ICONS
+                      ];
                     return (
                       <div
                         key={request.id}
@@ -251,10 +269,16 @@ export function ProviderPaymentRequestsClient() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-3">
-                              <h3 className="font-semibold text-gray-900">{request.serviceName}</h3>
+                              <h3 className="font-semibold text-gray-900">
+                                {request.serviceName}
+                              </h3>
                               <Badge
                                 variant="outline"
-                                className={STATUS_COLORS[request.requestStatus as keyof typeof STATUS_COLORS]}>
+                                className={
+                                  STATUS_COLORS[
+                                    request.requestStatus as keyof typeof STATUS_COLORS
+                                  ]
+                                }>
                                 <StatusIcon className="w-3 h-3 mr-1" />
                                 {request.requestStatus}
                               </Badge>
@@ -264,7 +288,9 @@ export function ProviderPaymentRequestsClient() {
                               <div className="flex items-center gap-2 text-gray-600">
                                 <User className="w-4 h-4" />
                                 <div>
-                                  <span className="font-medium">{request.staffName}</span>
+                                  <span className="font-medium">
+                                    {request.staffName}
+                                  </span>
                                   <span className="mx-2">•</span>
                                   <span>{request.staffMobile}</span>
                                 </div>
@@ -280,13 +306,18 @@ export function ProviderPaymentRequestsClient() {
                             {request.staffFeedback && (
                               <div className="bg-gray-50 rounded p-3 mb-3">
                                 <p className="text-sm text-gray-600">
-                                  <span className="font-medium">Staff Feedback:</span> {request.staffFeedback}
+                                  <span className="font-medium">
+                                    Staff Feedback:
+                                  </span>{" "}
+                                  {request.staffFeedback}
                                 </p>
                               </div>
                             )}
 
                             <div className="flex items-center justify-between">
-                              <div className="text-2xl font-bold text-green-600">₹{request.servicePrice}</div>
+                              <div className="text-2xl font-bold text-green-600">
+                                ₹{request.servicePrice}
+                              </div>
                               {request.requestStatus === "PENDING" && (
                                 <div className="flex gap-2">
                                   <Button
@@ -334,33 +365,52 @@ export function ProviderPaymentRequestsClient() {
               Approve Staff Payment
             </DialogTitle>
             <DialogDescription>
-              Review the payment request and set the percentage to pay the staff member.
+              Review the payment request and set the percentage to pay the staff
+              member.
             </DialogDescription>
           </DialogHeader>
           {selectedRequest && (
             <div className="space-y-4 py-4">
               {/* Staff Info */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-sm text-gray-900 mb-2">Staff Member</h4>
+                <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                  Staff Member
+                </h4>
                 <p className="font-medium">{selectedRequest.staffName}</p>
-                <p className="text-sm text-gray-600">{selectedRequest.staffMobile}</p>
-                <p className="text-sm text-gray-600">{selectedRequest.staffEmail}</p>
+                <p className="text-sm text-gray-600">
+                  {selectedRequest.staffMobile}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {selectedRequest.staffEmail}
+                </p>
               </div>
 
               {/* Service Info */}
               <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-sm text-gray-900 mb-2">Service Details</h4>
+                <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                  Service Details
+                </h4>
                 <p className="font-medium">{selectedRequest.serviceName}</p>
-                <p className="text-sm text-gray-600">Date: {selectedRequest.bookingDate}</p>
-                <p className="text-sm text-gray-600">Time: {selectedRequest.slotTime}</p>
-                <p className="text-sm text-gray-600">Customer: {selectedRequest.customerName}</p>
+                <p className="text-sm text-gray-600">
+                  Date: {selectedRequest.bookingDate}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Time: {selectedRequest.slotTime}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Customer: {selectedRequest.customerName}
+                </p>
               </div>
 
               {/* Staff Feedback */}
               {selectedRequest.staffFeedback && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-sm text-blue-900 mb-1">Staff Feedback</h4>
-                  <p className="text-sm text-blue-800 italic">"{selectedRequest.staffFeedback}"</p>
+                  <h4 className="font-semibold text-sm text-blue-900 mb-1">
+                    Staff Feedback
+                  </h4>
+                  <p className="text-sm text-blue-800 italic">
+                    "{selectedRequest.staffFeedback}"
+                  </p>
                 </div>
               )}
 
@@ -382,16 +432,26 @@ export function ProviderPaymentRequestsClient() {
                 <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Service Price:</span>
-                    <span className="font-medium">₹{selectedRequest.servicePrice}</span>
+                    <span className="font-medium">
+                      ₹{selectedRequest.servicePrice}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Provider Earnings (90%):</span>
-                    <span className="font-medium">₹{Math.round(selectedRequest.servicePrice * 0.9)}</span>
+                    <span className="text-gray-600">
+                      Provider Earnings (90%):
+                    </span>
+                    <span className="font-medium">
+                      ₹{Math.round(selectedRequest.servicePrice * 0.9)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm font-semibold border-t border-green-300 pt-1">
                     <span>Staff will receive:</span>
                     <span className="text-green-700">
-                      ₹{calculateStaffAmount(selectedRequest.servicePrice, percentage)}
+                      ₹
+                      {calculateStaffAmount(
+                        selectedRequest.servicePrice,
+                        percentage,
+                      )}
                     </span>
                   </div>
                 </div>
@@ -421,7 +481,11 @@ export function ProviderPaymentRequestsClient() {
                   ) : (
                     <>
                       <Send className="w-4 h-4 mr-2" />
-                      Pay ₹{calculateStaffAmount(selectedRequest.servicePrice, percentage)}
+                      Pay ₹
+                      {calculateStaffAmount(
+                        selectedRequest.servicePrice,
+                        percentage,
+                      )}
                     </>
                   )}
                 </Button>
@@ -447,7 +511,9 @@ export function ProviderPaymentRequestsClient() {
             <div className="space-y-4 py-4">
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="font-medium">{selectedRequest.serviceName}</p>
-                <p className="text-sm text-gray-600">{selectedRequest.staffName}</p>
+                <p className="text-sm text-gray-600">
+                  {selectedRequest.staffName}
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -460,7 +526,9 @@ export function ProviderPaymentRequestsClient() {
                   rows={4}
                   className="resize-none"
                 />
-                <p className="text-xs text-gray-500">This reason will be sent to the staff member.</p>
+                <p className="text-xs text-gray-500">
+                  This reason will be sent to the staff member.
+                </p>
               </div>
 
               <div className="flex justify-end gap-3 pt-2">
