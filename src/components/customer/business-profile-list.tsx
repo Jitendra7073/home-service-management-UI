@@ -67,27 +67,27 @@ const CategoryList = ({ isVisible, search }: any) => {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="group relative bg-white rounded-md overflow-hidden border border-gray-100 p-6 space-y-4">
+                className="group relative bg-white rounded-sm overflow-hidden border border-gray-100 p-6 space-y-4">
                 {/* Title Skeleton */}
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-7 w-1/2 rounded-md" />
+                  <Skeleton className="h-7 w-1/2 rounded-sm" />
                 </div>
 
                 {/* Description Skeleton */}
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-full rounded-md" />
-                  <Skeleton className="h-4 w-3/4 rounded-md" />
+                  <Skeleton className="h-4 w-full rounded-sm" />
+                  <Skeleton className="h-4 w-3/4 rounded-sm" />
                 </div>
 
                 {/* Stats Skeleton */}
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-2">
                   <div className="flex items-center gap-2">
-                    <Skeleton className="w-2.5 h-2.5 rounded-full" />
-                    <Skeleton className="h-4 w-24 rounded-md" />
+                    <Skeleton className="w-2.5 h-2.5 rounded-sm" />
+                    <Skeleton className="h-4 w-24 rounded-sm" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <Skeleton className="w-2.5 h-2.5 rounded-full" />
-                    <Skeleton className="h-4 w-24 rounded-md" />
+                    <Skeleton className="w-2.5 h-2.5 rounded-sm" />
+                    <Skeleton className="h-4 w-24 rounded-sm" />
                   </div>
                 </div>
               </div>
@@ -129,7 +129,7 @@ const CategoryList = ({ isVisible, search }: any) => {
         {/* SEARCH ENABLED IF search={true} */}
         {search && (
           <div className="relative group pb-10">
-            <div className="flex items-center border bg-white rounded-md px-4 sm:px-6 py-3 sm:py-4 gap-3">
+            <div className="flex items-center border bg-white rounded-sm px-4 sm:px-6 py-3 sm:py-4 gap-3">
               <Search className="w-5 h-5 text-gray-400" />
               <input
                 type="text"
@@ -152,7 +152,7 @@ const CategoryList = ({ isVisible, search }: any) => {
               <Link
                 key={category.id}
                 href={`/customer/explore?categories=${category.id}`}
-                className="group relative block bg-white rounded-md overflow-hidden
+                className="group relative block bg-white rounded-sm overflow-hidden
                    border border-gray-200 hover:border-blue-200
                    hover:shadow-lg transition-all">
                 <div className="p-6 space-y-4">
@@ -177,7 +177,7 @@ const CategoryList = ({ isVisible, search }: any) => {
                   <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                     {/* Total Providers */}
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                      <span className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
                       <span className="text-sm text-gray-700">
                         {category.totalProvidersCount > 1
                           ? "Total Businesses"
@@ -190,7 +190,7 @@ const CategoryList = ({ isVisible, search }: any) => {
 
                     {/* Available Providers */}
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                      <span className="w-2.5 h-2.5 rounded-sm bg-green-500 animate-pulse" />
                       <span className="text-sm text-gray-700">
                         Available Now
                         <span className="ml-1 font-semibold text-green-600">

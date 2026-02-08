@@ -24,7 +24,7 @@ const HeroSection = () => {
           {/* Left Content */}
           <div className="space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-full shadow-sm border">
+            <div className="inline-flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-sm shadow-sm border">
               <Sparkles className="w-4 h-4 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
                 Trusted by 10,000+ customers
@@ -75,7 +75,7 @@ const HeroSection = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 md:pt-4">
               {features.map((feature, idx) => (
                 <div key={idx} className="flex items-center gap-3 ">
-                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-md">
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-sm">
                     <feature.icon className="w-5 h-5 text-blue-600" />
                   </div>
                   <span className="text-sm font-medium text-gray-700">
@@ -89,7 +89,7 @@ const HeroSection = () => {
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
                 href={`/customer/explore`}
-                className="flex items-center gap-2 px-8 py-3  bg-gray-800 text-white rounded-md font-semibold hover:shadow-2xl transition-all ">
+                className="flex items-center gap-2 px-8 py-3  bg-gray-800 text-white rounded-sm font-semibold hover:shadow-2xl transition-all ">
                 Book a Service
                 <ArrowRight className="w-5 h-5" />
               </Link>
@@ -103,11 +103,11 @@ const HeroSection = () => {
                 alt="Home Renovation"
                 width={1200}
                 height={600}
-                className="rounded-md"
+                className="rounded-sm"
                 priority
               />
 
-              <div className="bg-card/95 rounded-md p-5 z-20 border border-border/50 animate-slide-up">
+              <div className="bg-card/95 rounded-sm p-5 z-20 border border-border/50 animate-slide-up">
                 <div className="flex items-center justify-between">
                   {/* Left Content */}
                   <div>

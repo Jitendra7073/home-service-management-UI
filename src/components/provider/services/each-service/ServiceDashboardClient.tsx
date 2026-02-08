@@ -170,27 +170,27 @@ export default function ServiceDashboardClient({ initialData }: ClientProps) {
                     label="Cover"
                     single
                     images={coverImages}
-                    onSelect={() => {}}
-                    onRemove={() => {}}
+                    onSelect={() => { }}
+                    onRemove={() => { }}
                   />
                   <ImageUploader
                     label="Gallery"
                     images={galleryImages}
-                    onSelect={() => {}}
-                    onRemove={() => {}}
+                    onSelect={() => { }}
+                    onRemove={() => { }}
                   />
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-2">
                   <img
                     src={data.coverImage}
-                    className="rounded-md w-full h-32 object-cover"
+                    className="rounded-sm w-full h-32 object-cover"
                   />
                   {data.images.map((url, i) => (
                     <img
                       key={i}
                       src={url}
-                      className="rounded-md w-full h-32 object-cover"
+                      className="rounded-sm w-full h-32 object-cover"
                     />
                   ))}
                 </div>

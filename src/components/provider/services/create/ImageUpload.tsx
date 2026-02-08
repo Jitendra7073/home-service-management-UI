@@ -19,13 +19,12 @@ export function ImagePreview({ image, onRemove }: ImagePreviewProps) {
   };
 
   return (
-    <div className="relative border rounded-md overflow-hidden">
+    <div className="relative border rounded-sm overflow-hidden">
       <img
         src={image.preview}
         alt="Preview"
-        className={`h-28 w-full object-cover transition duration-300 ${
-          image.uploading ? "opacity-40 blur-[1px]" : "opacity-100"
-        }`}
+        className={`h-28 w-full object-cover transition duration-300 ${image.uploading ? "opacity-40 blur-[1px]" : "opacity-100"
+          }`}
       />
 
       {image.uploading && (
@@ -46,9 +45,8 @@ export function ImagePreview({ image, onRemove }: ImagePreviewProps) {
         <button
           type="button"
           onClick={() => handleRemoveImage()}
-          className={`absolute top-1 flex item-center justify-center right-1 bg-black/60  text-white rounded p-1 transition-colors ${
-            removing ? "bg-red-600" : "hover:bg-red-600"
-          }`}>
+          className={`absolute top-1 flex item-center justify-center right-1 bg-black/60  text-white rounded p-1 transition-colors ${removing ? "bg-red-600" : "hover:bg-red-600"
+            }`}>
           {removing ? (
             <Loader2 className="w-4 h-4 animate-spin text-white" />
           ) : (
@@ -82,7 +80,7 @@ export function ImageUploader({
       <Label>{label}</Label>
 
       {!hasImage && (
-        <label className="border-2 border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
+        <label className="border-2 border-dashed border-gray-300 rounded-sm p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
           <input
             type="file"
             hidden
@@ -101,9 +99,8 @@ export function ImageUploader({
 
       {images.length > 0 && (
         <div
-          className={`grid ${
-            single ? "grid-cols-1" : "grid-cols-3"
-          } gap-3 mt-3`}>
+          className={`grid ${single ? "grid-cols-1" : "grid-cols-3"
+            } gap-3 mt-3`}>
           {images.map((img, i) => (
             <ImagePreview key={i} image={img} onRemove={() => onRemove(i)} />
           ))}

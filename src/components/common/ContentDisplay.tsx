@@ -44,7 +44,7 @@ export default function ContentDisplay({ contentKey }: ContentDisplayProps) {
   const { title, content, updatedAt } = data.data;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-6 bg-card rounded-xl shadow-sm border mt-6">
+    <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-6 bg-card rounded-sm shadow-sm border mt-6">
       <div className="border-b pb-4">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
           {title}

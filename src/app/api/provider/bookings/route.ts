@@ -6,6 +6,7 @@ export async function GET() {
         const { ok, data } = await backend("/api/v1/provider/booking", {
             method: "GET",
         });
+        console.log("Details of Data:", data)
 
         if (!ok) return NextResponse.json({ msg: "Response is not ok" });
 

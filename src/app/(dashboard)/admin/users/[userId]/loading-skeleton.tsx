@@ -6,16 +6,16 @@ export default function UserDetailsSkeleton() {
     <div className="space-y-6 max-w-7xl mx-auto p-6">
       {/* Header Skeleton */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <Skeleton className="h-10 w-10 rounded-md" />
+        <Skeleton className="h-10 w-10 rounded-sm" />
         <div className="flex-1 space-y-3">
           <div className="flex flex-wrap items-center gap-3">
             <Skeleton className="h-9 w-[200px]" />
-            <Skeleton className="h-6 w-[80px] rounded-full" />
-            <Skeleton className="h-6 w-[100px] rounded-full" />
+            <Skeleton className="h-6 w-[80px] rounded-sm" />
+            <Skeleton className="h-6 w-[100px] rounded-sm" />
           </div>
           <Skeleton className="h-4 w-[150px]" />
         </div>
-        <Skeleton className="h-10 w-[140px] rounded-md" />
+        <Skeleton className="h-10 w-[140px] rounded-sm" />
       </div>
 
       {/* Main Content Grid */}
@@ -31,7 +31,7 @@ export default function UserDetailsSkeleton() {
           <CardContent className="space-y-6">
             {/* Avatar */}
             <div className="flex justify-center">
-              <Skeleton className="h-32 w-32 rounded-full" />
+              <Skeleton className="h-32 w-32 rounded-sm" />
             </div>
 
             {/* Profile Details */}
@@ -60,14 +60,14 @@ export default function UserDetailsSkeleton() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border p-4 space-y-4">
+              <div className="rounded-sm border p-4 space-y-4">
                 <div className="flex items-start justify-between">
                   <Skeleton className="h-5 w-[200px]" />
                   <div className="flex gap-2">
-                    <Skeleton className="h-6 w-[80px] rounded-full" />
+                    <Skeleton className="h-6 w-[80px] rounded-sm" />
                   </div>
                 </div>
-                <Skeleton className="h-9 w-full rounded-md" />
+                <Skeleton className="h-9 w-full rounded-sm" />
               </div>
             </CardContent>
           </Card>
@@ -90,14 +90,14 @@ export default function UserDetailsSkeleton() {
                   <Skeleton className="h-4 w-4" />
                   <Skeleton className="h-4 w-[120px]" />
                 </div>
-                <Skeleton className="h-10 w-[180px] rounded-md" />
+                <Skeleton className="h-10 w-[180px] rounded-sm" />
                 <Skeleton className="h-4 w-[200px] ml-auto" />
               </div>
 
               {/* Activity Log Items Skeleton */}
               <div className="space-y-3">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="rounded-md border p-4 space-y-3">
+                  <div key={i} className="rounded-sm border p-4 space-y-3">
                     {/* Header Row */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 space-y-2">
@@ -105,8 +105,8 @@ export default function UserDetailsSkeleton() {
                         <Skeleton className="h-3 w-1/2" />
                       </div>
                       <div className="flex items-center gap-2">
-                        <Skeleton className="h-8 w-8 rounded-full" />
-                        <Skeleton className="h-6 w-[80px] rounded-full" />
+                        <Skeleton className="h-8 w-8 rounded-sm" />
+                        <Skeleton className="h-6 w-[80px] rounded-sm" />
                       </div>
                     </div>
 
@@ -130,8 +130,8 @@ export default function UserDetailsSkeleton() {
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-4 w-[100px]" />
                   <div className="flex gap-2">
-                    <Skeleton className="h-9 w-[100px] rounded-md" />
-                    <Skeleton className="h-9 w-[80px] rounded-md" />
+                    <Skeleton className="h-9 w-[100px] rounded-sm" />
+                    <Skeleton className="h-9 w-[80px] rounded-sm" />
                   </div>
                 </div>
               </div>

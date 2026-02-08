@@ -115,7 +115,7 @@ export default function StaffEarnings() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-100 rounded-lg">
+              <div className="p-3 bg-green-100 rounded-sm">
                 <IndianRupee className="w-6 h-6 text-green-600" />
               </div>
               <div>
@@ -131,7 +131,7 @@ export default function StaffEarnings() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-yellow-100 rounded-lg">
+              <div className="p-3 bg-yellow-100 rounded-sm">
                 <Clock className="w-6 h-6 text-yellow-600" />
               </div>
               <div>
@@ -214,7 +214,7 @@ export default function StaffEarnings() {
                     </TableCell>
                     <TableCell>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`px-3 py-1 rounded-sm text-xs font-medium ${getStatusColor(
                           earning.paymentStatus,
                         )}`}>
                         {earning.paymentStatus}

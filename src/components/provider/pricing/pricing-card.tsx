@@ -38,7 +38,7 @@ function PricingHero() {
         {highlights.map((item, i) => (
           <li
             key={i}
-            className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-700">
+            className="inline-flex items-center gap-2 rounded-sm border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-700">
             <Check className="h-4 w-4 text-blue-600" />
             {item}
           </li>
@@ -74,37 +74,36 @@ function PricingCard({
 
   const daysRemaining = trialEndDate
     ? Math.max(
-        0,
-        Math.ceil(
-          (new Date(trialEndDate).getTime() - Date.now()) /
-            (1000 * 60 * 60 * 24),
-        ),
-      )
+      0,
+      Math.ceil(
+        (new Date(trialEndDate).getTime() - Date.now()) /
+        (1000 * 60 * 60 * 24),
+      ),
+    )
     : 0;
 
   return (
     <div
-      className={`relative flex flex-col rounded-md border p-7 transition-all h-full ${
-        isActive || (isPremium && isTrialEligible && !isActive)
+      className={`relative flex flex-col rounded-sm border p-7 transition-all h-full ${isActive || (isPremium && isTrialEligible && !isActive)
           ? "border-blue-500 bg-blue-50 shadow-lg"
           : "border-gray-200 bg-white hover:shadow-lg"
-      }`}>
+        }`}>
       {/* Badge */}
       {(isInTrial ||
         (isPremium && isTrialEligible && !isInTrial && !isActive)) && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-md bg-blue-600 px-4 py-1 text-xs font-semibold text-white">
-          {isInTrial ? "TRIAL ACTIVE" : "FREE TRIAL"}
-        </div>
-      )}
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-sm bg-blue-600 px-4 py-1 text-xs font-semibold text-white">
+            {isInTrial ? "TRIAL ACTIVE" : "FREE TRIAL"}
+          </div>
+        )}
 
       {isActive && !isInTrial && !isCancelAtPeriodEnd && (
-        <span className="absolute top-4 right-4 rounded-md bg-blue-600 px-3 py-1 text-xs font-semibold text-white uppercase">
+        <span className="absolute top-4 right-4 rounded-sm bg-blue-600 px-3 py-1 text-xs font-semibold text-white uppercase">
           Active
         </span>
       )}
 
       {isCancelAtPeriodEnd && isActive && (
-        <span className="absolute top-4 right-4 rounded-md bg-red-600 px-3 py-1 text-xs font-semibold text-white">
+        <span className="absolute top-4 right-4 rounded-sm bg-red-600 px-3 py-1 text-xs font-semibold text-white">
           Cancelled
         </span>
       )}
@@ -166,7 +165,7 @@ function PricingCard({
       </ul>
 
       {isCancelAtPeriodEnd && isActive && (
-        <div className="mb-4 flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+        <div className="mb-4 flex items-start gap-3 rounded-sm border border-amber-200 bg-amber-50 px-4 py-3">
           <div className="mt-0.5 text-amber-500">
             <TriangleAlert size={18} />
           </div>
@@ -200,7 +199,7 @@ function PricingCard({
             {plan.price === 0 ? (
               <button
                 disabled
-                className="w-full cursor-default rounded-md bg-green-100 text-green-700 border border-green-200 py-3 text-sm font-semibold">
+                className="w-full cursor-default rounded-sm bg-green-100 text-green-700 border border-green-200 py-3 text-sm font-semibold">
                 Current Active Plan
               </button>
             ) : (
@@ -213,7 +212,7 @@ function PricingCard({
                         <button
                           disabled={isManageLoading}
                           onClick={onManage}
-                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-sm border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
                           {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
@@ -222,13 +221,13 @@ function PricingCard({
                         <button
                           disabled={isCancelLoading}
                           onClick={onCancel}
-                          className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-sm bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                           {isCancelLoading ? "Cancelling..." : "Cancel Trial"}
                         </button>
                         <button
                           disabled={isManageLoading}
                           onClick={onManage}
-                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-sm border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
                           {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
@@ -243,7 +242,7 @@ function PricingCard({
                       <button
                         disabled={isManageLoading}
                         onClick={onManage}
-                        className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 md:px-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        className="w-full cursor-pointer rounded-sm border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 text-sm font-semibold transition sm:py-2.5 md:px-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         {isManageLoading ? "Redirecting..." : "Manage"}
                       </button>
                     ) : (
@@ -251,13 +250,13 @@ function PricingCard({
                         <button
                           disabled={isCancelLoading}
                           onClick={onCancel}
-                          className="w-full cursor-pointer rounded-md bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-sm bg-red-100 text-red-700 hover:bg-red-200 border border-red-200 py-3 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                           {isCancelLoading ? "Cancelling..." : "Cancel"}
                         </button>
                         <button
                           disabled={isManageLoading}
                           onClick={onManage}
-                          className="w-full cursor-pointer rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                          className="w-full cursor-pointer rounded-sm border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                           {isManageLoading ? "Redirecting..." : "Manage"}
                         </button>
                       </div>
@@ -271,7 +270,7 @@ function PricingCard({
                     <button
                       disabled={isManageLoading}
                       onClick={onManage}
-                      className="w-full cursor-pointer rounded-md bg-gray-800 text-white hover:bg-gray-900 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="w-full cursor-pointer rounded-sm bg-gray-800 text-white hover:bg-gray-900 py-3 md:px-2 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
                       {isManageLoading ? "Redirecting..." : "Manage"}
                     </button>
                   )}
@@ -284,20 +283,19 @@ function PricingCard({
               isLoading || (plan.price === 0 && hasActivePaidSubscription)
             }
             onClick={() => onSubscribe(plan.stripePriceId)}
-            className={`w-full cursor-pointer rounded-md bg-blue-600  hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${
-              plan.price === 0 && hasActivePaidSubscription
+            className={`w-full cursor-pointer rounded-sm bg-blue-600  hover:bg-blue-700 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${plan.price === 0 && hasActivePaidSubscription
                 ? "bg-gray-200 text-black border border-gray-200 cursor-not-allowed hover:bg-gray-200"
                 : "text-white"
-            }`}>
+              }`}>
             {isLoading
               ? "Processing..."
               : plan.price === 0 && hasActivePaidSubscription
-              ? "You have active subscription"
-              : isPremium && isTrialEligible
-              ? "Start Free Trial"
-              : plan.price === 0
-              ? "Get Started"
-              : "Upgrade Now"}
+                ? "You have active subscription"
+                : isPremium && isTrialEligible
+                  ? "Start Free Trial"
+                  : plan.price === 0
+                    ? "Get Started"
+                    : "Upgrade Now"}
           </button>
         )}
       </div>
@@ -351,9 +349,9 @@ export default function PricingSection() {
   const trialEndDate =
     isInTrial && subscription?.currentPeriodStart
       ? new Date(
-          new Date(subscription.currentPeriodStart).getTime() +
-            7 * 24 * 60 * 60 * 1000,
-        )
+        new Date(subscription.currentPeriodStart).getTime() +
+        7 * 24 * 60 * 60 * 1000,
+      )
       : null;
 
   const isTrialEligible = activePlanName === "FREE" && !isInTrial;

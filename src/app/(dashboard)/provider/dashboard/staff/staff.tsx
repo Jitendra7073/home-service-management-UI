@@ -62,11 +62,11 @@ export default function StaffView() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-32 bg-gray-200 animate-pulse rounded-lg"
+                  className="h-32 bg-gray-200 animate-pulse rounded-sm"
                 />
               ))}
             </div>
-            <div className="h-64 bg-gray-200 animate-pulse rounded-lg" />
+            <div className="h-64 bg-gray-200 animate-pulse rounded-sm" />
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function StaffView() {
             <TabsTrigger value="pending-requests" className="relative">
               Pending Requests
               {pendingCount > 0 && (
-                <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-sm bg-red-500 text-xs text-white">
                   {pendingCount}
                 </span>
               )}

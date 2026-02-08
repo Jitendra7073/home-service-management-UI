@@ -110,7 +110,7 @@ export default function RegisterForm() {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-muted/50 px-4 py-10">
-      <div className="w-full max-w-5xl rounded-md border bg-card shadow-lg grid grid-cols-1 md:grid-cols-2">
+      <div className="w-full max-w-5xl rounded-sm border bg-card shadow-lg grid grid-cols-1 md:grid-cols-2">
         {/* LEFT FORM */}
         <div className="p-8 flex items-center">
           <Card className="w-full border-0 shadow-none">

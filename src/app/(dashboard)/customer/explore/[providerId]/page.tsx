@@ -150,10 +150,10 @@ function SocialLinks({ links }: { links?: SocialLink[] }) {
           href={item.value}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex items-center gap-2 rounded-md bg-card text-sm text-muted-foreground transition">
+          className="group flex items-center gap-2 rounded-sm bg-card text-sm text-muted-foreground transition">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted hover:bg-muted/80 text-muted-foreground group-hover:text-primary transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-muted hover:bg-muted/80 text-muted-foreground group-hover:text-primary transition-colors">
                 <PlatformIcon platform={item.key} className="h-4 w-4" />
               </div>
             </TooltipTrigger>
@@ -225,7 +225,7 @@ export default function ServiceDetailPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 space-y-6">
-        <div className="relative w-full overflow-hidden rounded-md aspect-16/8 md:aspect-19/7 shadow-sm">
+        <div className="relative w-full overflow-hidden rounded-sm aspect-16/8 md:aspect-19/7 shadow-sm">
           <Image
             src={service.coverImage || "/images/default-service-banner.png"}
             alt={service.name || "Service Name"}
@@ -239,7 +239,7 @@ export default function ServiceDetailPage() {
           {/* LEFT SIDE CONTENT */}
           <div className="lg:col-span-2 space-y-6">
             {/* SERVICE HEADER CARD */}
-            <div className="relative bg-card rounded-md overflow-hidden shadow-xs border">
+            <div className="relative bg-card rounded-sm overflow-hidden shadow-xs border">
               <div className="w-full bg-primary px-6 py-6 text-primary-foreground">
                 <div className="space-y-4">
                   <p className="text-sm uppercase tracking-widest text-primary-foreground/80">
@@ -259,19 +259,17 @@ export default function ServiceDetailPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
                     <FeaturePill
                       label="Estimate Timeline"
-                      value={`${
-                        (service.durationInMinutes / 60)
+                      value={`${(service.durationInMinutes / 60)
                           .toFixed(2)
                           .split(".")[0]
-                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
-                        (service.durationInMinutes / 60)
+                        } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
                           .toFixed(2)
                           .split(".")[1] == "00"
                           ? ""
                           : (service.durationInMinutes / 60)
-                              .toFixed(2)
-                              .split(".")[1] + " Min"
-                      } 
+                            .toFixed(2)
+                            .split(".")[1] + " Min"
+                        } 
                       `}
                     />
 
@@ -285,9 +283,8 @@ export default function ServiceDetailPage() {
                     />
                     <FeaturePill
                       label="Reviews"
-                      value={`${service.reviewCount} review${
-                        service.reviewCount !== 1 ? "s" : ""
-                      }`}
+                      value={`${service.reviewCount} review${service.reviewCount !== 1 ? "s" : ""
+                        }`}
                     />
                     <FeaturePill
                       label="Status"
@@ -383,7 +380,7 @@ export default function ServiceDetailPage() {
                         <button
                           key={index}
                           onClick={() => setActiveImage(image)}
-                          className="relative aspect-square overflow-hidden rounded-md">
+                          className="relative aspect-square overflow-hidden rounded-sm">
                           <Image
                             src={image}
                             alt="Service Image"
@@ -414,7 +411,7 @@ export default function ServiceDetailPage() {
                   ">
                             <button
                               onClick={() => setActiveImage(image)}
-                              className="relative aspect-square overflow-hidden rounded-md w-full">
+                              className="relative aspect-square overflow-hidden rounded-sm w-full">
                               <Image
                                 src={image}
                                 alt="Service Image"
@@ -432,8 +429,8 @@ export default function ServiceDetailPage() {
                 <Dialog
                   open={!!activeImage}
                   onOpenChange={() => setActiveImage(null)}>
-                    <DialogTitle></DialogTitle>
-                    <DialogDescription></DialogDescription>
+                  <DialogTitle></DialogTitle>
+                  <DialogDescription></DialogDescription>
                   <DialogContent className=" p-1  max-w-[95vw] sm:max-w-3xl border-none">
                     {activeImage && (
                       <Image
@@ -441,7 +438,7 @@ export default function ServiceDetailPage() {
                         alt="Preview"
                         width={1200}
                         height={1200}
-                        className="w-full h-auto max-h-[75vh] sm:max-h-[85vh] object-contain rounded-md"
+                        className="w-full h-auto max-h-[75vh] sm:max-h-[85vh] object-contain rounded-sm"
                         priority
                       />
                     )}
@@ -468,17 +465,15 @@ export default function ServiceDetailPage() {
                   <SummaryRow label="Service" value={service.name} />
                   <SummaryRow
                     label="Estimate Timeline"
-                    value={`${
-                      (service.durationInMinutes / 60).toFixed(2).split(".")[0]
-                    } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${
-                      (service.durationInMinutes / 60)
+                    value={`${(service.durationInMinutes / 60).toFixed(2).split(".")[0]
+                      } ${service.durationInMinutes < 60 ? "Min" : "Hrs"} ${(service.durationInMinutes / 60)
                         .toFixed(2)
                         .split(".")[1] == "00"
                         ? ""
                         : (service.durationInMinutes / 60)
-                            .toFixed(2)
-                            .split(".")[1] + " Min"
-                    } 
+                          .toFixed(2)
+                          .split(".")[1] + " Min"
+                      } 
                       `}
                   />
                   <SummaryRow label="Provider" value={provider.name} />

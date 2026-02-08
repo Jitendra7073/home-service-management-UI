@@ -219,25 +219,6 @@ export default function StaffBusinessBrowser() {
                       <Briefcase className="h-4 w-4" />
                       <span>{services.length} Services Available</span>
                     </div>
-
-                    {/* SERVICES PREVIEW */}
-
-                    {services.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Popular Services:</p>
-
-                        <div className="flex flex-wrap gap-1">
-                          {services.slice(0, 3).map((service: any) => (
-                            <Badge
-                              key={service.id}
-                              variant="outline"
-                              className="text-xs">
-                              {service.name} • ₹{service.price}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* ================= APPLY MODAL ================= */}
@@ -248,7 +229,7 @@ export default function StaffBusinessBrowser() {
                         <Button
                           onClick={() => setSelectedBusiness(provider)}
                           disabled
-                          className="w-full bg-transparent border border-green-700 rounded-md text-green-700 hover:bg-transparent">
+                          className="w-full bg-transparent border border-green-700 rounded-sm text-green-700 hover:bg-transparent">
                           <CircleCheckBig className="mr-2 h-4 w-4 text-green-700" />
                           Already Applied
                         </Button>

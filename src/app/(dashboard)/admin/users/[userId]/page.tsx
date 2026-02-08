@@ -200,7 +200,7 @@ export default function UserDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border border-destructive/20 bg-destructive/10 p-4">
+            <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-4">
               <p className="mb-2 text-sm font-semibold text-destructive">
                 Reason for Restriction
               </p>
@@ -308,7 +308,7 @@ export default function UserDetailsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="rounded-md border bg-card p-4">
+                <div className="rounded-sm border bg-card p-4">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">
@@ -370,7 +370,7 @@ export default function UserDetailsPage() {
                     {user.businesses.map((business: any) => (
                       <div
                         key={business._id || business.id}
-                        className="rounded-md border bg-card p-4">
+                        className="rounded-sm border bg-card p-4">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="font-semibold">
                             {business.name || business.businessName}
@@ -404,8 +404,7 @@ export default function UserDetailsPage() {
                           className="w-full gap-2"
                           onClick={() =>
                             router.push(
-                              `/admin/businesses/${
-                                business._id || business.id
+                              `/admin/businesses/${business._id || business.id
                               }`,
                             )
                           }>
@@ -469,7 +468,7 @@ function timeAgo(dateString: string) {
 
 function ActivityLogItem({ log }: { log: any }) {
   return (
-    <div className="group rounded-md border bg-card p-4 transition-all hover:shadow-md hover:border-primary/50">
+    <div className="group rounded-sm border bg-card p-4 transition-all hover:shadow-md hover:border-primary/50">
       <div className="space-y-3">
         {/* Header Row */}
         <div className="flex items-start justify-between gap-3">
@@ -488,9 +487,8 @@ function ActivityLogItem({ log }: { log: any }) {
             )}
             <Badge
               variant="outline"
-              className={`${
-                STATUS_STYLES[log.status] || STATUS_STYLES.SUCCESS
-              } font-medium`}>
+              className={`${STATUS_STYLES[log.status] || STATUS_STYLES.SUCCESS
+                } font-medium`}>
               {log.status}
             </Badge>
           </div>
@@ -543,7 +541,7 @@ function MetadataPopover({ metadata }: { metadata: any }) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-full hover:bg-accent">
+          className="h-8 w-8 rounded-sm hover:bg-accent">
           <Info className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -555,7 +553,7 @@ function MetadataPopover({ metadata }: { metadata: any }) {
             <p className="text-sm font-semibold">Additional Information</p>
           </div>
 
-          <pre className="max-h-[400px] overflow-auto rounded-md bg-muted p-4 text-xs font-mono leading-relaxed">
+          <pre className="max-h-[400px] overflow-auto rounded-sm bg-muted p-4 text-xs font-mono leading-relaxed">
             {JSON.stringify(metadata, null, 2)}
           </pre>
         </div>
@@ -606,9 +604,8 @@ function ActivityLogsSection({
       }
     });
 
-    const newUrl = `${window.location.pathname}${
-      params.toString() ? "?" + params.toString() : ""
-    }`;
+    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""
+      }`;
     window.history.replaceState({}, "", newUrl);
   };
 
@@ -756,13 +753,13 @@ function ActivityLogsSection({
             <Skeleton className="h-4 w-4" />
             <Skeleton className="h-4 w-[120px]" />
           </div>
-          <Skeleton className="h-10 w-[180px] rounded-md" />
+          <Skeleton className="h-10 w-[180px] rounded-sm" />
           <Skeleton className="h-4 w-[200px] ml-auto" />
         </div>
         {/* Activity Log Items Skeleton */}
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="rounded-md border p-4 space-y-3">
+            <div key={i} className="rounded-sm border p-4 space-y-3">
               {/* Header Row */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
@@ -770,8 +767,8 @@ function ActivityLogsSection({
                   <Skeleton className="h-3 w-1/2" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                  <Skeleton className="h-6 w-[80px] rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-sm" />
+                  <Skeleton className="h-6 w-[80px] rounded-sm" />
                 </div>
               </div>
 
@@ -834,7 +831,7 @@ function ActivityLogsSection({
               placeholder="Search logs by description, action, IP address..."
               value={searchQuery}
               onChange={(e) => handleFilterChange("search", e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full pl-10 pr-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             {searchQuery && (
@@ -948,15 +945,15 @@ function ActivityLogsSection({
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="rounded-md border p-4 space-y-3 animate-pulse">
+                className="rounded-sm border p-4 space-y-3 animate-pulse">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-3 w-1/2" />
                   </div>
                   <div className="flex items-center gap-2">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <Skeleton className="h-6 w-[80px] rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-sm" />
+                    <Skeleton className="h-6 w-[80px] rounded-sm" />
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">

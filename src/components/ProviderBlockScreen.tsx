@@ -37,8 +37,8 @@ export default function ProviderBlockScreen({
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-md shadow-xl p-8 text-center space-y-6">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+      <div className="max-w-md w-full bg-white rounded-sm shadow-xl p-8 text-center space-y-6">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-sm bg-slate-100">
           {status === "pending" ? (
             <Clock className="h-10 w-10 text-orange-500 animate-pulse" />
           ) : (
@@ -51,8 +51,8 @@ export default function ProviderBlockScreen({
             {status === "pending"
               ? "Approval Pending"
               : status === "rejected"
-              ? "Account Rejected"
-              : "Access Restricted"}
+                ? "Account Rejected"
+                : "Access Restricted"}
           </h1>
 
           <p className="text-gray-600">
@@ -66,7 +66,7 @@ export default function ProviderBlockScreen({
         </div>
 
         {reason && (status === "restricted" || status === "rejected") && (
-          <div className="bg-red-50 border border-red-100 rounded-md p-4 text-left">
+          <div className="bg-red-50 border border-red-100 rounded-sm p-4 text-left">
             <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">
               Reason Provided
             </p>

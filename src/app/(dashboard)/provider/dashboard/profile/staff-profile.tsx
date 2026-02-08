@@ -232,6 +232,12 @@ export default function StaffProfile() {
 
           {/* Profile Details Tab */}
           <TabsContent value="details" className="space-y-6 mt-6">
+            <div>
+              <h2 className="text-2xl font-bold">My Addresses</h2>
+              <p className="text-gray-600 mt-1">
+                Manage your addresses for payments and deliveries
+              </p>
+            </div>
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -376,7 +382,7 @@ export default function StaffProfile() {
                       {profile.businessMemberships.map((business: any) => (
                         <div
                           key={business.id}
-                          className="flex items-center justify-between p-4 border rounded-lg">
+                          className="flex items-center justify-between p-4 border rounded-sm">
                           <div className="flex items-center gap-3">
                             <Building2 className="w-5 h-5 text-gray-400" />
                             <div>
@@ -462,9 +468,8 @@ export default function StaffProfile() {
 
             {/* Add Card Form with smooth animation */}
             <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                showAddCard ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-              }`}>
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${showAddCard ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                }`}>
               {showAddCard && (
                 <StaffCardForm
                   onSuccess={() => {
@@ -497,7 +502,7 @@ export default function StaffProfile() {
                   </p>
                   <p>• Set a default card for automatic payments</p>
                 </div>
-                <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+                <div className="mt-4 p-3 bg-blue-100 rounded-sm">
                   <p className="text-xs text-blue-900">
                     <strong>Security:</strong> Your card details are stored
                     securely and encrypted. We never display your full card
@@ -553,8 +558,8 @@ export default function StaffProfile() {
             </div>
 
             {!hasConnected ? (
-              <div className="text-center py-16 px-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl mb-6">
+              <div className="text-center py-16 px-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-sm">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-blue-100 rounded-sm mb-6">
                   <CreditCard className="w-10 h-10 text-purple-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -587,7 +592,7 @@ export default function StaffProfile() {
                       });
                   }}
                   size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-xl">
+                  className="bg-gray-200 hover:to-blue-700 shadow-xl">
                   <CreditCard className="w-5 h-5 mr-2" />
                   Connect Bank Account
                 </Button>
@@ -600,7 +605,7 @@ export default function StaffProfile() {
                     {bankAccounts.map((account: any) => (
                       <div
                         key={account.id}
-                        className="relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+                        className="relative overflow-hidden bg-white rounded-sm shadow-sm hover:shadow-md transition-all duration-200">
                         {/* Gradient accent bar */}
                         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-600 to-blue-600" />
 
@@ -608,7 +613,7 @@ export default function StaffProfile() {
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-4">
-                                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl">
+                                <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-50 to-blue-50 rounded-sm">
                                   <Building2 className="w-6 h-6 text-purple-600" />
                                 </div>
                                 <div>
@@ -616,7 +621,7 @@ export default function StaffProfile() {
                                     {account.bankName}
                                   </h4>
                                   {account.isDefault && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-xs font-medium bg-green-100 text-green-800 mt-1">
                                       Default Account
                                     </span>
                                   )}
@@ -645,14 +650,13 @@ export default function StaffProfile() {
                                     Status
                                   </p>
                                   <span
-                                    className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                      account.status === "new" ||
+                                    className={`inline-flex items-center px-3 py-1 rounded-sm text-sm font-medium ${account.status === "new" ||
                                       account.status === "validated"
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-gray-100 text-gray-800"
-                                    }`}>
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-gray-100 text-gray-800"
+                                      }`}>
                                     {account.status === "new" ||
-                                    account.status === "validated"
+                                      account.status === "validated"
                                       ? "✓"
                                       : "○"}{" "}
                                     {account.status}
@@ -663,12 +667,11 @@ export default function StaffProfile() {
 
                             <div className="flex items-center gap-2">
                               <div
-                                className={`w-2 h-2 rounded-full ${
-                                  account.status === "new" ||
+                                className={`w-2 h-2 rounded-sm ${account.status === "new" ||
                                   account.status === "validated"
-                                    ? "bg-green-500"
-                                    : "bg-gray-400"
-                                }`}
+                                  ? "bg-green-500"
+                                  : "bg-gray-400"
+                                  }`}
                               />
                             </div>
                           </div>
@@ -677,7 +680,7 @@ export default function StaffProfile() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 px-8 bg-gray-50 rounded-2xl">
+                  <div className="text-center py-12 px-8 bg-gray-50 rounded-sm">
                     <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-600 mb-4">
                       No bank accounts found in our database.
@@ -715,9 +718,9 @@ export default function StaffProfile() {
                 )}
 
                 {/* Stripe Account Status Card */}
-                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6">
+                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-sm p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-white rounded-xl shadow-sm">
+                    <div className="flex items-center justify-center w-12 h-12 bg-white rounded-sm shadow-sm">
                       <CreditCard className="w-6 h-6 text-purple-600" />
                     </div>
                     <div className="flex-1">
@@ -725,30 +728,28 @@ export default function StaffProfile() {
                         Stripe Account Status
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center justify-between p-3 bg-white rounded-xl">
+                        <div className="flex items-center justify-between p-3 bg-white rounded-sm">
                           <span className="text-sm text-gray-600">
                             Account Status
                           </span>
                           <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                              stripeStatusData?.stripeAccountStatus ===
+                            className={`inline-flex items-center px-3 py-1 rounded-sm text-sm font-medium ${stripeStatusData?.stripeAccountStatus ===
                               "VERIFIED"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-amber-100 text-amber-800"
-                            }`}>
+                              ? "bg-green-100 text-green-800"
+                              : "bg-amber-100 text-amber-800"
+                              }`}>
                             {stripeStatusData?.stripeAccountStatus || "Unknown"}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-white rounded-xl">
+                        <div className="flex items-center justify-between p-3 bg-white rounded-sm">
                           <span className="text-sm text-gray-600">
                             Payouts Enabled
                           </span>
                           <span
-                            className={`inline-flex items-center text-sm font-medium ${
-                              stripeStatusData?.payoutsEnabled
-                                ? "text-green-700"
-                                : "text-gray-500"
-                            }`}>
+                            className={`inline-flex items-center text-sm font-medium ${stripeStatusData?.payoutsEnabled
+                              ? "text-green-700"
+                              : "text-gray-500"
+                              }`}>
                             {stripeStatusData?.payoutsEnabled
                               ? "✓ Active"
                               : "○ Inactive"}

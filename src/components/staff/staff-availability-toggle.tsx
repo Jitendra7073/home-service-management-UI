@@ -104,16 +104,19 @@ export function StaffAvailabilityToggle({
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="px-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h3 className="font-semibold text-gray-900 mb-2">
               Current Availability
             </h3>
             <div className="flex items-center gap-3 mb-2">
-              {getStatusBadge()}
+              {isOnLeave ? <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                <CalendarClock className="w-3 h-3 mr-1" />
+                On Leave
+              </Badge> : getStatusBadge()}
             </div>
-            <p className="text-sm text-gray-600">{getStatusMessage()}</p>
+            {!isOnLeave && <p className="text-sm text-gray-600">{getStatusMessage()}</p>}
           </div>
 
           {canToggle && (
@@ -144,34 +147,6 @@ export function StaffAvailabilityToggle({
           )}
         </div>
 
-        {!canToggle && (
-          <div
-            className={`mt-4 p-3 border rounded-lg ${
-              isOnLeave
-                ? "bg-orange-50 border-orange-200"
-                : "bg-blue-50 border-blue-200"
-            }`}>
-            <p
-              className={`text-sm ${
-                isOnLeave ? "text-orange-800" : "text-blue-800"
-              }`}>
-              {isOnLeave ? (
-                <>
-                  <CalendarClock className="inline w-4 h-4 mr-1" />
-                  <strong>Note:</strong> Your availability is automatically
-                  managed while you are on leave. You cannot change it during
-                  this period.
-                </>
-              ) : (
-                <>
-                  <strong>Note:</strong> Your availability is automatically
-                  managed based on your active bookings. You can toggle this
-                  when you have no active bookings.
-                </>
-              )}
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

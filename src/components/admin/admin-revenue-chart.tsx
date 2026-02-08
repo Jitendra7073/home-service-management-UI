@@ -27,7 +27,7 @@ const AdminRevenueChart: React.FC<AdminRevenueChartProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="w-full h-[250px] flex items-center justify-center border rounded-md">
+      <div className="w-full h-[250px] flex items-center justify-center border rounded-sm">
         <Spinner className="h-6 w-6" />
       </div>
     );
@@ -35,7 +35,7 @@ const AdminRevenueChart: React.FC<AdminRevenueChartProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-[250px] flex items-center justify-center border rounded-md bg-muted/10">
+      <div className="w-full h-[250px] flex items-center justify-center border rounded-sm bg-muted/10">
         <p className="text-sm text-muted-foreground">No revenue data</p>
       </div>
     );

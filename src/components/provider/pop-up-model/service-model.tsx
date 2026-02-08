@@ -26,15 +26,15 @@ const ServiceAwarenessModal = () => {
     typeof data?.count === "number"
       ? data.count
       : Array.isArray(data)
-      ? data?.length
-      : 0;
+        ? data?.length
+        : 0;
 
   if (isLoading || isDismissed || serviceCount > 0) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-[320px] rounded-md border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer">
+    <div className="fixed bottom-4 right-4 z-50 w-[320px] rounded-sm border bg-white shadow-lg p-4 animate-in slide-in-from-bottom-4 fade-in cursor-pointer">
       {/* Close Button */}
       <button
         onClick={() => setIsDismissed(true)}

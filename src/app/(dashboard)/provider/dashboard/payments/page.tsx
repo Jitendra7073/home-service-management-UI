@@ -453,20 +453,20 @@ export default function ProviderPaymentsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center p-6 bg-gray-50 rounded-lg">
+                        <div className="text-center p-6 bg-gray-50 rounded-sm">
                           <div className="text-sm text-gray-600 mb-2">
                             Approval Rate
                           </div>
                           <div className="text-3xl font-bold text-gray-900">
                             {stats?.approvedRequests &&
-                            stats?.approvedRequests + stats?.rejectedRequests >
+                              stats?.approvedRequests + stats?.rejectedRequests >
                               0
                               ? Math.round(
-                                  (stats.approvedRequests /
-                                    (stats.approvedRequests +
-                                      stats.rejectedRequests)) *
-                                    100,
-                                )
+                                (stats.approvedRequests /
+                                  (stats.approvedRequests +
+                                    stats.rejectedRequests)) *
+                                100,
+                              )
                               : 0}
                             %
                           </div>
@@ -478,7 +478,7 @@ export default function ProviderPaymentsPage() {
                           </div>
                         </div>
 
-                        <div className="text-center p-6 bg-gray-50 rounded-lg">
+                        <div className="text-center p-6 bg-gray-50 rounded-sm">
                           <div className="text-sm text-gray-600 mb-2">
                             Average Payment
                           </div>
@@ -486,8 +486,8 @@ export default function ProviderPaymentsPage() {
                             ₹
                             {stats?.totalPayments && stats?.totalPayments > 0
                               ? Math.round(
-                                  stats.totalPaidAmount / stats.totalPayments,
-                                )
+                                stats.totalPaidAmount / stats.totalPayments,
+                              )
                               : 0}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -495,17 +495,17 @@ export default function ProviderPaymentsPage() {
                           </div>
                         </div>
 
-                        <div className="text-center p-6 bg-gray-50 rounded-lg">
+                        <div className="text-center p-6 bg-gray-50 rounded-sm">
                           <div className="text-sm text-gray-600 mb-2">
                             Avg. Staff Percentage
                           </div>
                           <div className="text-3xl font-bold text-gray-900">
                             {stats?.totalPayments && stats?.totalPayments > 0
                               ? Math.round(
-                                  (stats.totalPaidAmount /
-                                    stats.totalRequestedAmount) *
-                                    100,
-                                )
+                                (stats.totalPaidAmount /
+                                  stats.totalRequestedAmount) *
+                                100,
+                              )
                               : 0}
                             %
                           </div>
@@ -636,12 +636,12 @@ export default function ProviderPaymentsPage() {
                         {requests.map((request: any) => {
                           const StatusIcon =
                             STATUS_ICONS[
-                              request.requestStatus as keyof typeof STATUS_ICONS
+                            request.requestStatus as keyof typeof STATUS_ICONS
                             ];
                           return (
                             <div
                               key={request.id}
-                              className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                              className="border rounded-sm p-4 hover:shadow-md transition-shadow">
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-3 mb-3">
@@ -652,7 +652,7 @@ export default function ProviderPaymentsPage() {
                                       variant="outline"
                                       className={
                                         STATUS_COLORS[
-                                          request.requestStatus as keyof typeof STATUS_COLORS
+                                        request.requestStatus as keyof typeof STATUS_COLORS
                                         ]
                                       }>
                                       <StatusIcon className="w-3 h-3 mr-1" />
@@ -805,7 +805,7 @@ export default function ProviderPaymentsPage() {
                         {payments.map((payment: any) => (
                           <div
                             key={payment.id}
-                            className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            className="border rounded-sm p-4 hover:shadow-md transition-shadow">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-3">
@@ -816,7 +816,7 @@ export default function ProviderPaymentsPage() {
                                     variant="outline"
                                     className={
                                       STATUS_COLORS[
-                                        payment.status as keyof typeof STATUS_COLORS
+                                      payment.status as keyof typeof STATUS_COLORS
                                       ]
                                     }>
                                     {payment.status}
@@ -840,8 +840,8 @@ export default function ProviderPaymentsPage() {
                                     <span>
                                       {payment.paidAt
                                         ? new Date(
-                                            payment.paidAt,
-                                          ).toLocaleDateString()
+                                          payment.paidAt,
+                                        ).toLocaleDateString()
                                         : "Pending"}
                                     </span>
                                   </div>
@@ -854,7 +854,7 @@ export default function ProviderPaymentsPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                                <div className="flex items-center justify-between bg-gray-50 rounded-sm p-3">
                                   <div className="flex gap-6 text-sm">
                                     <div>
                                       <span className="text-gray-500">
@@ -938,7 +938,7 @@ export default function ProviderPaymentsPage() {
           </DialogHeader>
           {selectedRequest && (
             <div className="space-y-4 py-4">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <h4 className="font-semibold text-sm text-gray-900 mb-2">
                   Staff Member
                 </h4>
@@ -951,7 +951,7 @@ export default function ProviderPaymentsPage() {
                 </p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <h4 className="font-semibold text-sm text-gray-900 mb-2">
                   Service Details
                 </h4>
@@ -968,7 +968,7 @@ export default function ProviderPaymentsPage() {
               </div>
 
               {selectedRequest.staffFeedback && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-sm p-4">
                   <h4 className="font-semibold text-sm text-blue-900 mb-1">
                     Staff Feedback
                   </h4>
@@ -992,7 +992,7 @@ export default function ProviderPaymentsPage() {
                   />
                   <span className="text-gray-600">of provider earnings</span>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1">
+                <div className="bg-green-50 border border-green-200 rounded-sm p-3 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Service Price:</span>
                     <span className="font-medium">
@@ -1071,7 +1071,7 @@ export default function ProviderPaymentsPage() {
           </DialogHeader>
           {selectedRequest && (
             <div className="space-y-4 py-4">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <p className="font-medium">{selectedRequest.serviceName}</p>
                 <p className="text-sm text-gray-600">
                   {selectedRequest.staffName}

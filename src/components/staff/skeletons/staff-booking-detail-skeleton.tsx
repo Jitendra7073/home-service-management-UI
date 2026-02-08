@@ -15,7 +15,7 @@ export function StaffBookingDetailSkeleton() {
               <div
                 key={i}
                 className="flex flex-col items-center flex-1 relative">
-                <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+                <div className="w-10 h-10 rounded-sm bg-gray-200 animate-pulse" />
                 <div className="h-4 bg-gray-200 rounded w-16 mt-2 animate-pulse" />
               </div>
             ))}
@@ -38,7 +38,7 @@ export function StaffBookingDetailSkeleton() {
             <div className="flex flex-wrap items-center gap-6">
               <div className="h-6 bg-gray-200 rounded w-32 animate-pulse" />
               <div className="h-7 bg-gray-200 rounded w-24 animate-pulse" />
-              <div className="h-8 bg-gray-200 rounded-full w-20 animate-pulse" />
+              <div className="h-8 bg-gray-200 rounded-sm w-20 animate-pulse" />
             </div>
 
             {/* Customer Information */}

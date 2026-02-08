@@ -155,13 +155,12 @@ export default function RefundStatusBadge({
               <div className="relative">
                 <div className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200">
                   <div
-                    className={`h-full transition-all duration-500 ${
-                      currentStep >= 3
+                    className={`h-full transition-all duration-500 ${currentStep >= 3
                         ? "bg-green-500 w-full"
                         : currentStep >= 2
-                        ? "bg-blue-500 w-1/2"
-                        : "bg-yellow-500 w-0"
-                    }`}
+                          ? "bg-blue-500 w-1/2"
+                          : "bg-yellow-500 w-0"
+                      }`}
                   />
                 </div>
 
@@ -176,13 +175,12 @@ export default function RefundStatusBadge({
                         className="flex flex-col items-center"
                       >
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                            isDone
+                          className={`w-8 h-8 rounded-sm flex items-center justify-center border-2 ${isDone
                               ? "bg-green-500 border-green-500 text-white"
                               : isCurrent
-                              ? "bg-blue-500 border-blue-500 text-white animate-pulse"
-                              : "bg-white border-gray-300 text-gray-400"
-                          }`}
+                                ? "bg-blue-500 border-blue-500 text-white animate-pulse"
+                                : "bg-white border-gray-300 text-gray-400"
+                            }`}
                         >
                           {isDone ? (
                             <CheckCircle2 className="w-4 h-4" />
@@ -194,11 +192,10 @@ export default function RefundStatusBadge({
                         </div>
 
                         <span
-                          className={`text-[10px] mt-2 font-medium ${
-                            isDone || isCurrent
+                          className={`text-[10px] mt-2 font-medium ${isDone || isCurrent
                               ? "text-gray-900"
                               : "text-gray-400"
-                          }`}
+                            }`}
                         >
                           {s.label}
                         </span>

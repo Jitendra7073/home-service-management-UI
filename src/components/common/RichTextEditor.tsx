@@ -15,7 +15,7 @@ const ReactQuill = dynamic(
   },
   {
     ssr: false,
-    loading: () => <Skeleton className="h-[300px] w-full rounded-md" />,
+    loading: () => <Skeleton className="h-[300px] w-full rounded-sm" />,
   },
 );
 

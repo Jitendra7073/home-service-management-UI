@@ -31,7 +31,7 @@ const RevenueChart = ({
 
   if (isLoading) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-full shadow-sm border rounded-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Revenue Chart</CardTitle>
           <CardDescription>Monthly revenue analysis</CardDescription>
@@ -48,7 +48,7 @@ const RevenueChart = ({
 
   if (!data || data.length === 0) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-full shadow-sm border rounded-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">Revenue Chart</CardTitle>
           <CardDescription>No revenue data available</CardDescription>
@@ -67,7 +67,7 @@ const RevenueChart = ({
   }
 
   return (
-    <Card className="w-full shadow-sm border rounded-md">
+    <Card className="w-full shadow-sm border rounded-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">Revenue Trends</CardTitle>
         <CardDescription>

@@ -91,7 +91,7 @@ export default function Header() {
                   <Link href="/customer/cart" className="relative">
                     <ShoppingCart className="text-primary" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-sm bg-red-600 text-white text-xs flex items-center justify-center">
                         {cartCount}
                       </span>
                     )}
@@ -120,10 +120,10 @@ export default function Header() {
         <div className="flex md:hidden items-center gap-1">
           <Link
             href="/customer/cart"
-            className="relative p-2 rounded-md hover:bg-muted">
+            className="relative p-2 rounded-sm hover:bg-muted">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1.5 rounded-sm">
                 {cartCount}
               </span>
             )}
@@ -195,7 +195,7 @@ function MobileNavItem({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-3 rounded-md hover:bg-muted">
+      className="flex items-center gap-3 px-3 py-3 rounded-sm hover:bg-muted">
       <Icon className="h-5 w-5 text-primary" />
       <span className="text-base font-medium">{label}</span>
     </Link>
@@ -204,7 +204,7 @@ function MobileNavItem({
 
 function PromoCard({ title, image }: { title: string; image: string }) {
   return (
-    <div className="relative overflow-hidden rounded-md border">
+    <div className="relative overflow-hidden rounded-sm border">
       <Image
         src={image}
         alt={title}

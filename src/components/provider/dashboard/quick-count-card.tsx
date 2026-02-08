@@ -32,7 +32,7 @@ const QuickCountCard: React.FC<CardProps> = ({
         className="
           w-auto
           bg-gradient-to-br from-white via-gray-50 to-gray-100 
-          border border-gray-200 shadow-sm rounded-md py-3 space-y-0 transition-all
+          border border-gray-200 shadow-sm rounded-sm py-3 space-y-0 transition-all
         ">
         <CardHeader className="flex flex-col gap-2 ">
           <div className="flex items-center justify-between gap-3">
@@ -57,7 +57,7 @@ const QuickCountCard: React.FC<CardProps> = ({
       className="
         w-auto 
         bg-gradient-to-br from-white via-gray-50 to-gray-100 
-        border border-gray-200 shadow-sm rounded-md py-3 space-y-0 transition-all
+        border border-gray-200 shadow-sm rounded-sm py-3 space-y-0 transition-all
       ">
       <CardHeader className="flex flex-col gap-2 ">
         <div className="flex items-center justify-between gap-3">
@@ -82,12 +82,11 @@ const QuickCountCard: React.FC<CardProps> = ({
 
       <CardFooter className="flex flex-col md:flex-row items-start md:items-center md: justify-between gap-1">
         <p
-          className={`text-sm flex items-center gap-1 mt-1 ${
-            growth.toLowerCase().includes("lost") ||
-            growth.toLowerCase().includes("cancelled")
+          className={`text-sm flex items-center gap-1 mt-1 ${growth.toLowerCase().includes("lost") ||
+              growth.toLowerCase().includes("cancelled")
               ? "text-red-500"
               : "text-green-600"
-          }`}>
+            }`}>
           {growth}
         </p>
         {subText && (

@@ -220,11 +220,10 @@ function TrackingStatusBadge({
 
   return (
     <span
-      className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
-        isCancelled
-          ? "bg-red-100 text-red-700 border-red-200"
-          : getBadgeColor(trackingStatus || "NOT_STARTED")
-      }`}>
+      className={`text-xs font-medium px-2.5 py-1 rounded-sm border ${isCancelled
+        ? "bg-red-100 text-red-700 border-red-200"
+        : getBadgeColor(trackingStatus || "NOT_STARTED")
+        }`}>
       {isCancelled ? "Cancelled" : formatStatus(trackingStatus || "NOT_STARTED")}
     </span>
   );
@@ -311,8 +310,8 @@ const columns: ColumnDef<Booking>[] = [
                         {trackingStatus === "NOT_STARTED"
                           ? "the beginning"
                           : trackingStatus
-                              ?.replaceAll("_", " ")
-                              .toLowerCase()}
+                            ?.replaceAll("_", " ")
+                            .toLowerCase()}
                       </span>
                     </span>
                   </div>
@@ -496,9 +495,8 @@ export function BookingTable({ NumberOfRows = 5 }: { NumberOfRows?: number }) {
   return (
     <div className="w-full space-y-4">
       <AdminDataTable
-        title={`Booking List ${
-          bookings.length > 0 ? `(${bookings.length} total)` : ""
-        }`}
+        title={`Booking List ${bookings.length > 0 ? `(${bookings.length} total)` : ""
+          }`}
         columns={adminColumns}
         data={table.getRowModel().rows}
         isLoading={isLoading}

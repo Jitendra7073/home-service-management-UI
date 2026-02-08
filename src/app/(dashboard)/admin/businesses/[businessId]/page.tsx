@@ -136,22 +136,22 @@ export default function BusinessDetailsPage() {
 
   const business: BusinessData | null = businessDataRaw
     ? {
-        ...businessDataRaw,
-        _id: businessDataRaw.id || businessDataRaw._id,
-        owner: businessDataRaw.user
-          ? {
-              ...businessDataRaw.user,
-              _id: businessDataRaw.user.id || businessDataRaw.user._id,
-              firstName: businessDataRaw.user.name?.split(" ")[0] || "",
-              lastName:
-                businessDataRaw.user.name?.split(" ").slice(1).join(" ") || "",
-            }
-          : { _id: "", firstName: "Unknown", lastName: "", email: "" },
-        address: businessDataRaw.address || "No address provided",
-        email: businessDataRaw.contactEmail,
-        phone: businessDataRaw.phoneNumber,
-        restrictionRequestMessage: businessDataRaw.restrictionRequestMessage,
-      }
+      ...businessDataRaw,
+      _id: businessDataRaw.id || businessDataRaw._id,
+      owner: businessDataRaw.user
+        ? {
+          ...businessDataRaw.user,
+          _id: businessDataRaw.user.id || businessDataRaw.user._id,
+          firstName: businessDataRaw.user.name?.split(" ")[0] || "",
+          lastName:
+            businessDataRaw.user.name?.split(" ").slice(1).join(" ") || "",
+        }
+        : { _id: "", firstName: "Unknown", lastName: "", email: "" },
+      address: businessDataRaw.address || "No address provided",
+      email: businessDataRaw.contactEmail,
+      phone: businessDataRaw.phoneNumber,
+      restrictionRequestMessage: businessDataRaw.restrictionRequestMessage,
+    }
     : null;
 
   const actionLoading =
@@ -233,7 +233,7 @@ export default function BusinessDetailsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <Skeleton className="h-12 w-12 rounded-sm" />
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-32" />
                     <Skeleton className="h-3 w-48" />
@@ -259,10 +259,10 @@ export default function BusinessDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Skeleton className="h-40 rounded-md" />
-                  <Skeleton className="h-40 rounded-md" />
-                  <Skeleton className="h-40 rounded-md" />
-                  <Skeleton className="h-40 rounded-md" />
+                  <Skeleton className="h-40 rounded-sm" />
+                  <Skeleton className="h-40 rounded-sm" />
+                  <Skeleton className="h-40 rounded-sm" />
+                  <Skeleton className="h-40 rounded-sm" />
                 </div>
               </CardContent>
             </Card>
@@ -473,13 +473,13 @@ export default function BusinessDetailsPage() {
                     <p className="font-semibold text-sm mb-1">
                       Appeal from Provider:
                     </p>
-                    <p className="text-sm text-muted-foreground p-3 bg-secondary/50 rounded-md border italic">
+                    <p className="text-sm text-muted-foreground p-3 bg-secondary/50 rounded-sm border italic">
                       "
                       {business.restrictionRequestMessage &&
                         business.restrictionRequestMessage
                           .charAt(0)
                           .toUpperCase() +
-                          business.restrictionRequestMessage.slice(1)}
+                        business.restrictionRequestMessage.slice(1)}
                       "
                     </p>
                   </div>

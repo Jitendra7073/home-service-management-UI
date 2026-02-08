@@ -10,7 +10,7 @@ interface ReviewsListProps {
 
 export function ReviewsList({ reviews }: ReviewsListProps) {
   return (
-    <Card className="rounded-md  border-gray-200">
+    <Card className="rounded-sm  border-gray-200">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Customer Feedback</CardTitle>
         <Button variant="ghost" size="sm" className="text-blue-600">
@@ -35,11 +35,10 @@ export function ReviewsList({ reviews }: ReviewsListProps) {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${
-                        i < review.rating
+                      className={`w-3 h-3 ${i < review.rating
                           ? "fill-yellow-400 text-yellow-400"
                           : "text-gray-300"
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>

@@ -109,7 +109,7 @@ export default function AdminStaffDetailPage({
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
+                  <div className="w-16 h-16 rounded-sm bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl">
                     {staff.name?.charAt(0)}
                   </div>
                   <div>
@@ -180,7 +180,7 @@ export default function AdminStaffDetailPage({
                     {staff.staffApplications.map((app: any) => (
                       <div
                         key={app.id}
-                        className="flex justify-between items-center p-3 rounded-lg">
+                        className="flex justify-between items-center p-3 rounded-sm">
                         <div>
                           <p className="font-medium">
                             {app.businessProfile.businessName}
@@ -209,7 +209,7 @@ export default function AdminStaffDetailPage({
                 {staff.staffAssignBookings?.length > 0 ? (
                   <div className="space-y-3">
                     {staff.staffAssignBookings.map((assign: any) => (
-                      <div key={assign.id} className="p-3 border rounded-lg">
+                      <div key={assign.id} className="p-3 border rounded-sm">
                         <div className="flex justify-between">
                           <span className="font-medium">
                             {assign.booking.service.name}

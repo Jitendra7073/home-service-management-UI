@@ -37,7 +37,7 @@ import ManageBusinessSkeleton from "./businessSkeleton";
 /* ---------------- REUSABLE ---------------- */
 function LabelAndValue({ label, value, icon: Icon }: any) {
   return (
-    <div className="p-4 border rounded-md space-y-1">
+    <div className="p-4 border rounded-sm space-y-1">
       <div className="flex items-center gap-2 text-gray-600">
         {Icon && <Icon className="w-4 h-4" />}
         <Label>{label}</Label>
@@ -50,7 +50,7 @@ function LabelAndValue({ label, value, icon: Icon }: any) {
 /* ---------------- SLOT CARD ---------------- */
 function SlotCard({ slot, onDelete, isDeleting }: any) {
   return (
-    <div className="flex justify-between items-center p-4 border rounded-md">
+    <div className="flex justify-between items-center p-4 border rounded-sm">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4" />
         <span>{slot.time}</span>
@@ -240,7 +240,7 @@ function CreateSlotDialog({
               />
             </div>
 
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-sm">
               <p className="text-xs text-blue-700">
                 <span className="font-medium">Note:</span> This slot will be
                 available for customers to book appointments.
@@ -424,7 +424,7 @@ export default function BusinessInfo() {
       <h1 className="text-3xl font-bold">Manage Business Profile</h1>
 
       {/* BUSINESS DETAILS */}
-      <section className="bg-white sm:p-6 sm:border rounded-md space-y-4">
+      <section className="bg-white sm:p-6 sm:border rounded-sm space-y-4">
         <div className="flex justify-between">
           <h2 className="text-xl font-semibold">Business Details</h2>
           <Button onClick={() => setEditBusinessOpen(true)}>
@@ -454,7 +454,7 @@ export default function BusinessInfo() {
       </section>
 
       {/* SLOTS */}
-      <section className="bg-white sm:p-6 sm:border rounded-md space-y-4">
+      <section className="bg-white sm:p-6 sm:border rounded-sm space-y-4">
         <div className="flex justify-between">
           <h2 className="text-xl font-semibold">Time Slots</h2>
           <Button onClick={() => setCreateSlotOpen(true)}>

@@ -58,7 +58,7 @@ const NotificationPopup = ({
       animate={{ opacity: 1, x: 0, y: 0 }}
       exit={{ opacity: 0, x: 400, transition: { duration: 0.2 } }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="relative mb-3 overflow-hidden rounded-md shadow-2xl"
+      className="relative mb-3 overflow-hidden rounded-sm shadow-2xl"
     >
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200">
@@ -73,14 +73,14 @@ const NotificationPopup = ({
       {/* Notification Card */}
       <div
         onClick={handleClick}
-        className="bg-white border border-gray-200 rounded-md p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all min-w-[380px] max-w-[420px]"
+        className="bg-white border border-gray-200 rounded-sm p-4 cursor-pointer hover:shadow-lg hover:border-blue-300 transition-all min-w-[380px] max-w-[420px]"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           {/* Icon & Title */}
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <div className="flex-shrink-0 mt-0.5">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-sm bg-blue-100 flex items-center justify-center">
                 <Bell className="w-5 h-5 text-blue-600" />
               </div>
             </div>
@@ -96,7 +96,7 @@ const NotificationPopup = ({
 
               {/* Type Badge */}
               {notification.type && (
-                <span className="inline-block mt-2 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-medium rounded-full uppercase tracking-wide">
+                <span className="inline-block mt-2 px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-medium rounded-sm uppercase tracking-wide">
                   {notification.type.replace(/_/g, " ")}
                 </span>
               )}
@@ -109,7 +109,7 @@ const NotificationPopup = ({
               e.stopPropagation();
               onClose();
             }}
-            className="flex-shrink-0 p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="flex-shrink-0 p-1 hover:bg-gray-100 rounded-sm transition-colors"
           >
             <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
           </button>

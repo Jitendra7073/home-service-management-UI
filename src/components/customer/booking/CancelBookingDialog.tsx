@@ -161,7 +161,7 @@ export default function CancelBookingDialog({
   /* ---------------- UI ---------------- */
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] rounded-md overflow-hidden flex flex-col">
+      <AlertDialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] rounded-sm overflow-hidden flex flex-col">
         {/* Fixed Header */}
         <AlertDialogHeader className="flex-shrink-0 pb-3">
           <AlertDialogTitle className="text-red-600 flex items-center gap-2 text-lg">
@@ -187,34 +187,34 @@ export default function CancelBookingDialog({
         <div className="flex-1 overflow-y-auto px-1 space-y-4">
           {/* Grid Layout: Policy & Payment Side by Side on Desktop */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-           {/* Service Time Info */}
-          {serviceStart && (
-            <div className="rounded-md border-2 border-blue-200 bg-blue-50 p-3">
-              <div className="flex items-center gap-2 text-blue-900 font-semibold text-sm mb-2">
-                <Calendar className="w-4 h-4" />
-                Service Scheduled For
+            {/* Service Time Info */}
+            {serviceStart && (
+              <div className="rounded-sm border-2 border-blue-200 bg-blue-50 p-3">
+                <div className="flex items-center gap-2 text-blue-900 font-semibold text-sm mb-2">
+                  <Calendar className="w-4 h-4" />
+                  Service Scheduled For
+                </div>
+                <p className="text-xs sm:text-sm text-blue-800">
+                  {serviceStart.toLocaleString("en-IN", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  {" at "}
+                  <span className="font-bold text-base">{selectedBooking.slot?.time}</span>
+                </p>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-700 bg-blue-100 px-2 py-1.5 rounded-sm mt-2">
+                  <Clock className="w-4 h-4" />
+                  <span className="font-medium">
+                    {hoursBeforeService > 0 && `${hoursBeforeService}h `}
+                    {minutesBeforeService % 60}m remaining
+                  </span>
+                </div>
               </div>
-              <p className="text-xs sm:text-sm text-blue-800">
-                {serviceStart.toLocaleString("en-IN", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-                {" at "}
-                <span className="font-bold text-base">{selectedBooking.slot?.time}</span>
-              </p>
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-700 bg-blue-100 px-2 py-1.5 rounded-md mt-2">
-                <Clock className="w-4 h-4" />
-                <span className="font-medium">
-                  {hoursBeforeService > 0 && `${hoursBeforeService}h `}
-                  {minutesBeforeService % 60}m remaining
-                </span>
-              </div>
-            </div>
-          )}
-           {/* Cancellation Policy Card */}
-            <div className={`rounded-md border-2 p-3 ${policy.percentage === 0
+            )}
+            {/* Cancellation Policy Card */}
+            <div className={`rounded-sm border-2 p-3 ${policy.percentage === 0
               ? "border-green-200 bg-green-50"
               : policy.percentage <= 10
                 ? "border-yellow-200 bg-yellow-50"
@@ -257,53 +257,53 @@ export default function CancelBookingDialog({
                 {policy.note}
               </p>
 
-              
+
             </div>
           </div>
           {/* Payment Summary Card */}
-            {selectedBooking.paymentStatus === "PAID" ? (
-              <div className="rounded-md border-2 border-gray-300 bg-white p-3">
-                <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm mb-3">
-                  <Wallet className="w-4 h-4" />
-                  Refund Breakdown
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs sm:text-sm">
-                    <span className="text-gray-600">Amount Paid</span>
-                    <span className="font-semibold text-gray-900">₹{selectedBooking.totalAmount}</span>
-                  </div>
-
-                  {cancellationFee > 0 && (
-                    <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
-                      <span className="text-red-600 font-medium">
-                        Fee ({policy.percentage}%)
-                      </span>
-                      <span className="font-bold text-red-600">- ₹{cancellationFee}</span>
-                    </div>
-                  )}
-                  
-                   <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
-                    <span className="text-gray-600">Total</span>
-                    <span className="font-semibold text-gray-900">₹{refundAmount}</span>
-                  </div>
-                </div>
-
-               
+          {selectedBooking.paymentStatus === "PAID" ? (
+            <div className="rounded-sm border-2 border-gray-300 bg-white p-3">
+              <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm mb-3">
+                <Wallet className="w-4 h-4" />
+                Refund Breakdown
               </div>
-            ) : (
-              <div className="rounded-md border-2 border-blue-200 bg-blue-50 p-3">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="font-medium text-blue-900 text-sm mb-1">No Payment</p>
-                    <p className="text-xs text-blue-700">
-                      Cancelled immediately with no charges.
-                    </p>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs sm:text-sm">
+                  <span className="text-gray-600">Amount Paid</span>
+                  <span className="font-semibold text-gray-900">₹{selectedBooking.totalAmount}</span>
+                </div>
+
+                {cancellationFee > 0 && (
+                  <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
+                    <span className="text-red-600 font-medium">
+                      Fee ({policy.percentage}%)
+                    </span>
+                    <span className="font-bold text-red-600">- ₹{cancellationFee}</span>
                   </div>
+                )}
+
+                <div className="flex justify-between items-center text-xs sm:text-sm border-t pt-2">
+                  <span className="text-gray-600">Total</span>
+                  <span className="font-semibold text-gray-900">₹{refundAmount}</span>
                 </div>
               </div>
-            )}
+
+
+            </div>
+          ) : (
+            <div className="rounded-sm border-2 border-blue-200 bg-blue-50 p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-blue-900 text-sm mb-1">No Payment</p>
+                  <p className="text-xs text-blue-700">
+                    Cancelled immediately with no charges.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Reason Selection - Compact */}
           <div className="space-y-2">

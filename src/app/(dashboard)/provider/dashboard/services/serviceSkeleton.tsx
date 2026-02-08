@@ -10,7 +10,7 @@ const ServiceSkeleton = () => {
     <div className="flex w-full justify-center animate-pulse">
       <div className="w-full max-w-[1400px] px-2 md:px-6 space-y-8 md:space-y-14">
         {/* ---------- Header Skeleton ---------- */}
-        <section className="w-full rounded-md border px-6 py-6 sm:px-8 sm:py-7">
+        <section className="w-full rounded-sm border px-6 py-6 sm:px-8 sm:py-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Title */}
             <div className="space-y-2">
@@ -20,8 +20,8 @@ const ServiceSkeleton = () => {
 
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-2">
-              <Skeleton className="h-9 w-24 rounded-md" />
-              <Skeleton className="h-9 w-32 rounded-md" />
+              <Skeleton className="h-9 w-24 rounded-sm" />
+              <Skeleton className="h-9 w-32 rounded-sm" />
             </div>
           </div>
         </section>
@@ -35,7 +35,7 @@ const ServiceSkeleton = () => {
                   <Skeleton className="h-4 w-24" />
                   <Skeleton className="h-7 w-16" />
                 </div>
-                <Skeleton className="h-12 w-12 rounded-full" />
+                <Skeleton className="h-12 w-12 rounded-sm" />
               </CardContent>
             </Card>
           ))}

@@ -21,7 +21,7 @@ export default function BookingHeader({
   const setServiceModelOpen = useSetAtom(ServiceModelState);
 
   return (
-    <section className="w-full rounded-md border border-border bg-card px-6 py-6 sm:px-8 sm:py-7">
+    <section className="w-full rounded-sm border border-border bg-card px-6 py-6 sm:px-8 sm:py-7">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <h1 className="text-xl sm:text-2xl font-semibold text-foreground">

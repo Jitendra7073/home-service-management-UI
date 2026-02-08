@@ -180,7 +180,7 @@ export default function BookingDetailsDashboard({
 
             {/* Cancellation alert in header */}
             {booking.bookingStatus === "CANCELLED" ? (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-100 border border-red-300 rounded-full">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-100 border border-red-300 rounded-sm">
                 <XCircle className="w-4 h-4 text-red-600" />
                 <span className="text-sm font-semibold text-red-800">
                   Cancelled by Customer
@@ -239,7 +239,7 @@ export default function BookingDetailsDashboard({
                   <img
                     src={booking.service.coverImage}
                     alt={booking.service.name}
-                    className="w-full h-64 object-cover rounded-md"
+                    className="w-full h-64 object-cover rounded-sm"
                   />
                 )}
 
@@ -395,7 +395,7 @@ function TrackingProgress({
     <div className="space-y-4">
       {/* Cancellation message - show when cancelled */}
       {isCancelled && (
-        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+        <div className="flex items-center justify-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-sm mb-4">
           <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
           <p className="text-sm font-medium text-red-800 text-center">
             Service was cancelled by customer at{" "}
@@ -403,11 +403,11 @@ function TrackingProgress({
               {current === "NOT_STARTED"
                 ? "the beginning"
                 : current.charAt(0).toUpperCase() +
-                  current
-                    .toLocaleLowerCase()
-                    .slice(1)
-                    .replaceAll("_", " ")
-                    .toLowerCase()}
+                current
+                  .toLocaleLowerCase()
+                  .slice(1)
+                  .replaceAll("_", " ")
+                  .toLowerCase()}
             </span>{" "}
             stage
           </p>
@@ -426,17 +426,15 @@ function TrackingProgress({
             <div key={step} className="flex gap-3 pb-6 relative">
               {i !== TRACKING_STEPS.length - 1 && (
                 <div
-                  className={`absolute left-3 top-7 w-1 h-full rounded ${
-                    i < currentIndex ? displayColor : "bg-gray-200"
-                  }`}
+                  className={`absolute left-3 top-7 w-1 h-full rounded ${i < currentIndex ? displayColor : "bg-gray-200"
+                    }`}
                 />
               )}
 
               {/* Step circle - show X icon for cancelled state beyond current step */}
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-white shadow ${
-                  done ? displayColor : "bg-gray-300"
-                }`}>
+                className={`w-7 h-7 rounded-sm flex items-center justify-center text-white shadow ${done ? displayColor : "bg-gray-300"
+                  }`}>
                 {done ? (
                   isCancelled ? (
                     <X size={16} strokeWidth={3} />
@@ -450,13 +448,12 @@ function TrackingProgress({
 
               <div>
                 <p
-                  className={`${
-                    done
-                      ? isCancelled
-                        ? "font-semibold text-red-700"
-                        : "font-semibold"
-                      : "text-gray-500"
-                  }`}>
+                  className={`${done
+                    ? isCancelled
+                      ? "font-semibold text-red-700"
+                      : "font-semibold"
+                    : "text-gray-500"
+                    }`}>
                   {step.replaceAll("_", " ")}
                 </p>
               </div>
@@ -468,7 +465,7 @@ function TrackingProgress({
         {isCancelled && (
           <div className="flex gap-3 relative">
             <div className="absolute left-3 top-7 w-1 h-6 rounded bg-gray-200" />
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white shadow bg-red-600 border-2 border-red-600">
+            <div className="w-7 h-7 rounded-sm flex items-center justify-center text-white shadow bg-red-600 border-2 border-red-600">
               <X size={16} strokeWidth={3} />
             </div>
             <div>
@@ -486,7 +483,7 @@ function TrackingProgress({
 
 function InfoBox({ icon: Icon, label, value }: any) {
   return (
-    <div className="flex gap-3 p-3 border rounded-md">
+    <div className="flex gap-3 p-3 border rounded-sm">
       <Icon className="w-5 h-5 text-gray-600" />
       <div>
         <p className="text-xs text-gray-500">{label}</p>
@@ -498,7 +495,7 @@ function InfoBox({ icon: Icon, label, value }: any) {
 
 function Tag({ icon: Icon, text }: any) {
   return (
-    <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-sm">
+    <span className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-sm text-sm">
       <Icon className="w-4 h-4" />
       {text}
     </span>

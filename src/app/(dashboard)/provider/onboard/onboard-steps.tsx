@@ -144,7 +144,7 @@ export default function OnboardSteps() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-sm animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading your progress...</p>
         </div>
       </div>
@@ -179,12 +179,11 @@ export default function OnboardSteps() {
                     <div className="flex flex-col items-center">
                       <div
                         className={`
-                          w-11 h-11 rounded-full flex items-center justify-center
+                          w-11 h-11 rounded-sm flex items-center justify-center
                           mb-2 transition-all duration-300
-                          ${
-                            active
-                              ? "bg-blue-600 text-white shadow-lg scale-110"
-                              : completed
+                          ${active
+                            ? "bg-blue-600 text-white shadow-lg scale-110"
+                            : completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-200 text-gray-400"
                           }
@@ -199,10 +198,9 @@ export default function OnboardSteps() {
                       <span
                         className={`
                           text-xs sm:text-sm font-medium text-center whitespace-nowrap
-                          ${
-                            active
-                              ? "text-blue-600"
-                              : completed
+                          ${active
+                            ? "text-blue-600"
+                            : completed
                               ? "text-green-600"
                               : "text-gray-500"
                           }
@@ -236,9 +234,9 @@ export default function OnboardSteps() {
               </span>
             </div>
 
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-sm h-2">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-2 rounded-sm transition-all duration-300"
                 style={{ width: `${(step / steps.length) * 100}%` }}
               />
             </div>

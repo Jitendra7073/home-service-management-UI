@@ -16,7 +16,7 @@ export default function PaymentTimer({ timeLeft }: PaymentTimerProps) {
 
   if (isExpired) {
     return (
-      <div className="flex items-center gap-2 text-destructive bg-destructive/10 px-3 py-2 rounded-md border border-destructive/20">
+      <div className="flex items-center gap-2 text-destructive bg-destructive/10 px-3 py-2 rounded-sm border border-destructive/20">
         <AlertTriangle className="w-4 h-4" />
         <span className="text-sm font-medium">
           Payment link expired
@@ -27,11 +27,10 @@ export default function PaymentTimer({ timeLeft }: PaymentTimerProps) {
 
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-2 rounded-md border ${
-        isUrgent
+      className={`flex items-center gap-2 px-3 py-2 rounded-sm border ${isUrgent
           ? "text-destructive bg-destructive/10 border-destructive/20"
           : "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/20 dark:border-orange-800/30"
-      }`}
+        }`}
     >
       <Clock className="w-4 h-4" />
       <span className="text-sm font-medium">

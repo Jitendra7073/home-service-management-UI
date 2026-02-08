@@ -118,7 +118,7 @@ export default function StaffAvailabilityPage({ params }: PageProps) {
               return (
                 <div
                   key={day.value}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-sm">
                   <div className="flex items-center h-11">
                     <Checkbox
                       id={`day-${index}`}

@@ -259,7 +259,7 @@ export function PlanModal({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-md border p-3 shadow-sm">
+              <div className="flex items-center justify-between rounded-sm border p-3 shadow-sm">
                 <div className="space-y-0.5">
                   <Label>Active Status</Label>
                   <p className="text-xs text-muted-foreground">

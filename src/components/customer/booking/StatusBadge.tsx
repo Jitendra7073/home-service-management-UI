@@ -30,7 +30,7 @@ export function BookingStatusBadge({
 
   return (
     <Badge
-      className={`border font-medium rounded-full ${config.bgColor} ${config.color} ${config.borderColor} ${sizeClasses[size]}`}
+      className={`border font-medium rounded-sm ${config.bgColor} ${config.color} ${config.borderColor} ${sizeClasses[size]}`}
       title={config.description}>
       {config.label}
     </Badge>
@@ -56,7 +56,7 @@ export function PaymentStatusBadge({
   const sizeClasses = {
     sm: "px-2 py-0.5 text-xs rounded-sm",
     md: "px-4 py-1 text-sm rounded-sm",
-    lg: "px-5 py-1.5 text-base rounded-md",
+    lg: "px-5 py-1.5 text-base rounded-sm",
   };
 
   return (

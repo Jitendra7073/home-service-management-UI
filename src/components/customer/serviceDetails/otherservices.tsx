@@ -34,7 +34,7 @@ const OtherServicesGrid = ({
         {otherServices.map((s: any) => (
           <div
             key={s.id}
-            className="group border rounded-md cursor-pointer p-5  border-gray-200 hover:border-blue-200
+            className="group border rounded-sm cursor-pointer p-5  border-gray-200 hover:border-blue-200
                    hover:shadow-lg transition-all "
             onClick={() => handleRedirecting(s)}>
             <div className="flex items-center gap-3 mb-2">
@@ -61,7 +61,7 @@ const OtherServicesGrid = ({
                   {(s.durationInMinutes / 60).toFixed(2).split(".")[1] == "00"
                     ? ""
                     : (s.durationInMinutes / 60).toFixed(2).split(".")[1] +
-                      " Min"}
+                    " Min"}
                 </span>
               </div>
             </div>

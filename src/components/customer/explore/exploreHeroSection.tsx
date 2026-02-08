@@ -26,7 +26,7 @@ const ExploreHeader: React.FC<ExploreHeaderProps> = ({
     <div className="relative overflow-hidden bg-slate-800 text-white py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 bg-gray-700/30 rounded-md backdrop-blur-md border border-gray-600/50">
+          <div className="p-3 bg-gray-700/30 rounded-sm backdrop-blur-md border border-gray-600/50">
             {icons}
           </div>
           <div>
@@ -42,19 +42,19 @@ const ExploreHeader: React.FC<ExploreHeaderProps> = ({
         {isVisible && (
           <div className="flex flex-wrap gap-4 mt-8">
             {/* Total Providers */}
-            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-md border border-gray-600/50 text-sm text-gray-300">
+            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-sm border border-gray-600/50 text-sm text-gray-300">
               <span className="font-bold text-white">{totalProviders}</span>{" "}
               Providers Available
             </div>
 
             {/* Total Services */}
-            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-md border border-gray-600/50 text-sm text-gray-300">
+            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-sm border border-gray-600/50 text-sm text-gray-300">
               <span className="font-bold text-white">{totalServices}</span>{" "}
               Services Available
             </div>
 
             {/* Results After Filtering */}
-            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-md border border-gray-600/50 text-sm text-gray-300">
+            <div className="px-4 py-2 bg-gray-700/30 backdrop-blur-md rounded-sm border border-gray-600/50 text-sm text-gray-300">
               <span className="font-bold text-white">{filteredCount}</span>{" "}
               Showing Results
             </div>

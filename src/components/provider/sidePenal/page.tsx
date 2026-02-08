@@ -60,12 +60,7 @@ const navMain = [
     title: "Staff Leaves",
     url: "/provider/dashboard/staff-leaves",
     icon: CalendarClock,
-  },
-  {
-    title: "Staff Bookings",
-    url: "/provider/dashboard/staff-bookings",
-    icon: TicketCheck,
-  },
+  }
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -83,7 +78,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = UserData?.user ?? {};
   const subscriptionStatus =
     user?.providerSubscription !== null &&
-    user?.providerSubscription !== undefined
+      user?.providerSubscription !== undefined
       ? user?.providerSubscription?.plan.name.toLowerCase()
       : "free";
 

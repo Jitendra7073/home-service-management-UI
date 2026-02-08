@@ -298,7 +298,7 @@ export default function AllStaffLeavesView() {
           {[1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className="h-40 bg-gray-200 animate-pulse rounded-lg"
+              className="h-40 bg-gray-200 animate-pulse rounded-sm"
             />
           ))}
         </div>
@@ -307,13 +307,12 @@ export default function AllStaffLeavesView() {
           {leaves.map((leave) => (
             <Card
               key={leave.id}
-              className={`${
-                leave.status === "PENDING"
-                  ? "border-yellow-200 bg-yellow-50/30"
-                  : leave.status === "APPROVED"
+              className={`${leave.status === "PENDING"
+                ? "border-yellow-200 bg-yellow-50/30"
+                : leave.status === "APPROVED"
                   ? "border-green-200 bg-green-50/30"
                   : "border-red-200 bg-red-50/30"
-              }`}>
+                }`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between gap-6">
                   <div className="flex-1 space-y-4">
@@ -364,7 +363,7 @@ export default function AllStaffLeavesView() {
 
                     {/* Reason */}
                     {leave.reason && (
-                      <div className="text-sm text-gray-600 bg-white/50 p-3 rounded-md border border-gray-200">
+                      <div className="text-sm text-gray-600 bg-white/50 p-3 rounded-sm border border-gray-200">
                         <span className="font-medium">Reason: </span>
                         {leave.reason}
                       </div>
@@ -378,7 +377,7 @@ export default function AllStaffLeavesView() {
 
                     {/* Additional Info for Approved/Rejected */}
                     {leave.status === "APPROVED" && leave.approvedAt && (
-                      <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-2 rounded-md">
+                      <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-2 rounded-sm">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Approved on {formatDate(leave.approvedAt)}</span>
                       </div>
@@ -387,7 +386,7 @@ export default function AllStaffLeavesView() {
                     {leave.status === "REJECTED" && (
                       <div className="space-y-2">
                         {leave.rejectedAt && (
-                          <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 p-2 rounded-md">
+                          <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 p-2 rounded-sm">
                             <XCircle className="w-4 h-4" />
                             <span>
                               Rejected on {formatDate(leave.rejectedAt)}
@@ -395,7 +394,7 @@ export default function AllStaffLeavesView() {
                           </div>
                         )}
                         {leave.rejectReason && (
-                          <div className="text-sm text-red-700 bg-red-50 p-3 rounded-md border border-red-200">
+                          <div className="text-sm text-red-700 bg-red-50 p-3 rounded-sm border border-red-200">
                             <span className="font-medium">Reason: </span>
                             {leave.rejectReason}
                           </div>

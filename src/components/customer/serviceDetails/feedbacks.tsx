@@ -49,7 +49,7 @@ const Feedback = ({ feedback }: any) => {
                         </span>
                       ))}
                     </span>
-                    <p className=" bg-gray-200 px-3 rounded-full">{reviewTags[feedback?.rating]}</p>
+                    <p className=" bg-gray-200 px-3 rounded-sm">{reviewTags[feedback?.rating]}</p>
                   </div>
                 </div>
                 <span className="text-muted-foreground text-sm">

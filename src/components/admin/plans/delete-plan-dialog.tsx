@@ -100,7 +100,7 @@ export function DeletePlanDialog({
           : "This action cannot be undone. Are you sure you want to delete this plan?"
       }>
       {needsMigration && (
-        <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-800 border border-amber-200 mb-4">
+        <div className="rounded-sm bg-amber-50 p-3 text-sm text-amber-800 border border-amber-200 mb-4">
           <div className="flex items-center gap-2 mb-2 font-semibold">
             <AlertTriangle className="h-4 w-4" />
             Active Subscribers Found

@@ -48,12 +48,12 @@ export function NavUser({
               size="lg"
               suppressHydrationWarning
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="h-8 w-8 rounded-md grayscale">
+              <Avatar className="h-8 w-8 rounded-sm grayscale">
                 <AvatarImage
                   src="https://cdn.vectorstock.com/i/500p/29/52/faceless-male-avatar-in-hoodie-vector-56412952.jpg"
                   alt={user.name}
                 />
-                <AvatarFallback className="rounded-md">
+                <AvatarFallback className="rounded-sm">
                   {user.name ? user.name.charAt(0) : "U"}
                 </AvatarFallback>
               </Avatar>
@@ -72,28 +72,27 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-md"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-sm"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
             <DropdownMenuLabel className="p-0 font-normal">
               <Badge
-                className={`flex items-center w-full gap-1.5 border px-2.5 py-1 text-xs font-medium ${
-                  subscriptionStatus !== "free" &&
+                className={`flex items-center w-full gap-1.5 border px-2.5 py-1 text-xs font-medium ${subscriptionStatus !== "free" &&
                   "text-yellow-600 bg-transparent border border-yellow-600"
-                }`}>
+                  }`}>
                 {subscriptionStatus !== "free" && (
                   <BadgeCheckIcon className="h-3.5 w-3.5" />
                 )}
                 {subscriptionStatus}
               </Badge>
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-md">
+                <Avatar className="h-8 w-8 rounded-sm">
                   <AvatarImage
                     src="https://cdn.vectorstock.com/i/500p/29/52/faceless-male-avatar-in-hoodie-vector-56412952.jpg"
                     alt={user.name}
                   />
-                  <AvatarFallback className="rounded-md">
+                  <AvatarFallback className="rounded-sm">
                     {user.name ? user.name.charAt(0) : "U"}
                   </AvatarFallback>
                 </Avatar>

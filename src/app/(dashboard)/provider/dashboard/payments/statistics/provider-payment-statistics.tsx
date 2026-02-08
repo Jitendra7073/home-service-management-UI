@@ -205,16 +205,16 @@ export function ProviderPaymentStatisticsClient() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Approval Rate */}
-              <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="text-center p-6 bg-gray-50 rounded-sm">
                 <div className="text-sm text-gray-600 mb-2">Approval Rate</div>
                 <div className="text-3xl font-bold text-gray-900">
                   {stats?.approvedRequests &&
-                  stats?.approvedRequests + stats?.rejectedRequests > 0
+                    stats?.approvedRequests + stats?.rejectedRequests > 0
                     ? Math.round(
-                        (stats.approvedRequests /
-                          (stats.approvedRequests + stats.rejectedRequests)) *
-                          100,
-                      )
+                      (stats.approvedRequests /
+                        (stats.approvedRequests + stats.rejectedRequests)) *
+                      100,
+                    )
                     : 0}
                   %
                 </div>
@@ -227,7 +227,7 @@ export function ProviderPaymentStatisticsClient() {
               </div>
 
               {/* Average Payment */}
-              <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="text-center p-6 bg-gray-50 rounded-sm">
                 <div className="text-sm text-gray-600 mb-2">
                   Average Payment
                 </div>
@@ -243,16 +243,16 @@ export function ProviderPaymentStatisticsClient() {
               </div>
 
               {/* Staff Percentage */}
-              <div className="text-center p-6 bg-gray-50 rounded-lg">
+              <div className="text-center p-6 bg-gray-50 rounded-sm">
                 <div className="text-sm text-gray-600 mb-2">
                   Avg. Staff Percentage
                 </div>
                 <div className="text-3xl font-bold text-gray-900">
                   {stats?.totalPayments && stats?.totalPayments > 0
                     ? Math.round(
-                        (stats.totalPaidAmount / stats.totalRequestedAmount) *
-                          100,
-                      )
+                      (stats.totalPaidAmount / stats.totalRequestedAmount) *
+                      100,
+                    )
                     : 0}
                   %
                 </div>

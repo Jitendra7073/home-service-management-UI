@@ -122,7 +122,7 @@ function ContentEditor({
     onError: () => toast.error("Failed to save changes"),
   });
 
-  if (isLoading) return <Skeleton className="h-[400px] w-full rounded-md" />;
+  if (isLoading) return <Skeleton className="h-[400px] w-full rounded-sm" />;
 
   const currentData = data?.data || { title: label, content: "" };
 
@@ -199,7 +199,7 @@ function ContentEditor({
           </div>
         ) : (
           <div
-            className="prose prose-slate dark:prose-invert max-w-none border rounded-md p-6 bg-muted/5 min-h-[200px]"
+            className="prose prose-slate dark:prose-invert max-w-none border rounded-sm p-6 bg-muted/5 min-h-[200px]"
             dangerouslySetInnerHTML={{
               __html:
                 currentData.content ||

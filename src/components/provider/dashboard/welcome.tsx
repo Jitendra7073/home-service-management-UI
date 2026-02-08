@@ -6,7 +6,7 @@ const Welcome = ({ username, isLoading, isPending }: any) => {
           Welcome back,{" "}
           <span className="inline-block">
             {isLoading || isPending ? (
-              <span className="inline-block h-6 w-32 rounded-md bg-gray-200 animate-pulse align-middle" />
+              <span className="inline-block h-6 w-32 rounded-sm bg-gray-200 animate-pulse align-middle" />
             ) : (
               <span className="text-blue-700 font-bold">{username}</span>
             )}

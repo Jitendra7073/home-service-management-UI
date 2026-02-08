@@ -112,10 +112,10 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
               <img
                 src={staff.photo}
                 alt={staff.user.name}
-                className="h-10 w-10 rounded-full object-cover"
+                className="h-10 w-10 rounded-sm object-cover"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+              <div className="h-10 w-10 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                 {staff.user.name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -137,12 +137,12 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
             {specializations.slice(0, 2).map((spec: string, i: number) => (
               <span
                 key={i}
-                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-sm">
                 {spec}
               </span>
             ))}
             {specializations.length > 2 && (
-              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-sm">
                 +{specializations.length - 2}
               </span>
             )}
@@ -157,11 +157,10 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
         const type = row.original.employmentType;
         return (
           <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${
-              type === "BUSINESS_BASED"
-                ? "bg-purple-100 text-purple-700"
-                : "bg-orange-100 text-orange-700"
-            }`}>
+            className={`px-3 py-1 rounded-sm text-xs font-medium ${type === "BUSINESS_BASED"
+              ? "bg-purple-100 text-purple-700"
+              : "bg-orange-100 text-orange-700"
+              }`}>
             {type === "BUSINESS_BASED" ? "Business Staff" : "Freelancer"}
           </span>
         );
@@ -186,14 +185,41 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
         const staff = row.original;
         const availability = staff.availability || "AVAILABLE";
 
+        if (availability === "NOT_AVAILABLE") {
+          return (
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="relative inline-flex rounded-sm h-2 w-2 bg-red-500"></span>
+              </span>
+              <span className="px-2 py-1 bg-red-50 text-red-700 text-xs rounded-sm border border-red-200">
+                On Leave / Unavailable
+              </span>
+            </div>
+          );
+        }
+
+        if (availability === "ON_WORK") {
+          return (
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-pulse absolute inline-flex h-full w-full rounded-sm bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-sm h-2 w-2 bg-blue-500"></span>
+              </span>
+              <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-sm border border-blue-200">
+                On Work
+              </span>
+            </div>
+          );
+        }
+
         if (availability === "BUSY") {
           return (
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-sm bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-sm h-2 w-2 bg-orange-500"></span>
               </span>
-              <span className="px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full border border-orange-200">
+              <span className="px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-sm border border-orange-200">
                 Busy
               </span>
             </div>
@@ -203,9 +229,9 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
         return (
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <span className="relative inline-flex rounded-sm h-2 w-2 bg-green-500"></span>
             </span>
-            <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+            <span className="px-2 py-1 bg-green-50 text-green-700 text-xs rounded-sm border border-green-200">
               Available
             </span>
           </div>
@@ -297,7 +323,7 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
   return (
     <div className="space-y-4">
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="rounded-sm border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -308,9 +334,9 @@ export default function StaffTable({ NumberOfRows = 10 }: StaffTableProps) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}

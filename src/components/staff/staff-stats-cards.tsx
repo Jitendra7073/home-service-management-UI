@@ -68,7 +68,7 @@ export default function StaffStatsCards({
                     )}
                   </p>
                 </div>
-                <div className={`${stat.bgColor} p-3 rounded-full`}>
+                <div className={`${stat.bgColor} p-3 rounded-sm`}>
                   <Icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
               </div>

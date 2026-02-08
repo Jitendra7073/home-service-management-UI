@@ -42,12 +42,8 @@ export function UnlinkStaffModal({
   staffId,
   staffName,
 }: UnlinkStaffModalProps) {
-  const [selectedReplacementStaff, setSelectedReplacementStaff] =
-    useState<string>("");
-  const [bookingTransfers, setBookingTransfers] = useState<BookingTransfer[]>(
-    [],
-  );
-  const [step, setStep] = useState<"check" | "transfer" | "confirm">("check");
+  const [reason, setReason] = useState("");
+  const [step, setStep] = useState<"check" | "blocked" | "confirm">("check");
   const [ongoingBookings, setOngoingBookings] = useState<any[]>([]);
 
   const queryClient = useQueryClient();
@@ -57,7 +53,7 @@ export function UnlinkStaffModal({
     queryKey: ["staff-ongoing-bookings", staffId],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/provider/staff/${staffId}/bookings`,
+        `/api/provider/staff/${staffId}/bookings`, // Use proxy or direct if configured
         {
           credentials: "include",
         },
@@ -65,38 +61,19 @@ export function UnlinkStaffModal({
       if (!res.ok) throw new Error("Failed to fetch bookings");
       return res.json();
     },
-    enabled: isOpen && step === "check",
-  });
-
-  // Fetch available staff for replacement
-  const { data: staffData, isLoading: isLoadingStaff } = useQuery({
-    queryKey: ["provider-staff-replacement", staffId],
-    queryFn: async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/provider/staff?isApproved=true`,
-        {
-          credentials: "include",
-        },
-      );
-      if (!res.ok) throw new Error("Failed to fetch staff");
-      return res.json();
-    },
-    enabled: isOpen && step === "transfer",
+    enabled: isOpen,
   });
 
   // Unlink staff mutation
   const unlinkMutation = useMutation({
-    mutationFn: async (data: {
-      staffId: string;
-      transfers?: BookingTransfer[];
-    }) => {
+    mutationFn: async (data: { staffId: string; reason: string }) => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/provider/staff/${data.staffId}/unlink`,
+        `/api/provider/staff/${data.staffId}/unlink`,
         {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ transfers: data.transfers }),
+          body: JSON.stringify({ reason: data.reason }),
         },
       );
       const result = await res.json();
@@ -117,7 +94,7 @@ export function UnlinkStaffModal({
   });
 
   useEffect(() => {
-    if (bookingsData?.bookings && step === "check") {
+    if (bookingsData?.bookings && isOpen) {
       const activeBookings = bookingsData.bookings.filter(
         (b: any) =>
           b.bookingStatus === "CONFIRMED" &&
@@ -128,272 +105,137 @@ export function UnlinkStaffModal({
       );
       setOngoingBookings(activeBookings);
 
-      // Initialize booking transfers
-      const transfers = activeBookings.map((b: any) => ({
-        bookingId: b.id,
-        bookingDetails: `${b.service?.name || "Service"} for ${b.user?.name}`,
-        newStaffId: "",
-      }));
-      setBookingTransfers(transfers);
-
-      // Auto-advance if no ongoing bookings
-      if (activeBookings.length === 0) {
-        setStep("confirm");
+      if (activeBookings.length > 0) {
+        setStep("blocked");
       } else {
-        setStep("transfer");
+        setStep("confirm");
       }
     }
-  }, [bookingsData, step]);
-
-  const handleAssignStaffToBooking = (
-    bookingId: string,
-    newStaffId: string,
-  ) => {
-    setBookingTransfers((prev) =>
-      prev.map((bt) =>
-        bt.bookingId === bookingId ? { ...bt, newStaffId } : bt,
-      ),
-    );
-  };
-
-  const handleApplyToAll = () => {
-    if (selectedReplacementStaff) {
-      setBookingTransfers((prev) =>
-        prev.map((bt) => ({ ...bt, newStaffId: selectedReplacementStaff })),
-      );
-    }
-  };
-
-  const canProceedToConfirm = () => {
-    return bookingTransfers.every((bt) => bt.newStaffId !== "");
-  };
+  }, [bookingsData, isOpen]);
 
   const handleUnlinkStaff = () => {
+    if (!reason.trim()) {
+      toast.error("Please provide a reason for unlinking.");
+      return;
+    }
     unlinkMutation.mutate({
       staffId,
-      transfers: ongoingBookings.length > 0 ? bookingTransfers : undefined,
+      reason,
     });
   };
 
   const resetModal = () => {
     setStep("check");
     setOngoingBookings([]);
-    setBookingTransfers([]);
-    setSelectedReplacementStaff("");
+    setReason("");
     onClose();
   };
 
-  const availableStaff =
-    staffData?.staffProfiles?.filter(
-      (s: any) => s.id !== staffId && s.availability === "AVAILABLE",
-    ) || [];
-
   return (
     <Dialog open={isOpen} onOpenChange={resetModal}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-red-600">
             <UserCircle className="w-5 h-5" />
-            Unlink Staff from Business
+            Unlink Staff Member
           </DialogTitle>
           <DialogDescription>
-            {step === "check" && "Checking for ongoing bookings..."}
-            {step === "transfer" &&
-              "Transfer ongoing bookings to another staff member"}
-            {step === "confirm" && "Confirm unlink action"}
+            Are you sure you want to remove <strong>{staffName}</strong> from
+            your business?
           </DialogDescription>
         </DialogHeader>
 
-        {isLoadingBookings && step === "check" ? (
-          <div className="flex items-center justify-center py-8">
+        {isLoadingBookings ? (
+          <div className="flex flex-col items-center justify-center py-8 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+            <p className="text-sm text-gray-500">
+              Checking for ongoing bookings...
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Step 1: Show ongoing bookings */}
-            {step === "transfer" && ongoingBookings.length > 0 && (
-              <>
+            {/* BLOCKED STATE */}
+            {step === "blocked" && (
+              <div className="space-y-4">
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
-                    <strong>{staffName}</strong> has{" "}
-                    <strong>{ongoingBookings.length}</strong> ongoing{" "}
-                    {ongoingBookings.length === 1 ? "booking" : "bookings"} that
-                    need to be transferred to another staff member before
-                    unlinking.
+                    <p>Cannot unlink staff member. <strong>{staffName}</strong> has
+                      <strong>{ongoingBookings.length}</strong> ongoing booking(s)
+                      that must be completed first.</p>
                   </AlertDescription>
                 </Alert>
 
-                {/* Quick assign all */}
-                <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <Label
-                    htmlFor="assign-all"
-                    className="text-sm font-medium whitespace-nowrap">
-                    Assign all bookings to:
-                  </Label>
-                  <Select
-                    value={selectedReplacementStaff}
-                    onValueChange={setSelectedReplacementStaff}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select staff member" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableStaff.map((staff: any) => (
-                        <SelectItem key={staff.id} value={staff.id}>
-                          {staff.user.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleApplyToAll}
-                    disabled={!selectedReplacementStaff}>
-                    Apply to All
-                  </Button>
-                </div>
-
-                {/* Individual booking transfers */}
-                <div className="space-y-3">
-                  <Label className="text-sm font-semibold">
-                    Transfer Bookings
-                  </Label>
-                  {bookingTransfers.map((transfer, index) => {
-                    const booking = ongoingBookings[index];
-                    return (
-                      <div
-                        key={transfer.bookingId}
-                        className="p-3 border rounded-lg space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Briefcase className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm font-medium">
-                            {transfer.bookingDetails}
-                          </span>
-                          <span className="text-xs text-gray-500 ml-auto">
-                            {booking.slot?.date &&
-                              new Date(booking.slot.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <Select
-                          value={transfer.newStaffId}
-                          onValueChange={(value) =>
-                            handleAssignStaffToBooking(
-                              transfer.bookingId,
-                              value,
-                            )
-                          }>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select replacement staff" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {availableStaff.map((staff: any) => (
-                              <SelectItem key={staff.id} value={staff.id}>
-                                <div className="flex items-center gap-2">
-                                  <span>{staff.user.name}</span>
-                                  <span className="text-xs text-gray-500">
-                                    {staff.availability === "AVAILABLE"
-                                      ? "• Available"
-                                      : "• Busy"}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                <div className="border rounded-sm divide-y max-h-60 overflow-y-auto">
+                  {ongoingBookings.map((booking: any) => (
+                    <div key={booking.id} className="p-3 text-sm">
+                      <div className="flex justify-between font-medium">
+                        <span>{booking.service?.name}</span>
+                        <span className="text-gray-500">
+                          {booking.slot?.time}
+                        </span>
                       </div>
-                    );
-                  })}
+                      <div className="text-gray-500 text-xs mt-1">
+                        Customer: {booking.user?.name}
+                      </div>
+                      <div className="text-xs mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 rounded inline-block">
+                        {booking.trackingStatus.replace(/_/g, " ")}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </>
+              </div>
             )}
 
-            {/* Step 2: Confirm */}
+            {/* CONFIRM STATE */}
             {step === "confirm" && (
               <div className="space-y-4">
-                {ongoingBookings.length === 0 ? (
-                  <Alert>
-                    <AlertDescription>
-                      <strong>{staffName}</strong> has no ongoing bookings. You
-                      can safely unlink them from your business. Their account
-                      will not be deleted, but they will no longer be associated
-                      with your business.
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <Alert>
-                    <AlertDescription>
-                      All bookings have been assigned to new staff members.
-                      Review the transfer details below before confirming.
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {ongoingBookings.length > 0 && (
-                  <div className="p-4 rounded-lg space-y-2">
-                    <p className="text-sm font-semibold">
-                      Booking Transfer Summary:
-                    </p>
-                    {bookingTransfers.map((transfer, index) => {
-                      const booking = ongoingBookings[index];
-                      const newStaff = availableStaff.find(
-                        (s: any) => s.id === transfer.newStaffId,
-                      );
-                      return (
-                        <div
-                          key={transfer.bookingId}
-                          className="text-sm flex justify-between">
-                          <span className="text-gray-600">
-                            {transfer.bookingDetails}
-                          </span>
-                          <span className="font-medium">
-                            → {newStaff?.user.name || "Not assigned"}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
+                <Alert className="bg-blue-50 border-blue-200 text-blue-800">
                   <AlertDescription>
-                    This action cannot be undone. <strong>{staffName}</strong>{" "}
-                    will lose access to your business and all associated
-                    services.
+                    No ongoing bookings found. You can proceed with unlinking.
                   </AlertDescription>
                 </Alert>
+
+                <div className="space-y-2">
+                  <Label htmlFor="reason">
+                    Reason for Unlinking <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="reason"
+                    className="flex min-h-[80px] w-full rounded-sm border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Please explain why you are removing this staff member..."
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500">
+                    This reason will be visible to the staff member.
+                  </p>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button
             variant="outline"
             onClick={resetModal}
             disabled={unlinkMutation.isPending}>
-            Cancel
+            {step === "blocked" ? "Close" : "Cancel"}
           </Button>
-          {step === "transfer" && (
-            <Button
-              onClick={() => setStep("confirm")}
-              disabled={!canProceedToConfirm() || isLoadingBookings}>
-              Review Transfers
-            </Button>
-          )}
+
           {step === "confirm" && (
             <Button
               variant="destructive"
               onClick={handleUnlinkStaff}
-              disabled={unlinkMutation.isPending}>
+              disabled={unlinkMutation.isPending || !reason.trim()}>
               {unlinkMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Unlinking...
                 </>
               ) : (
-                "Confirm Unlink Staff"
+                "Confirm & Unlink"
               )}
             </Button>
           )}

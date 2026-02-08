@@ -49,10 +49,13 @@ export function AssignStaffModal({
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
+      console.log("[AssignStaffModal] Dialog opened for booking:", bookingId);
       setShowReassign(false);
       setSelectedStaffId("");
       setPaymentType("PERCENTAGE");
       setPaymentValue("50");
+    } else {
+      console.log("[AssignStaffModal] Dialog closed");
     }
   }, [isOpen]);
 
@@ -64,36 +67,54 @@ export function AssignStaffModal({
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch booking details");
-      return res.json();
+      const data = await res.json();
+      console.log("[AssignStaffModal] Booking details fetched:", data);
+      return data;
     },
     enabled: isOpen,
   });
 
+
+
   // Fetch approved staff with availability status
+  const bookingDate = bookingData?.booking?.date;
+
   const { data: staffData, isLoading: isLoadingStaff } = useQuery({
-    queryKey: ["provider-staff-assignable"],
+    queryKey: ["provider-staff-assignable", bookingId, bookingDate],
     queryFn: async () => {
-      const res = await fetch(`/api/provider/staff?isApproved=true&limit=100`, {
+      console.log("[AssignStaffModal] queryFn called. bookingDate:", bookingDate);
+      let url = `/api/provider/staff?isApproved=true&limit=100`;
+      if (bookingDate) {
+        url += `&date=${encodeURIComponent(bookingDate)}`;
+      }
+      console.log("[AssignStaffModal] Fetching staff with URL:", url);
+      const res = await fetch(url, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch staff");
-      return res.json();
+      const data = await res.json();
+      console.log("[AssignStaffModal] Staff data fetched:", data);
+      return data;
     },
     enabled: isOpen,
   });
 
   const assignMutation = useMutation({
     mutationFn: async () => {
+      const payload = {
+        bookingId,
+        staffId: selectedStaffId,
+        staffPaymentType: paymentType,
+        staffPaymentValue: parseFloat(paymentValue),
+      };
+
+      console.log("[AssignStaffModal] Assigning staff:", payload);
+
       const res = await fetch("/api/provider/assign_booking", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bookingId,
-          staffId: selectedStaffId,
-          staffPaymentType: paymentType,
-          staffPaymentValue: parseFloat(paymentValue),
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -134,6 +155,7 @@ export function AssignStaffModal({
       return;
     }
 
+    console.log("[AssignStaffModal] Handle assign clicked. Selected ID:", selectedStaffId);
     assignMutation.mutate();
   };
 
@@ -149,26 +171,26 @@ export function AssignStaffModal({
   // Create a combined staff list that includes the assigned staff even if not in the main list
   const assignedStaffInfo = assignedStaffData
     ? {
-        id: assignedStaffData.assignedStaffId,
-        user: {
-          name: assignedStaffData.staff?.name || "Staff Member",
-          email: assignedStaffData.staff?.email,
-          mobile: assignedStaffData.staff?.mobile,
-        },
-        _count: {
-          bookings: 1, // At least this booking
-        },
-        availability: "AVAILABLE", // Assigned staff is considered available
-        status: "APPROVED",
-      }
+      id: assignedStaffData.assignedStaffId,
+      user: {
+        name: assignedStaffData.staff?.name || "Staff Member",
+        email: assignedStaffData.staff?.email,
+        mobile: assignedStaffData.staff?.mobile,
+      },
+      _count: {
+        bookings: 1, // At least this booking
+      },
+      availability: "AVAILABLE", // Assigned staff is considered available
+      status: "APPROVED",
+    }
     : null;
 
   // Combine staff: assigned staff + other staff
   const allStaff = assignedStaffInfo
     ? [
-        assignedStaffInfo,
-        ...staffList.filter((s: any) => s.id !== assignedStaffInfo.id),
-      ]
+      assignedStaffInfo,
+      ...staffList.filter((s: any) => s.id !== assignedStaffInfo.id),
+    ]
     : staffList;
 
   // Separate staff by availability status
@@ -180,12 +202,9 @@ export function AssignStaffModal({
       s.availability === "AVAILABLE",
   );
 
-  const notAvailableStaff = allStaff.filter(
-    (s: any) =>
-      s.id !== assignedStaffInfo?.id &&
-      s.status === "APPROVED" &&
-      s.availability === "NOT_AVAILABLE",
-  );
+
+
+
 
   const onWorkStaff = allStaff.filter(
     (s: any) =>
@@ -200,6 +219,14 @@ export function AssignStaffModal({
       s.status === "APPROVED" &&
       s.availability === "BUSY",
   );
+
+  console.log("[AssignStaffModal] Filtered Staff:", {
+    total: allStaff.length,
+    assigned: assignedStaff?.id,
+    available: availableStaff.length,
+    onWork: onWorkStaff.length,
+    busy: busyStaff.length
+  });
 
   const isLoading = isLoadingBooking || isLoadingStaff;
 
@@ -236,9 +263,11 @@ export function AssignStaffModal({
   const getAvailabilityMessage = (staff: any) => {
     switch (staff.availability) {
       case "NOT_AVAILABLE":
-        return staff.currentBooking?.leaveReason
-          ? `On leave: ${staff.currentBooking.leaveReason}`
-          : "Marked as not available";
+        return staff.leaveDetails
+          ? `On leave: ${staff.leaveDetails.reason || "Scheduled Leave"}`
+          : staff.currentBooking?.leaveReason
+            ? `On leave: ${staff.currentBooking.leaveReason}`
+            : "Marked as not available";
       case "ON_WORK":
         return staff.currentBooking
           ? `Working on: ${staff.currentBooking.service}`
@@ -265,19 +294,25 @@ export function AssignStaffModal({
 
     return (
       <div
-        onClick={() => !isDisabled && setSelectedStaffId(staff.id)}
+        onClick={() => {
+          if (!isDisabled) {
+            console.log("[AssignStaffModal] Selected staff:", staff.id);
+            setSelectedStaffId(staff.id);
+          }
+        }}
         className={`
-          relative p-4 rounded-lg border-2 transition-all cursor-pointer
-          ${
-            isSelected
-              ? "border-blue-500 bg-blue-50"
+          relative p-4 rounded-sm border-2 transition-all cursor-pointer
+          ${isSelected
+            ? "border-blue-500 bg-blue-50"
+            : isAssigned
+              ? "border-green-500 bg-green-50"
               : "border-gray-200 hover:border-gray-300 bg-white"
           }
-          ${isDisabled ? "opacity-60 cursor-not-allowed" : ""}
+          ${isDisabled && !isAssigned ? "opacity-60 cursor-not-allowed" : ""}
         `}>
         {isAssigned && (
           <div className="absolute top-2 right-2">
-            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-full">
+            <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded-sm">
               Assigned
             </span>
           </div>
@@ -325,7 +360,7 @@ export function AssignStaffModal({
           </div>
 
           {!isDisabled && isSelected && (
-            <div className="h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center">
+            <div className="h-6 w-6 rounded-sm bg-blue-500 flex items-center justify-center">
               <Check className="h-4 w-4 text-white" />
             </div>
           )}
@@ -367,11 +402,10 @@ export function AssignStaffModal({
                   setPaymentValue("50");
                 }}
                 className={`
-                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
-                  ${
-                    paymentType === "PERCENTAGE"
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-sm border-2 transition-all
+                  ${paymentType === "PERCENTAGE"
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
                   }
                 `}>
                 <Percent className="w-4 h-4" />
@@ -385,11 +419,10 @@ export function AssignStaffModal({
                   setPaymentValue("0");
                 }}
                 className={`
-                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all
-                  ${
-                    paymentType === "FIXED_AMOUNT"
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                  flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-sm border-2 transition-all
+                  ${paymentType === "FIXED_AMOUNT"
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
                   }
                 `}>
                 <IndianRupee className="w-4 h-4" />
@@ -427,8 +460,8 @@ export function AssignStaffModal({
                   {paymentType === "PERCENTAGE"
                     ? `Staff will receive ${paymentValue}% of provider earnings`
                     : `Staff will receive ₹${parseFloat(
-                        paymentValue || 0,
-                      ).toFixed(2)} fixed amount`}
+                      paymentValue || "0",
+                    ).toFixed(2)} fixed amount`}
                 </p>
               )}
             </div>
@@ -440,12 +473,12 @@ export function AssignStaffModal({
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
             </div>
-          ) : allStaff.length === 0 ? (
+          ) : (availableStaff.length === 0 && onWorkStaff.length === 0 && busyStaff.length === 0 && !isAlreadyAssigned) ? (
             <div className="text-center py-12">
               <UserPlus className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-sm text-gray-500">No staff available</p>
+              <p className="text-sm text-gray-500">No available staff members</p>
               <p className="text-xs text-gray-400 mt-1">
-                Approve staff members first
+                All staff are currently unavailable or on leave.
               </p>
             </div>
           ) : (
@@ -461,7 +494,7 @@ export function AssignStaffModal({
                     isAssigned={true}
                     isDisabled={true}
                   />
-                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-sm">
                     <p className="text-sm text-green-800">
                       ✓ This booking is assigned to{" "}
                       <strong>{assignedStaff.user?.name}</strong>
@@ -472,7 +505,7 @@ export function AssignStaffModal({
 
               {/* Reassignment Warning */}
               {isAlreadyAssigned && showReassign && (
-                <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-200 rounded-sm">
                   <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-amber-800">
                     <p className="font-medium mb-1">Reassigning staff</p>
@@ -506,81 +539,15 @@ export function AssignStaffModal({
                   </div>
                 )}
 
-              {/* On Work Staff */}
-              {onWorkStaff.length > 0 &&
-                (!isAlreadyAssigned || showReassign) && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
-                      On Work Staff
-                    </p>
-                    <div className="space-y-2">
-                      {onWorkStaff.map((staff: any) => (
-                        <StaffCard
-                          key={staff.id}
-                          staff={staff}
-                          isDisabled={true}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-              {/* Not Available Staff */}
-              {notAvailableStaff.length > 0 &&
-                (!isAlreadyAssigned || showReassign) && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
-                      Not Available Staff
-                    </p>
-                    <div className="space-y-2">
-                      {notAvailableStaff.map((staff: any) => (
-                        <StaffCard
-                          key={staff.id}
-                          staff={staff}
-                          isDisabled={true}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-              {/* Busy Staff */}
-              {busyStaff.length > 0 && (!isAlreadyAssigned || showReassign) && (
-                <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">
-                    Busy Staff
-                  </p>
-                  <div className="space-y-2">
-                    {busyStaff.map((staff: any) => (
-                      <StaffCard
-                        key={staff.id}
-                        staff={staff}
-                        isDisabled={true}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* No available staff message */}
-              {availableStaff.length === 0 &&
-                onWorkStaff.length === 0 &&
-                notAvailableStaff.length === 0 &&
-                busyStaff.length === 0 &&
-                !isAlreadyAssigned && (
-                  <div className="text-center py-8">
-                    <p className="text-sm text-gray-500">
-                      No available staff members
-                    </p>
-                  </div>
-                )}
 
               {/* Toggle Reassign Mode */}
               {isAlreadyAssigned &&
                 !showReassign &&
                 (availableStaff.length > 0 ||
                   onWorkStaff.length > 0 ||
-                  notAvailableStaff.length > 0 ||
                   busyStaff.length > 0) && (
                   <Button
                     variant="outline"

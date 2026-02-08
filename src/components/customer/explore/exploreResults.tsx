@@ -14,11 +14,10 @@ const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
         {[1, 2, 3, 4, 5].map((star) => (
           <StarIcon
             key={star}
-            className={`w-4 h-4 ${
-              star <= Math.round(rating)
-                ? "text-yellow-400 fill-yellow-400"
-                : "text-gray-300 fill-gray-100"
-            }`}
+            className={`w-4 h-4 ${star <= Math.round(rating)
+              ? "text-yellow-400 fill-yellow-400"
+              : "text-gray-300 fill-gray-100"
+              }`}
           />
         ))}
         <span className="ml-1 text-sm font-medium text-gray-700">
@@ -36,7 +35,7 @@ const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
             <div className="p-4 space-y-3">
               <div className="flex justify-between items-start gap-4">
                 <Skeleton className="h-6 w-3/4 rounded" />
-                <Skeleton className="h-5 w-5 rounded-full" />
+                <Skeleton className="h-5 w-5 rounded-sm" />
               </div>
               <div className="space-y-2">
                 <Skeleton className="h-4 w-full rounded" />
@@ -85,7 +84,7 @@ const Results = ({ services, onServiceClick, isLoading, isError }: any) => {
         <Card
           key={service.id}
           onClick={() => onServiceClick(service)}
-          className="group relative block bg-white rounded-md overflow-hidden
+          className="group relative block bg-white rounded-sm overflow-hidden
                    border border-gray-200 hover:border-blue-200
                    hover:shadow-lg transition-all py-2 cursor-pointer">
           {/* CONTENT */}

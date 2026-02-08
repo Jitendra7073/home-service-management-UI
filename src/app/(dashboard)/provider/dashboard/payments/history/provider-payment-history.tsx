@@ -239,7 +239,7 @@ export function ProviderPaymentHistoryClient() {
                 {payments.map((payment: any) => (
                   <div
                     key={payment.id}
-                    className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    className="border rounded-sm p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
@@ -250,7 +250,7 @@ export function ProviderPaymentHistoryClient() {
                             variant="outline"
                             className={
                               STATUS_COLORS[
-                                payment.status as keyof typeof STATUS_COLORS
+                              payment.status as keyof typeof STATUS_COLORS
                               ]
                             }>
                             {payment.status}
@@ -281,7 +281,7 @@ export function ProviderPaymentHistoryClient() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                        <div className="flex items-center justify-between bg-gray-50 rounded-sm p-3">
                           <div className="flex gap-6 text-sm">
                             <div>
                               <span className="text-gray-500">

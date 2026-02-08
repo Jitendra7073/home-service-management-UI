@@ -82,7 +82,7 @@ const Address: React.FC<AddressProps> = ({
       .join(", ");
 
   if (isLoading) {
-    return <div className="h-24 bg-gray-100 animate-pulse rounded-md" />;
+    return <div className="h-24 bg-gray-100 animate-pulse rounded-sm" />;
   }
 
   if (isError) {
@@ -116,18 +116,16 @@ const Address: React.FC<AddressProps> = ({
       )}
 
       <div
-        className={`space-y-3 ${
-          addresses.length > 3 && "h-[300px] overflow-y-auto"
-        }`}>
+        className={`space-y-3 ${addresses.length > 3 && "h-[300px] overflow-y-auto"
+          }`}>
         {addresses.map((addr: any) => (
           <div
             key={addr.id}
             onClick={() => setSelectedAddress(addr.id)}
-            className={`flex justify-between items-start p-4 rounded-md border cursor-pointer
-              ${
-                selectedAddress === addr.id
-                  ? "border-green-500 bg-green-50"
-                  : "border-gray-200 bg-white"
+            className={`flex justify-between items-start p-4 rounded-sm border cursor-pointer
+              ${selectedAddress === addr.id
+                ? "border-green-500 bg-green-50"
+                : "border-gray-200 bg-white"
               }`}>
             <div className="space-y-1">
               <div className="flex items-center gap-2">

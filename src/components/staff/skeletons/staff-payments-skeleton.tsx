@@ -20,7 +20,7 @@ export function StaffPaymentsSkeleton() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-sm" />
                   <Skeleton className="h-8 w-20" />
                 </div>
               </CardContent>
@@ -45,10 +45,10 @@ export function StaffPaymentsSkeleton() {
           </CardHeader>
           <CardContent className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="border rounded-lg p-4 space-y-3">
+              <div key={i} className="border rounded-sm p-4 space-y-3">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-5 w-40" />
-                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-6 w-20 rounded-sm" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Skeleton className="h-5 w-48" />

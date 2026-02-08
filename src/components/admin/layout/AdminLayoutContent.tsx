@@ -134,7 +134,7 @@ export function AdminLayoutContent({
                 <Link
                   href="/admin"
                   className="flex justify-center items-center">
-                  <div className="flex aspect-squar items-center justify-center rounded-md w-full hover:bg-gray-100">
+                  <div className="flex aspect-squar items-center justify-center rounded-sm w-full hover:bg-gray-100">
                     <Image
                       src="/HSM-logo.png"
                       alt="ServiceHub Logo"
@@ -208,7 +208,7 @@ export function AdminLayoutContent({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 bg-gray-100 cursor-pointer rounded-full border border-slate-200">
+                  className="relative h-10 w-10 bg-gray-100 cursor-pointer rounded-sm border border-slate-200">
                   <span className="font-semibold text-slate-700">
                     {userDetails &&
                       userDetails?.name

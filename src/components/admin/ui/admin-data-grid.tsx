@@ -48,7 +48,7 @@ export function AdminDataGrid<T>({
   // Default skeleton if none provided
   const DefaultSkeleton = () => (
     <div className="flex flex-col space-y-3">
-      <Skeleton className="h-[200px] w-full rounded-md" />
+      <Skeleton className="h-[200px] w-full rounded-sm" />
       <div className="space-y-2">
         <Skeleton className="h-4 w-[250px]" />
         <Skeleton className="h-4 w-[200px]" />

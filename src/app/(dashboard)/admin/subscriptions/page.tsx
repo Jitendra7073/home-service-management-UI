@@ -227,9 +227,8 @@ export default function SubscriptionsPage() {
 
         const planName = selectedSub.plan?.name || "Unknown Plan";
         const planPrice = selectedSub.plan?.price
-          ? `${
-              selectedSub.plan.price
-            } ${selectedSub.plan.currency?.toUpperCase()}`
+          ? `${selectedSub.plan.price
+          } ${selectedSub.plan.currency?.toUpperCase()}`
           : "Free";
         const startDate = selectedSub.createdAt
           ? format(new Date(selectedSub.createdAt), "PPP")
@@ -245,7 +244,7 @@ export default function SubscriptionsPage() {
             title="Cancel Subscription"
             description="Are you sure you want to cancel this subscription? This action cannot be undone."
             requireReason>
-            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-2 mb-2">
+            <div className="rounded-sm border bg-muted/40 p-3 text-sm space-y-2 mb-2">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <User className="h-4 w-4" /> Provider

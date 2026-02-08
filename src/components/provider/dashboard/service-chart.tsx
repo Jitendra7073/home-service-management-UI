@@ -34,7 +34,7 @@ interface ServiceChartProps {
 const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-full shadow-sm border rounded-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Top Performing Services
@@ -53,7 +53,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
 
   if (!data || data.length === 0) {
     return (
-      <Card className="w-full shadow-sm border rounded-md">
+      <Card className="w-full shadow-sm border rounded-sm">
         <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Top Performing Services
@@ -74,7 +74,7 @@ const ServiceChart: React.FC<ServiceChartProps> = ({ data, isLoading }) => {
   }
 
   return (
-    <Card className="w-full shadow-sm border rounded-md">
+    <Card className="w-full shadow-sm border rounded-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">
           Top Performing Services

@@ -29,8 +29,8 @@ export function StaffProfileSkeleton() {
                   <div className="space-y-2">
                     <div className="h-8 bg-gray-200 rounded w-48 animate-pulse" />
                     <div className="flex gap-2">
-                      <div className="h-6 bg-gray-200 rounded-full w-28 animate-pulse" />
-                      <div className="h-6 bg-gray-200 rounded-full w-20 animate-pulse" />
+                      <div className="h-6 bg-gray-200 rounded-sm w-28 animate-pulse" />
+                      <div className="h-6 bg-gray-200 rounded-sm w-20 animate-pulse" />
                     </div>
                   </div>
                   <div className="h-8 bg-gray-200 rounded w-24 animate-pulse" />
@@ -60,10 +60,10 @@ export function StaffProfileSkeleton() {
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="border border-gray-200 rounded-lg p-4 space-y-2">
+                  className="border border-gray-200 rounded-sm p-4 space-y-2">
                   <div className="h-5 bg-gray-200 rounded w-40 animate-pulse" />
                   <div className="h-4 bg-gray-200 rounded w-28 animate-pulse" />
-                  <div className="h-6 bg-gray-200 rounded-full w-16 animate-pulse" />
+                  <div className="h-6 bg-gray-200 rounded-sm w-16 animate-pulse" />
                 </div>
               ))}
             </div>

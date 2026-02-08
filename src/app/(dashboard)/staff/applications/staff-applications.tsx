@@ -158,17 +158,15 @@ export default function StaffApplications() {
             <button
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 -mb-px ${
-                activeTab === tab.key
-                  ? "text-blue-600 border-blue-600"
-                  : "text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300"
-              }`}>
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 -mb-px ${activeTab === tab.key
+                ? "text-blue-600 border-blue-600"
+                : "text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300"
+                }`}>
               {tab.label}
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                activeTab === tab.key
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-600"
-              }`}>
+              <span className={`text-xs px-2 py-0.5 rounded-sm ${activeTab === tab.key
+                ? "bg-blue-100 text-blue-700"
+                : "bg-gray-100 text-gray-600"
+                }`}>
                 {count}
               </span>
             </button>
@@ -180,7 +178,7 @@ export default function StaffApplications() {
       {isLoading ? (
         <div className="grid gap-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="border rounded-md shadow-sm">
+            <Card key={i} className="border rounded-sm shadow-sm">
               <CardHeader>
                 <div className="h-6 w-1/2 bg-muted rounded animate-pulse" />
                 <div className="h-4 w-1/3 bg-muted rounded mt-2 animate-pulse" />
@@ -202,7 +200,7 @@ export default function StaffApplications() {
           </p>
           <a
             href="/staff/businesses"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+            className="inline-flex items-center justify-center rounded-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
             Browse Businesses
           </a>
         </Card>
@@ -237,7 +235,7 @@ export default function StaffApplications() {
                 </div>
 
                 {application.status === "APPROVED" && (
-                  <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4">
+                  <div className="rounded border border-green-500/50 bg-green-500/10 px-4 py-2">
                     <p className="text-sm font-medium text-green-700 dark:text-green-400">
                       Congratulations! Your application has been approved. You
                       can now start receiving bookings from this business.

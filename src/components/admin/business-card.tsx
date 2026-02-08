@@ -132,14 +132,14 @@ export function BusinessCard({
         </div>
 
         {isRestricted && restrictionReason && (
-          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3">
+          <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3">
             <p className="mb-1 text-xs font-semibold text-destructive">
               Restriction Reason
             </p>
             <p className="text-sm text-destructive">
               {restrictionReason &&
                 restrictionReason.charAt(0).toUpperCase() +
-                  restrictionReason.slice(1)}
+                restrictionReason.slice(1)}
             </p>
           </div>
         )}
@@ -163,7 +163,7 @@ export function BusinessCard({
                 onClick={onApprove}
                 disabled={!!actionLoading}>
                 {actionLoading === "approve" ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
                 ) : (
                   <CheckCircle className="h-4 w-4" />
                 )}
@@ -178,7 +178,7 @@ export function BusinessCard({
               onClick={onUnblock}
               disabled={!!actionLoading}>
               {actionLoading === "unblock" ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
               ) : (
                 <CheckCircle className="h-4 w-4" />
               )}
@@ -192,7 +192,7 @@ export function BusinessCard({
               onClick={onBlock}
               disabled={!!actionLoading}>
               {actionLoading === "block" ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
               ) : (
                 <Ban className="h-4 w-4" />
               )}

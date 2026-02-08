@@ -104,7 +104,7 @@ export function UserCard({
               onClick={isRestricted ? onUnblock : onBlock}
               disabled={isBlocking}>
               {isBlocking ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
               ) : isRestricted ? (
                 <Shield className="h-4 w-4" />
               ) : (
@@ -115,8 +115,8 @@ export function UserCard({
                   ? "Unblocking..."
                   : "Blocking..."
                 : isRestricted
-                ? "Unblock"
-                : "Block"}
+                  ? "Unblock"
+                  : "Block"}
             </Button>
           )}
         </div>

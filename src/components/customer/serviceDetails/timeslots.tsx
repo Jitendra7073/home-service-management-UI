@@ -72,7 +72,7 @@ export default function SlotsSelector({
   };
 
   return (
-    <div className="bg-white border rounded-md p-6 shadow-sm">
+    <div className="bg-white border rounded-sm p-6 shadow-sm">
       <h2 className="text-xl font-bold mb-4">Select Date & Time</h2>
 
       {/* DATE SELECTOR */}
@@ -84,11 +84,10 @@ export default function SlotsSelector({
               setSelectedDate(date);
               setSelectedSlotId(null);
             }}
-            className={`px-4 py-2 rounded-md border text-sm font-semibold whitespace-nowrap ${
-              selectedDate === date
+            className={`px-4 py-2 rounded-sm border text-sm font-semibold whitespace-nowrap ${selectedDate === date
                 ? "bg-black text-white border-black"
                 : "bg-gray-50 text-gray-900 border-gray-200 hover:bg-gray-100"
-            }`}>
+              }`}>
             {new Date(date).toLocaleDateString("en-IN", {
               weekday: "short",
               month: "short",
@@ -109,11 +108,10 @@ export default function SlotsSelector({
             <button
               key={slot.id}
               onClick={() => handleSelect(slot)}
-              className={`p-3 rounded-md text-center border-2 text-sm font-semibold ${
-                selectedSlotId === slot.id
+              className={`p-3 rounded-sm text-center border-2 text-sm font-semibold ${selectedSlotId === slot.id
                   ? "bg-green-100 border-green-300 text-green-600 shadow"
                   : "bg-white border-gray-200 hover:border-green-400 hover:bg-green-50"
-              }`}>
+                }`}>
               {slot.time}
             </button>
           ))}

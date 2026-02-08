@@ -184,7 +184,7 @@ export function ServiceListSkeleton({
       {Array.from({ length: count }).map((_, i) => (
         <Card key={i} className="p-4">
           <div className="flex items-center gap-4">
-            <Skeleton className="h-16 w-16 rounded-md" />
+            <Skeleton className="h-16 w-16 rounded-sm" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-5 w-48" />
               <Skeleton className="h-4 w-64" />
@@ -257,7 +257,7 @@ export function InlineLoader({
 
   return (
     <div className="flex items-center gap-2">
-      <div className={`animate-spin rounded-full border-2 border-current border-t-transparent ${sizeClasses[size]}`} />
+      <div className={`animate-spin rounded-sm border-2 border-current border-t-transparent ${sizeClasses[size]}`} />
       {text && <span className="text-sm text-muted-foreground">{text}</span>}
     </div>
   );
@@ -274,7 +274,7 @@ export function FullPageLoader({
   return (
     <div className="flex items-center justify-center min-h-[400px]">
       <div className="flex flex-col items-center gap-4">
-        <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-12 w-12" />
+        <div className="animate-spin rounded-sm border-4 border-primary border-t-transparent h-12 w-12" />
         {text && <p className="text-sm text-muted-foreground">{text}</p>}
       </div>
     </div>
@@ -295,7 +295,7 @@ export function TokenRefreshIndicator({
 
   return (
     <div className={`flex items-center gap-2 text-xs text-muted-foreground ${className}`}>
-      <div className="animate-spin rounded-full border-2 border-current border-t-transparent h-3 w-3" />
+      <div className="animate-spin rounded-sm border-2 border-current border-t-transparent h-3 w-3" />
       <span>Refreshing session...</span>
     </div>
   );

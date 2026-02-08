@@ -22,12 +22,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 
 // Require field symbol
-const RequireField = () =>{
+const RequireField = () => {
   return <span className="text-red-500 -ml-1">*</span>;
 }
 
 export default function ForgotPassword() {
-   const router = useRouter();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -65,7 +65,7 @@ export default function ForgotPassword() {
 
   return (
     <section className="min-h-screen flex items-center justify-center p-4 bg-muted/50">
-      <div className="flex w-full max-w-4xl overflow-hidden rounded-md border bg-card shadow-lg">
+      <div className="flex w-full max-w-4xl overflow-hidden rounded-sm border bg-card shadow-lg">
         {/* Left Side */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
           <Card className="border-0 shadow-none">

@@ -260,12 +260,12 @@ export function ProviderPaymentRequestsClient() {
                   {requests.map((request: any) => {
                     const StatusIcon =
                       STATUS_ICONS[
-                        request.requestStatus as keyof typeof STATUS_ICONS
+                      request.requestStatus as keyof typeof STATUS_ICONS
                       ];
                     return (
                       <div
                         key={request.id}
-                        className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        className="border rounded-sm p-4 hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-3">
@@ -276,7 +276,7 @@ export function ProviderPaymentRequestsClient() {
                                 variant="outline"
                                 className={
                                   STATUS_COLORS[
-                                    request.requestStatus as keyof typeof STATUS_COLORS
+                                  request.requestStatus as keyof typeof STATUS_COLORS
                                   ]
                                 }>
                                 <StatusIcon className="w-3 h-3 mr-1" />
@@ -372,7 +372,7 @@ export function ProviderPaymentRequestsClient() {
           {selectedRequest && (
             <div className="space-y-4 py-4">
               {/* Staff Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <h4 className="font-semibold text-sm text-gray-900 mb-2">
                   Staff Member
                 </h4>
@@ -386,7 +386,7 @@ export function ProviderPaymentRequestsClient() {
               </div>
 
               {/* Service Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <h4 className="font-semibold text-sm text-gray-900 mb-2">
                   Service Details
                 </h4>
@@ -404,7 +404,7 @@ export function ProviderPaymentRequestsClient() {
 
               {/* Staff Feedback */}
               {selectedRequest.staffFeedback && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-sm p-4">
                   <h4 className="font-semibold text-sm text-blue-900 mb-1">
                     Staff Feedback
                   </h4>
@@ -429,7 +429,7 @@ export function ProviderPaymentRequestsClient() {
                   />
                   <span className="text-gray-600">of provider earnings</span>
                 </div>
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1">
+                <div className="bg-green-50 border border-green-200 rounded-sm p-3 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Service Price:</span>
                     <span className="font-medium">
@@ -509,7 +509,7 @@ export function ProviderPaymentRequestsClient() {
           </DialogHeader>
           {selectedRequest && (
             <div className="space-y-4 py-4">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 rounded-sm p-4">
                 <p className="font-medium">{selectedRequest.serviceName}</p>
                 <p className="text-sm text-gray-600">
                   {selectedRequest.staffName}

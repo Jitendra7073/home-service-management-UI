@@ -73,7 +73,7 @@ const Filters: React.FC<FiltersProps> = ({
     <>
       <div className="hidden lg:block">
         <div className="sticky top-20 ">
-          <Card className="border-gray-200 shadow-sm rounded-md">
+          <Card className="border-gray-200 shadow-sm rounded-sm">
             <CardContent className="py-6">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="w-5 h-5 text-gray-600" />
@@ -221,7 +221,7 @@ const Filters: React.FC<FiltersProps> = ({
                     onChange={(e) =>
                       onPriceChange([priceRange[0], parseInt(e.target.value)])
                     }
-                    className="w-full h-2 bg-gray-300 rounded-md appearance-none cursor-pointer accent-gray-800"
+                    className="w-full h-2 bg-gray-300 rounded-sm appearance-none cursor-pointer accent-gray-800"
                   />
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 text-sm">Min</span>
@@ -335,7 +335,7 @@ const Filters: React.FC<FiltersProps> = ({
                 onChange={(e) =>
                   onPriceChange([priceRange[0], parseInt(e.target.value)])
                 }
-                className="w-full h-2 bg-gray-300 rounded-md"
+                className="w-full h-2 bg-gray-300 rounded-sm"
               />
 
               <p className="text-gray-600 text-sm mt-2">

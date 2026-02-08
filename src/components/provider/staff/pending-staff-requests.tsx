@@ -61,7 +61,7 @@ export default function PendingStaffRequests({
           <Card key={i} className="animate-pulse">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-gray-200" />
+                <div className="h-12 w-12 rounded-sm bg-gray-200" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-1/3" />
                   <div className="h-3 bg-gray-200 rounded w-1/2" />
@@ -79,7 +79,7 @@ export default function PendingStaffRequests({
       <Card>
         <CardContent className="p-12 text-center">
           <div className="flex flex-col items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
+            <div className="h-16 w-16 rounded-sm bg-gray-100 flex items-center justify-center">
               <Briefcase className="h-8 w-8 text-gray-400" />
             </div>
             <div>
@@ -112,10 +112,10 @@ export default function PendingStaffRequests({
                   <img
                     src={request.user.photo}
                     alt={request.user.name}
-                    className="h-14 w-14 rounded-full object-cover border-2 border-white shadow-sm"
+                    className="h-14 w-14 rounded-sm object-cover border-2 border-white shadow-sm"
                   />
                 ) : (
-                  <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold border-2 border-white shadow-sm">
+                  <div className="h-14 w-14 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold border-2 border-white shadow-sm">
                     {request.user?.name?.charAt(0).toUpperCase() || "?"}
                   </div>
                 )}
@@ -186,7 +186,7 @@ export default function PendingStaffRequests({
                     {request.specialization.map((spec: string, i: number) => (
                       <span
                         key={i}
-                        className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                        className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-sm">
                         {spec}
                       </span>
                     ))}

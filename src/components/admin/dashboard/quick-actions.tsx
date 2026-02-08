@@ -49,7 +49,7 @@ export function QuickActions() {
           <Link
             key={action.href}
             href={action.href}
-            className={`group flex items-center justify-between rounded-md border ${action.borderColor} ${action.bgColor} p-4 transition-all hover:shadow-md`}
+            className={`group flex items-center justify-between rounded-sm border ${action.borderColor} ${action.bgColor} p-4 transition-all hover:shadow-md`}
           >
             <div className="flex-1">
               <p className={`font-medium ${action.titleColor}`}>{action.title}</p>

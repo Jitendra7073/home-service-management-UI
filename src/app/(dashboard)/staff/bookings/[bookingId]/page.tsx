@@ -144,7 +144,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
         // Booking is cancelled by customer
         toast.error(
           result.msg ||
-            "Cannot update tracking status. This booking has been cancelled by the customer.",
+          "Cannot update tracking status. This booking has been cancelled by the customer.",
         );
         setIsUpdating(false);
       } else if (result.requireReason) {
@@ -225,7 +225,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
     if (isBookingCancelled) {
       return (
         <div className="mb-8">
-          <div className="flex items-center justify-center p-6 bg-red-50 border-2 border-red-200 rounded-lg">
+          <div className="flex items-center justify-center p-6 bg-red-50 border-2 border-red-200 rounded-sm">
             <XCircle className="w-12 h-12 text-red-600 mr-4" />
             <div>
               <h3 className="text-lg font-bold text-red-900 mb-1">
@@ -263,21 +263,19 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
                 key={step.key}
                 className="flex flex-col items-center flex-1 relative">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                    isCompleted
-                      ? "bg-blue-600 border-blue-600 text-white"
-                      : "bg-white border-gray-300 text-gray-400"
-                  }`}>
+                  className={`w-10 h-10 rounded-sm flex items-center justify-center border-2 transition-all duration-300 ${isCompleted
+                    ? "bg-blue-600 border-blue-600 text-white"
+                    : "bg-white border-gray-300 text-gray-400"
+                    }`}>
                   <StepIcon className="w-5 h-5" />
                 </div>
                 <span
-                  className={`text-xs mt-2 font-medium text-center ${
-                    isCurrent
-                      ? "text-blue-600"
-                      : isCompleted
+                  className={`text-xs mt-2 font-medium text-center ${isCurrent
+                    ? "text-blue-600"
+                    : isCompleted
                       ? "text-gray-700"
                       : "text-gray-400"
-                  }`}>
+                    }`}>
                   {step.label}
                 </span>
               </div>
@@ -300,7 +298,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
     if (isBookingCancelled) {
       return (
         <div className="space-y-3">
-          <div className="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-center p-6 bg-red-50 border border-red-200 rounded-sm">
             <XCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-red-900 mb-2">
               Booking Cancelled by Customer
@@ -319,7 +317,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
       if (isPaid || payment?.status === "PAID") {
         return (
           <div className="space-y-3">
-            <div className="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
+            <div className="text-center p-6 bg-green-50 border border-green-200 rounded-sm">
               <BadgeCheck className="w-12 h-12 text-green-600 mx-auto mb-3" />
               <h3 className="text-lg font-semibold text-green-900 mb-2">
                 Payment Received!
@@ -344,7 +342,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
       if (paymentStatus?.requestStatus === "PENDING") {
         return (
           <div className="space-y-3">
-            <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-sm">
               <Hourglass className="w-12 h-12 text-yellow-600 mx-auto mb-3 animate-pulse" />
               <h3 className="text-lg font-semibold text-yellow-900 mb-2">
                 Payment Request Pending
@@ -366,7 +364,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
       if (paymentStatus?.requestStatus === "REJECTED") {
         return (
           <div className="space-y-3">
-            <div className="text-center p-6 bg-red-50 border border-red-200 rounded-lg">
+            <div className="text-center p-6 bg-red-50 border border-red-200 rounded-sm">
               <XCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
               <h3 className="text-lg font-semibold text-red-900 mb-2">
                 Payment Request Rejected
@@ -393,7 +391,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
       // No payment request yet - show request button
       return (
         <div className="space-y-3">
-          <div className="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
+          <div className="text-center p-6 bg-green-50 border border-green-200 rounded-sm">
             <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-green-900 mb-2">
               Service Completed!
@@ -551,8 +549,8 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
                 {booking.bookingStatus === "CANCELLED"
                   ? "Booking Cancelled"
                   : booking.trackingStatus === "COMPLETED"
-                  ? "Booking Complete"
-                  : "Update Status"}
+                    ? "Booking Complete"
+                    : "Update Status"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -633,7 +631,7 @@ export default function StaffBookingDetailPage({ params }: PageProps) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             {/* Booking Summary */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+            <div className="bg-gray-50 rounded-sm p-4 space-y-2">
               <h4 className="font-semibold text-sm text-gray-900">
                 Booking Details
               </h4>

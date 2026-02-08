@@ -13,8 +13,8 @@ export default function ServiceDetailsSkeleton() {
             <Skeleton className="h-4 w-24" />
           </div>
           <div className="flex gap-2">
-            <Skeleton className="h-9 w-24 rounded-md" />
-            <Skeleton className="h-9 w-32 rounded-md" />
+            <Skeleton className="h-9 w-24 rounded-sm" />
+            <Skeleton className="h-9 w-32 rounded-sm" />
           </div>
         </div>
 
@@ -44,10 +44,10 @@ export default function ServiceDetailsSkeleton() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4">
-                  <Skeleton className="col-span-2 h-[300px] rounded-md" />
+                  <Skeleton className="col-span-2 h-[300px] rounded-sm" />
                   <div className="grid grid-rows-2 gap-4">
-                    <Skeleton className="h-full rounded-md" />
-                    <Skeleton className="h-full rounded-md" />
+                    <Skeleton className="h-full rounded-sm" />
+                    <Skeleton className="h-full rounded-sm" />
                   </div>
                 </div>
               </CardContent>
@@ -61,7 +61,7 @@ export default function ServiceDetailsSkeleton() {
                 <Skeleton className="h-5 w-44" />
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-14 w-full rounded-md" />
+                <Skeleton className="h-14 w-full rounded-sm" />
               </CardContent>
             </Card>
 

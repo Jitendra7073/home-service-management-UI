@@ -62,7 +62,7 @@ export default function ServiceStatsCards({
               </div>
 
               {/* Icon */}
-              <div className={`p-3 rounded-full ${item.bg}`}>
+              <div className={`p-3 rounded-sm ${item.bg}`}>
                 <Icon className={`w-5 h-5 ${item.text}`} />
               </div>
             </CardContent>

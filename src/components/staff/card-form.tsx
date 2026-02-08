@@ -275,10 +275,10 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
                 Card Preview
               </h3>
               <div
-                className={`w-full h-44 rounded-xl bg-gradient-to-br ${cardConfig.color} p-6 text-white flex flex-col justify-between relative overflow-hidden shadow-lg`}>
+                className={`w-full h-44 rounded-sm bg-gradient-to-br ${cardConfig.color} p-6 text-white flex flex-col justify-between relative overflow-hidden shadow-lg`}>
                 {/* Background Pattern */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-15 rounded-full -mr-20 -mt-20" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full -ml-16 -mb-16" />
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-15 rounded-sm -mr-20 -mt-20" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-sm -ml-16 -mb-16" />
 
                 {/* Card Content */}
                 <div className="relative z-10 flex justify-between items-start">
@@ -309,7 +309,7 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
 
               {/* Detected Card Type Badge */}
               {detectedCardType !== "unknown" && cardNumber && (
-                <div className="mt-3 flex items-center justify-center p-2 bg-green-50 border border-green-200 rounded-lg">
+                <div className="mt-3 flex items-center justify-center p-2 bg-green-50 border border-green-200 rounded-sm">
                   <CreditCard className="w-4 h-4 text-green-600 mr-2" />
                   <span className="text-xs text-green-800 font-medium">
                     {cardConfig.text} card detected
@@ -318,7 +318,7 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
               )}
 
               {/* Security Notice */}
-              <div className="mt-4 flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mt-4 flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-sm">
                 <Lock className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <p className="text-xs text-blue-800">
                   Your card details are encrypted with AES-256 encryption and
@@ -471,7 +471,7 @@ export function StaffCardForm({ onSuccess, onCancel }: StaffCardFormProps) {
                   control={form.control}
                   name="isDefault"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-lg border p-3 bg-gray-50">
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-sm border p-3 bg-gray-50">
                       <FormControl>
                         <Checkbox
                           checked={field.value}

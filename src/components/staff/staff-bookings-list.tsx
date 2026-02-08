@@ -66,7 +66,7 @@ export default function StaffBookingsList({
       {bookings.map((booking) => (
         <div
           key={booking.id}
-          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+          className="border border-gray-200 rounded-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
           onClick={() => (window.location.href = `/staff/bookings/${booking.id}`)}
         >
           <div className="flex items-start justify-between">

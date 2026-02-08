@@ -145,7 +145,7 @@ export function EditCardDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
+            <div className="p-2 bg-blue-100 rounded-sm">
               <Edit className="w-5 h-5 text-blue-600" />
             </div>
             <div>
@@ -262,7 +262,7 @@ export function EditCardDialog({
             </div>
 
             {/* Info Note */}
-            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-sm">
               <CreditCard className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-blue-800">
                 Card number and CVV cannot be modified for security reasons.

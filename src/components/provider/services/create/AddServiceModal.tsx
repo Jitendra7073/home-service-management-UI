@@ -252,7 +252,7 @@ export default function AddServiceModal() {
           <DialogTitle>Add New Service</DialogTitle>
         </DialogHeader>
 
-        {/* <div className="flex items-center justify-between border p-3 rounded-md">
+        {/* <div className="flex items-center justify-between border p-3 rounded-sm">
           <Label>Service Active Status</Label>
           <Switch
             checked={form.isActive}
@@ -298,11 +298,10 @@ export default function AddServiceModal() {
                 placeholder="Details about the service... (Max 200 characters)"
               />
               <div
-                className={`text-xs text-right mt-1 ${
-                  form.description.length >= 200
+                className={`text-xs text-right mt-1 ${form.description.length >= 200
                     ? "text-red-500"
                     : "text-muted-foreground"
-                }`}>
+                  }`}>
                 {form.description.length}/200 characters
               </div>
             </div>
@@ -368,7 +367,7 @@ export default function AddServiceModal() {
               </Select>
             </Field>
           </div>
-          <p className="mt-1 rounded-md border border-blue-200 bg-blue-50 px-3 py-2  text-sm text-blue-700">
+          <p className="mt-1 rounded-sm border border-blue-200 bg-blue-50 px-3 py-2  text-sm text-blue-700">
             Actual service time may vary based on site conditions and service
             complexity.
           </p>

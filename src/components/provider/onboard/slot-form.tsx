@@ -167,7 +167,7 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-md shadow-md border overflow-hidden">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-sm shadow-md border overflow-hidden">
       {/* HEADER */}
       <div className="relative w-full h-36 sm:h-44 md:h-70">
         <img src={headerImage} className="w-full h-full object-contain" />
@@ -290,11 +290,10 @@ export default function SlotForm({ onNext }: { onNext: (data: any) => void }) {
                       {dynamicSlotOptions.map((opt) => (
                         <label
                           key={opt.value}
-                          className={`relative flex items-center gap-4 py-2 px-4 rounded-md border-2 cursor-pointer transition-all w-fit
-                            ${
-                              field.value === opt.value
-                                ? "border-green-600 bg-green-100 shadow-md"
-                                : "border-gray-200 bg-white hover:border-green-300"
+                          className={`relative flex items-center gap-4 py-2 px-4 rounded-sm border-2 cursor-pointer transition-all w-fit
+                            ${field.value === opt.value
+                              ? "border-green-600 bg-green-100 shadow-md"
+                              : "border-gray-200 bg-white hover:border-green-300"
                             }
                           `}>
                           <input

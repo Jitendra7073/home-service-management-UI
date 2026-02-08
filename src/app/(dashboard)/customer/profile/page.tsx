@@ -36,9 +36,9 @@ import { useRouter } from "next/navigation";
 // Skeleton Loader
 const ProfileSkeleton = () => (
   <div className="space-y-4">
-    <div className="h-32 bg-gray-200 rounded-md animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-md animate-pulse" />
-    <div className="h-48 bg-gray-200 rounded-md animate-pulse" />
+    <div className="h-32 bg-gray-200 rounded-sm animate-pulse" />
+    <div className="h-48 bg-gray-200 rounded-sm animate-pulse" />
+    <div className="h-48 bg-gray-200 rounded-sm animate-pulse" />
   </div>
 );
 
@@ -143,7 +143,7 @@ const CustomerProfilePage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex justify-center items-center p-4">
         <Card className="max-w-md w-full border-red-200">
           <CardContent className="pt-6 text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-red-100 rounded-sm flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-red-600" />
             </div>
             <h2 className="text-xl font-semibold mb-2 text-gray-900">
@@ -161,9 +161,9 @@ const CustomerProfilePage = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 py-14 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* PROFILE HEADER CARD */}
-          <Card className="shadow-md mb-6 rounded-md overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
+          <Card className="shadow-md mb-6 rounded-sm overflow-hidden border-gray-200 hover:shadow-lg transition-shadow">
             <CardContent className="p-0">
-              <div/>
+              <div />
 
               <div className="px-4 sm:px-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
@@ -221,10 +221,10 @@ const CustomerProfilePage = () => {
           </Card>
 
           {/* PERSONAL INFO CARD */}
-          <Card className="shadow-md rounded-md border-gray-200">
+          <Card className="shadow-md rounded-sm border-gray-200">
             <CardHeader className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
               <CardTitle className="flex items-center gap-2 text-gray-900">
-                <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-gray-700 rounded-sm flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-lg sm:text-xl">Personal Information</span>
@@ -248,7 +248,7 @@ const CustomerProfilePage = () => {
                   <Mail className="w-4 h-4 text-gray-500" />
                   Email Address
                 </Label>
-                <div className="mt-2 p-3 bg-gray-100 rounded-md border border-gray-200">
+                <div className="mt-2 p-3 bg-gray-100 rounded-sm border border-gray-200">
                   <p className="text-sm sm:text-base text-gray-900 break-all">
                     {user.email}
                   </p>

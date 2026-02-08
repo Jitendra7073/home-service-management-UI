@@ -56,7 +56,7 @@ export function AppSidebar({
               <Link
                 href={homeLink}
                 className="flex justify-center items-center gap-2 w-full">
-                <div className="flex aspect-square items-center justify-center rounded-md">
+                <div className="flex aspect-square items-center justify-center rounded-sm">
                   <Image
                     src={logoUrl}
                     alt="Logo"

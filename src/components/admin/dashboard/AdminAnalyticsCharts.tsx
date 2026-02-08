@@ -31,10 +31,10 @@ export function AdminAnalyticsCharts() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-[400px] rounded-xl" />
+        <Skeleton className="h-[400px] rounded-sm" />
         <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-[350px] rounded-xl" />
-          <Skeleton className="h-[350px] rounded-xl" />
+          <Skeleton className="h-[350px] rounded-sm" />
+          <Skeleton className="h-[350px] rounded-sm" />
         </div>
       </div>
     );
@@ -42,7 +42,7 @@ export function AdminAnalyticsCharts() {
 
   if (error || !analytics) {
     return (
-      <div className="p-4 border border-red-200 rounded-md bg-red-50 text-red-800">
+      <div className="p-4 border border-red-200 rounded-sm bg-red-50 text-red-800">
         Error loading analytics: {error?.message || "No data available"}
       </div>
     );

@@ -131,7 +131,7 @@ export default function MobileFilters({
                 onChange={(e) =>
                   onPriceChange([priceRange[0], parseInt(e.target.value)])
                 }
-                className="w-full h-2 bg-gray-300 rounded-md"
+                className="w-full h-2 bg-gray-300 rounded-sm"
               />
 
               <p className="text-gray-600 text-sm mt-2">

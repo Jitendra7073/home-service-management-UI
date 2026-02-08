@@ -93,7 +93,7 @@ export default function AdminStaffOverview() {
                     {totalStaff}
                   </p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-full">
+                <div className="p-3 bg-blue-100 rounded-sm">
                   <Users className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
@@ -111,7 +111,7 @@ export default function AdminStaffOverview() {
                     {activeStaff}
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-full">
+                <div className="p-3 bg-green-100 rounded-sm">
                   <UserCheck className="h-6 w-6 text-green-600" />
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function AdminStaffOverview() {
                     {businessBased}
                   </p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-full">
+                <div className="p-3 bg-purple-100 rounded-sm">
                   <Briefcase className="h-6 w-6 text-purple-600" />
                 </div>
               </div>
@@ -147,7 +147,7 @@ export default function AdminStaffOverview() {
                     {globalFreelancers}
                   </p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-full">
+                <div className="p-3 bg-orange-100 rounded-sm">
                   <Globe className="h-6 w-6 text-orange-600" />
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function AdminStaffOverview() {
                     <TableRow key={staff.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                          <div className="h-8 w-8 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                             {staff.name.charAt(0)}
                           </div>
                           <span className="font-medium">{staff.name}</span>
@@ -226,13 +226,12 @@ export default function AdminStaffOverview() {
                       <TableCell>{staff.totalBookings || 0}</TableCell>
                       <TableCell>
                         <span
-                          className={`font-medium ${
-                            staff.completionRate >= 80
+                          className={`font-medium ${staff.completionRate >= 80
                               ? "text-green-600"
                               : staff.completionRate >= 50
-                              ? "text-yellow-600"
-                              : "text-red-600"
-                          }`}>
+                                ? "text-yellow-600"
+                                : "text-red-600"
+                            }`}>
                           {staff.completionRate || 0}%
                         </span>
                       </TableCell>

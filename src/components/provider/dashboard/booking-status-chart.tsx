@@ -45,7 +45,7 @@ const BookingStatusChart = ({ data, isLoading }: BookingStatusChartProps) => {
 
   if (isLoading) {
     return (
-      <Card className="flex flex-col h-full shadow-sm border rounded-md">
+      <Card className="flex flex-col h-full shadow-sm border rounded-sm">
         <CardHeader className="items-center pb-0">
           <CardTitle>Booking Status</CardTitle>
           <CardDescription>Distribution of booking statuses</CardDescription>
@@ -62,7 +62,7 @@ const BookingStatusChart = ({ data, isLoading }: BookingStatusChartProps) => {
 
   if (chartData.length === 0) {
     return (
-      <Card className="flex flex-col h-full shadow-sm border rounded-md">
+      <Card className="flex flex-col h-full shadow-sm border rounded-sm">
         <CardHeader className="items-center pb-0">
           <CardTitle>Booking Status</CardTitle>
           <CardDescription>No bookings to display</CardDescription>
@@ -81,7 +81,7 @@ const BookingStatusChart = ({ data, isLoading }: BookingStatusChartProps) => {
   }
 
   return (
-    <Card className="flex flex-col h-full shadow-sm border rounded-md">
+    <Card className="flex flex-col h-full shadow-sm border rounded-sm">
       <CardHeader className="items-center pb-0">
         <CardTitle>Booking Distribution</CardTitle>
         <CardDescription>Current status of all bookings</CardDescription>

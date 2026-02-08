@@ -59,7 +59,7 @@ export function NavUser({
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="h-8 w-8 rounded-md grayscale">
+              <Avatar className="h-8 w-8 rounded-sm grayscale">
                 <AvatarImage
                   src={
                     user.avatar ||
@@ -67,7 +67,7 @@ export function NavUser({
                   }
                   alt={user.name}
                 />
-                <AvatarFallback className="rounded-md">
+                <AvatarFallback className="rounded-sm">
                   {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                 </AvatarFallback>
               </Avatar>
@@ -86,7 +86,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-md"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-sm"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}>
@@ -95,11 +95,10 @@ export function NavUser({
                 <div className="px-2 py-1.5">
                   <Badge
                     variant="outline"
-                    className={`flex items-center w-fit gap-1.5 px-2.5 py-1 text-xs font-medium ${
-                      isPaidPlan
+                    className={`flex items-center w-fit gap-1.5 px-2.5 py-1 text-xs font-medium ${isPaidPlan
                         ? "text-yellow-600 border-yellow-600 bg-yellow-50"
                         : "text-gray-600 border-gray-200"
-                    }`}>
+                      }`}>
                     {isPaidPlan && <BadgeCheckIcon className="h-3.5 w-3.5" />}
                     {subscriptionStatus === "free" || !subscriptionStatus
                       ? "Free Plan"
@@ -109,7 +108,7 @@ export function NavUser({
               )}
 
               <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-md grayscale">
+                <Avatar className="h-8 w-8 rounded-sm grayscale">
                   <AvatarImage
                     src={
                       user.avatar ||
@@ -117,7 +116,7 @@ export function NavUser({
                     }
                     alt={user.name}
                   />
-                  <AvatarFallback className="rounded-md">
+                  <AvatarFallback className="rounded-sm">
                     {user.name ? user.name.charAt(0).toUpperCase() : "U"}
                   </AvatarFallback>
                 </Avatar>

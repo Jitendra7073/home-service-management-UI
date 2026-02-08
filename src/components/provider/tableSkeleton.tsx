@@ -27,12 +27,12 @@ const TableSkeleton = ({
 
         <div className="flex gap-2">
           <Skeleton className="h-9 w-56" />
-          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-sm" />
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-md border overflow-hidden">
+      <div className="rounded-sm border overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

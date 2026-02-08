@@ -277,7 +277,7 @@ export default function ProviderApplications() {
                 {application.coverLetter && (
                   <div>
                     <p className="text-sm font-medium mb-2">Cover Letter:</p>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap bg-muted/50 rounded-lg p-3">
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap bg-muted/50 rounded-sm p-3">
                       {application.coverLetter}
                     </p>
                   </div>
@@ -285,7 +285,7 @@ export default function ProviderApplications() {
 
                 {application.status === "REJECTED" &&
                   application.rejectionReason && (
-                    <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                    <div className="rounded-sm border border-destructive/50 bg-destructive/10 p-4">
                       <p className="text-sm font-medium text-destructive mb-1">
                         Rejection Reason:
                       </p>
@@ -296,7 +296,7 @@ export default function ProviderApplications() {
                   )}
 
                 {application.status === "APPROVED" && (
-                  <div className="rounded-lg border border-green-500/50 bg-green-500/10 p-4">
+                  <div className="rounded-sm border border-green-500/50 bg-green-500/10 p-4">
                     <p className="text-sm font-medium text-green-700 dark:text-green-400">
                       This staff member has been approved and can now receive
                       bookings from your business.

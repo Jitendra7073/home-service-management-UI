@@ -263,7 +263,7 @@ export function PlanForm({ initialData }: { initialData?: Plan }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between rounded-md border p-4 shadow-sm">
+            <div className="flex items-center justify-between rounded-sm border p-4 shadow-sm">
               <div className="space-y-0.5">
                 <Label>Active Status</Label>
                 <p className="text-sm text-muted-foreground">

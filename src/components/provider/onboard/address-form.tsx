@@ -41,7 +41,7 @@ const AddressSchema = z.object({
 type AddressFormValues = z.infer<typeof AddressSchema>;
 
 // Require field symbol
-const RequireField = () =>{
+const RequireField = () => {
   return <span className="text-red-500 -ml-1">*</span>;
 }
 const AddressForm = ({ onNext }: { onNext: () => void }) => {
@@ -91,7 +91,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
   const mapImg = `/images/p/world.png`;
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-md md:shadow-md overflow-hidden sm:border">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-sm md:shadow-md overflow-hidden sm:border">
       {/* MAP HEADER */}
       <div className="relative w-full h-70">
         <img
@@ -185,7 +185,7 @@ const AddressForm = ({ onNext }: { onNext: () => void }) => {
               )}
             />
 
-              {/* Address type */}
+            {/* Address type */}
             <FormField
               control={form.control}
               name="type"

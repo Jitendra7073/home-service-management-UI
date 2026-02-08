@@ -44,9 +44,8 @@ export function ServiceCard({
 }: ServiceCardProps) {
   return (
     <Card
-      className={`overflow-hidden p-0 w-full gap-0 border-0 hover:shadow-md transition-shadow ${
-        isRestricted ? "border-1 border-destructive/50" : ""
-      } ${!isActive ? "opacity-60" : ""} ${className || ""}`}>
+      className={`overflow-hidden p-0 w-full gap-0 border-0 hover:shadow-md transition-shadow ${isRestricted ? "border-1 border-destructive/50" : ""
+        } ${!isActive ? "opacity-60" : ""} ${className || ""}`}>
       <CardHeader className="bg-gray-800 p-5 text-white gap-0">
         <div className="flex items-start justify-between">
           <CardTitle className="text-lg font-semibold capitalize">
@@ -97,14 +96,14 @@ export function ServiceCard({
         </div>
 
         {isRestricted && restrictionReason && (
-          <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3">
+          <div className="rounded-sm border border-destructive/20 bg-destructive/10 p-3">
             <p className="mb-1 text-xs font-semibold text-destructive">
               Restriction Reason
             </p>
             <p className="text-sm text-destructive">
               {restrictionReason &&
                 restrictionReason.charAt(0).toUpperCase() +
-                  restrictionReason.slice(1)}
+                restrictionReason.slice(1)}
             </p>
           </div>
         )}
@@ -126,7 +125,7 @@ export function ServiceCard({
               onClick={onUnblock}
               disabled={isActionPending}>
               {isActionPending ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
               ) : (
                 <CheckCircle className="h-4 w-4" />
               )}
@@ -140,7 +139,7 @@ export function ServiceCard({
               onClick={onBlock}
               disabled={isActionPending}>
               {isActionPending ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-sm border-2 border-current border-t-transparent" />
               ) : (
                 <Ban className="h-4 w-4" />
               )}

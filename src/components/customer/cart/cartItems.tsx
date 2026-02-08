@@ -52,7 +52,7 @@ const CartItems: React.FC<CartItemProps> = ({
 
   if (isLoading || isPending) {
     return (
-      <div className="bg-white rounded-md p-4 border mb-3">
+      <div className="bg-white rounded-sm p-4 border mb-3">
         <div className="flex justify-between items-start ">
           <div className="flex-1 space-y-3">
             <div className="h-4 bg-gray-200 rounded w-3/4  animate-pulse"></div>
@@ -67,7 +67,7 @@ const CartItems: React.FC<CartItemProps> = ({
 
   if (isError) {
     return (
-      <div className="bg-pink-50 border border-pink-200 rounded-md p-5 text-center space-y-2 mb-3">
+      <div className="bg-pink-50 border border-pink-200 rounded-sm p-5 text-center space-y-2 mb-3">
         <p className="text-pink-800 font-semibold text-lg">
           Oh no… your cart is hiding!
         </p>
@@ -82,11 +82,10 @@ const CartItems: React.FC<CartItemProps> = ({
   return (
     <div className="space-y-4 mb-6">
       <div
-        className={`space-y-4 ${
-          cartItems.length > 3 ? "max-h-64 overflow-y-auto pr-2" : ""
-        }`}>
+        className={`space-y-4 ${cartItems.length > 3 ? "max-h-64 overflow-y-auto pr-2" : ""
+          }`}>
         {cartItems.map((item: any, index: any) => (
-          <div key={index} className="bg-gray-50 rounded-md p-4 border">
+          <div key={index} className="bg-gray-50 rounded-sm p-4 border">
             <div className="flex justify-between items-start ">
               <div className="flex flex-col gap-2">
                 <h3 className="font-semibold text-gray-800">
@@ -117,7 +116,7 @@ const CartItems: React.FC<CartItemProps> = ({
                         removingItemId !== item.id && clickHandle(item.id)
                       }>
                       {removingItemId === item.id ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+                        <div className="h-4 w-4 animate-spin rounded-sm border-2 border-red-500 border-t-transparent" />
                       ) : (
                         <X className="w-4 h-4 text-red-500 hover:text-red-600 cursor-pointer" />
                       )}

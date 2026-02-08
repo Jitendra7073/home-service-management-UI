@@ -375,11 +375,10 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                     variant="outline"
                     size="sm"
                     disabled={!!originalData.restrictionRequestMessage}
-                    className={`bg-background text-destructive ${
-                      !!originalData.restrictionRequestMessage
-                        ? "bg-destructive/50 text-destructive/50"
-                        : ""
-                    } ml-4`}>
+                    className={`bg-background text-destructive ${!!originalData.restrictionRequestMessage
+                      ? "bg-destructive/50 text-destructive/50"
+                      : ""
+                      } ml-4`}>
                     {originalData.restrictionRequestMessage
                       ? "Request Pending"
                       : "Request Access"}
@@ -423,7 +422,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-3">
           <div className="lg:col-span-2 space-y-4">
-            <Card className="rounded-md shadow-sm border-gray-200">
+            <Card className="rounded-sm shadow-sm border-gray-200">
               <CardHeader>
                 <CardTitle className="text-base">Service Information</CardTitle>
               </CardHeader>
@@ -490,7 +489,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                 ) : (
                   <div className="prose max-w-none">
                     <div className="flex gap-6 mb-6">
-                      <div className="flex items-center gap-2 text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">
+                      <div className="flex items-center gap-2 text-gray-600 bg-gray-100 px-3 py-1 rounded-sm text-sm font-semibold">
                         <Clock className="w-4 h-4" />{" "}
                         {
                           (originalData.durationInMinutes / 60)
@@ -505,7 +504,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                         }
                         M
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-sm font-semibold">
+                      <div className="flex items-center gap-2 text-gray-600 bg-gray-100 px-3 py-1 rounded-sm text-sm font-semibold">
                         <Banknote className="w-4 h-4" /> {originalData.currency}{" "}
                         {originalData.price}
                       </div>
@@ -521,7 +520,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
               </CardContent>
             </Card>
 
-            <Card className="rounded-md border-gray-200 overflow-hidden">
+            <Card className="rounded-sm border-gray-200 overflow-hidden">
               <CardHeader>
                 <CardTitle className="text-base">Media Gallery</CardTitle>
               </CardHeader>
@@ -551,7 +550,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2 row-span-2 h-[300px] rounded-md overflow-hidden border">
+                    <div className="md:col-span-2 row-span-2 h-[300px] rounded-sm overflow-hidden border">
                       <img
                         src={originalData.coverImage}
                         className="w-full h-full object-cover hover:scale-105 transition duration-500"
@@ -562,7 +561,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                       {originalData.images.slice(0, 2).map((img, i) => (
                         <div
                           key={i}
-                          className="rounded-md overflow-hidden border h-full">
+                          className="rounded-sm overflow-hidden border h-full">
                           <img
                             src={img}
                             className="w-full h-full object-cover"
@@ -578,17 +577,16 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
           </div>
 
           <div className="space-y-4">
-            <Card className="rounded-md border-gray-200">
+            <Card className="rounded-sm border-gray-200">
               <CardHeader>
                 <CardTitle className="text-base">Availability Status</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between p-3 rounded-md border">
+                <div className="flex items-center justify-between p-3 rounded-sm border">
                   <div className="flex items-center gap-3">
                     <ShieldCheck
-                      className={`w-5 h-5 ${
-                        formData.isActive ? "text-green-600" : "text-gray-400"
-                      }`}
+                      className={`w-5 h-5 ${formData.isActive ? "text-green-600" : "text-gray-400"
+                        }`}
                     />
                     <div>
                       <p className="font-medium text-sm">
@@ -609,7 +607,7 @@ export default function ServiceDashboard({ serviceId }: { serviceId: string }) {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-gray-50 border-dashed border-gray-200 shadow-none rounded-md">
+            <Card className="bg-gray-50 border-dashed border-gray-200 shadow-none rounded-sm">
               <CardContent className="pt-6 space-y-4">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-500">Service ID</span>

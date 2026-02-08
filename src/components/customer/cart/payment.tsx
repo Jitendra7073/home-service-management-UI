@@ -68,7 +68,7 @@ const Payment: React.FC<PaymentProps> = ({ cartData, selectedAddress }) => {
       <button
         onClick={handleStripeCheckout}
         disabled={loading}
-        className="w-full py-3 rounded-md bg-gray-800 text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 transition disabled:bg-gray-400">
+        className="w-full py-3 rounded-sm bg-gray-800 text-white font-semibold flex items-center justify-center gap-2 hover:bg-gray-900 transition disabled:bg-gray-400">
         <CreditCard className="w-5 h-5" />
         {loading ? "Processing..." : "Proceed to Secure Payment"}
       </button>

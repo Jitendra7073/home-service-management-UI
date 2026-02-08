@@ -20,7 +20,12 @@ export function useCustomerBookings(page = 1, limit = 20) {
       const res = await fetch(
         `/api/v1/customer/bookings?page=${page}&limit=${limit}`,
       );
-      if (!res.ok) throw new Error("Failed to fetch bookings");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch bookings",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.BOOKINGS,
@@ -47,7 +52,12 @@ export function useProvidersList(page = 1, limit = 20, filters?: any) {
       const res = await fetch(
         `/api/v1/customer/providers?${params.toString()}`,
       );
-      if (!res.ok) throw new Error("Failed to fetch providers");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch providers",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.PROVIDERS,
@@ -63,7 +73,12 @@ export function useProviderDetails(providerId: string) {
     queryKey: queryKeys.customer.providerDetails(providerId),
     queryFn: async () => {
       const res = await fetch(`/api/v1/customer/providers/${providerId}`);
-      if (!res.ok) throw new Error("Failed to fetch provider");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch provider",
+        );
+      }
       return res.json();
     },
     enabled: !!providerId,
@@ -84,7 +99,14 @@ export function useProviderBookings(page = 1, limit = 20) {
       const res = await fetch(
         `/api/v1/provider/bookings?page=${page}&limit=${limit}`,
       );
-      if (!res.ok) throw new Error("Failed to fetch provider bookings");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error ||
+          errorData.msg ||
+          "Failed to fetch provider bookings",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.BOOKINGS,
@@ -100,7 +122,12 @@ export function useProviderServices() {
     queryKey: queryKeys.provider.services,
     queryFn: async () => {
       const res = await fetch("/api/v1/provider/service");
-      if (!res.ok) throw new Error("Failed to fetch services");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch services",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.SERVICES,
@@ -116,7 +143,12 @@ export function useProviderSlots() {
     queryKey: queryKeys.provider.slots,
     queryFn: async () => {
       const res = await fetch("/api/v1/provider/slots");
-      if (!res.ok) throw new Error("Failed to fetch slots");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch slots",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.SLOTS,
@@ -132,7 +164,14 @@ export function useSubscriptionPlans() {
     queryKey: queryKeys.provider.subscription,
     queryFn: async () => {
       const res = await fetch("/api/v1/provider/subscription");
-      if (!res.ok) throw new Error("Failed to fetch subscription plans");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error ||
+          errorData.msg ||
+          "Failed to fetch subscription plans",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.SUBSCRIPTION,
@@ -150,7 +189,12 @@ export function useUserProfile() {
     queryKey: queryKeys.common.profile,
     queryFn: async () => {
       const res = await fetch("/api/common/profile");
-      if (!res.ok) throw new Error("Failed to fetch profile");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch profile",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.PROFILE,
@@ -166,7 +210,12 @@ export function useUserAddresses() {
     queryKey: queryKeys.common.addresses,
     queryFn: async () => {
       const res = await fetch("/api/v1/common/addresses");
-      if (!res.ok) throw new Error("Failed to fetch addresses");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch addresses",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.PROFILE,
@@ -182,7 +231,12 @@ export function useCategories() {
     queryKey: queryKeys.common.categories,
     queryFn: async () => {
       const res = await fetch("/api/v1/common/categories");
-      if (!res.ok) throw new Error("Failed to fetch categories");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch categories",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.CATEGORIES,
@@ -198,7 +252,12 @@ export function useNotifications() {
     queryKey: queryKeys.common.notifications,
     queryFn: async () => {
       const res = await fetch("/api/v1/common/notifications");
-      if (!res.ok) throw new Error("Failed to fetch notifications");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || errorData.msg || "Failed to fetch notifications",
+        );
+      }
       return res.json();
     },
     ...QUERY_CACHE_CONFIG.NOTIFICATIONS,

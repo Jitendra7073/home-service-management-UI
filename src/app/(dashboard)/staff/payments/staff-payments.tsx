@@ -180,36 +180,32 @@ export function StaffPaymentsClient() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2 rounded-lg ${
-                      stripeData.hasConnected
+                    className={`p-2 rounded-sm ${stripeData.hasConnected
                         ? "bg-green-100"
                         : "bg-amber-100"
-                    }`}
+                      }`}
                   >
                     <CreditCard
-                      className={`w-6 h-6 ${
-                        stripeData.hasConnected
+                      className={`w-6 h-6 ${stripeData.hasConnected
                           ? "text-green-600"
                           : "text-amber-600"
-                      }`}
+                        }`}
                     />
                   </div>
                   <div>
                     <h3
-                      className={`font-semibold ${
-                        stripeData.hasConnected
+                      className={`font-semibold ${stripeData.hasConnected
                           ? "text-green-900"
                           : "text-amber-900"
-                      }`}
+                        }`}
                     >
                       Stripe Account Status
                     </h3>
                     <p
-                      className={`text-sm ${
-                        stripeData.hasConnected
+                      className={`text-sm ${stripeData.hasConnected
                           ? "text-green-700"
                           : "text-amber-700"
-                      }`}
+                        }`}
                     >
                       {stripeData.hasConnected
                         ? "Connected - Ready to receive payments"
@@ -291,7 +287,7 @@ export function StaffPaymentsClient() {
                   return (
                     <div
                       key={payment.id}
-                      className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      className="border rounded-sm p-4 hover:shadow-md transition-shadow">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
@@ -302,7 +298,7 @@ export function StaffPaymentsClient() {
                               variant="outline"
                               className={
                                 STATUS_COLORS[
-                                  payment.status as keyof typeof STATUS_COLORS
+                                payment.status as keyof typeof STATUS_COLORS
                                 ]
                               }>
                               <StatusIcon className="w-3 h-3 mr-1" />
@@ -320,8 +316,8 @@ export function StaffPaymentsClient() {
                               <span>
                                 {payment.paidAt
                                   ? new Date(
-                                      payment.paidAt,
-                                    ).toLocaleDateString()
+                                    payment.paidAt,
+                                  ).toLocaleDateString()
                                   : "Pending"}
                               </span>
                             </div>

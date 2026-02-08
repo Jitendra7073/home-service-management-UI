@@ -45,12 +45,12 @@ export function PlanFormSkeleton() {
           </div>
 
           {/* Switch */}
-          <div className="flex items-center justify-between rounded-md border p-4 shadow-sm">
+          <div className="flex items-center justify-between rounded-sm border p-4 shadow-sm">
             <div className="space-y-2">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-3 w-64" />
             </div>
-            <Skeleton className="h-6 w-12 rounded-md" />
+            <Skeleton className="h-6 w-12 rounded-sm" />
           </div>
 
           <div className="border-t" />

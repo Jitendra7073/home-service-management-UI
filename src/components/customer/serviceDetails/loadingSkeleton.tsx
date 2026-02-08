@@ -7,7 +7,7 @@ function ServiceDetailSkeleton() {
         {/* LEFT SECTION */}
         <div className="lg:col-span-2 space-y-6">
           {/* HERO SECTION */}
-          <div className="bg-muted rounded-md p-8 h-64 border border-border">
+          <div className="bg-muted rounded-sm p-8 h-64 border border-border">
             <div className="h-10 w-2/3 bg-muted-foreground/20 rounded mb-4"></div>
             <div className="h-4 w-1/2 bg-muted-foreground/20 rounded"></div>
 
@@ -15,13 +15,13 @@ function ServiceDetailSkeleton() {
               {Array(4)
                 .fill("")
                 .map((_, i) => (
-                  <div key={i} className="bg-gray-300 h-16 rounded-md"></div>
+                  <div key={i} className="bg-gray-300 h-16 rounded-sm"></div>
                 ))}
             </div>
           </div>
 
           {/* BUSINESS INFO */}
-          <div className="bg-white rounded-md p-8 border border-gray-200">
+          <div className="bg-white rounded-sm p-8 border border-gray-200">
             <div className="h-7 w-56 bg-gray-300 rounded mb-6"></div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -31,12 +31,12 @@ function ServiceDetailSkeleton() {
                 <div className="h-4 w-56 bg-gray-200 rounded"></div>
               </div>
 
-              <div className="h-32 bg-gray-200 rounded-md"></div>
+              <div className="h-32 bg-gray-200 rounded-sm"></div>
             </div>
           </div>
 
           {/* DATE SELECTOR */}
-          <div className="bg-white rounded-md p-8 border border-gray-200">
+          <div className="bg-white rounded-sm p-8 border border-gray-200">
             <div className="h-7 w-48 bg-gray-300 rounded mb-6"></div>
 
             <div className="flex gap-3 overflow-x-auto">
@@ -45,13 +45,13 @@ function ServiceDetailSkeleton() {
                 .map((_, i) => (
                   <div
                     key={i}
-                    className="h-12 w-28 min-w-[7rem] bg-muted rounded-md border border-border"></div>
+                    className="h-12 w-28 min-w-[7rem] bg-muted rounded-sm border border-border"></div>
                 ))}
             </div>
           </div>
 
           {/* TIME SLOTS GRID */}
-          <div className="bg-card rounded-md p-8 border border-border">
+          <div className="bg-card rounded-sm p-8 border border-border">
             <div className="h-7 w-40 bg-muted-foreground/20 rounded mb-6"></div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -60,7 +60,7 @@ function ServiceDetailSkeleton() {
                 .map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-muted rounded-md border border-border"></div>
+                    className="h-16 bg-muted rounded-sm border border-border"></div>
                 ))}
             </div>
           </div>
@@ -68,7 +68,7 @@ function ServiceDetailSkeleton() {
 
         {/* RIGHT SECTION - SUMMARY */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-md p-6 border border-gray-200 sticky top-24 space-y-6">
+          <div className="bg-white rounded-sm p-6 border border-gray-200 sticky top-24 space-y-6">
             <div className="h-7 w-40 bg-gray-300 rounded"></div>
 
             {/* Summary Fields */}
@@ -79,10 +79,10 @@ function ServiceDetailSkeleton() {
             </div>
 
             {/* Quantity */}
-            <div className="h-10 bg-muted-foreground/20 rounded-md mt-4"></div>
+            <div className="h-10 bg-muted-foreground/20 rounded-sm mt-4"></div>
 
             {/* Selected slot box */}
-            <div className="h-16 bg-muted-foreground/20 rounded-md"></div>
+            <div className="h-16 bg-muted-foreground/20 rounded-sm"></div>
 
             {/* Price rows */}
             <div className="space-y-2">
@@ -91,10 +91,10 @@ function ServiceDetailSkeleton() {
             </div>
 
             {/* Total */}
-            <div className="h-12 bg-gray-300 rounded-md"></div>
+            <div className="h-12 bg-gray-300 rounded-sm"></div>
 
             {/* Benefits box */}
-            <div className="h-16 bg-muted rounded-md border border-border"></div>
+            <div className="h-16 bg-muted rounded-sm border border-border"></div>
           </div>
         </div>
       </div>

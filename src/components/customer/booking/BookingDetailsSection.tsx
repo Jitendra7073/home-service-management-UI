@@ -24,12 +24,12 @@ import { useQuery } from "@tanstack/react-query";
 
 const CancellationSkeleton = () => {
   return (
-    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-md shadow-sm animate-pulse">
+    <div className="mb-6 bg-gradient-to-r from-red-50 to-orange-50  p-4 rounded-sm shadow-sm animate-pulse">
       <div className="flex items-start gap-3">
         <div className="flex-1 space-y-4">
           <div className="flex justify-start items-center gap-3">
             {/* Icon skeleton */}
-            <div className="w-6 h-6 rounded-full bg-red-200 mt-1" />
+            <div className="w-6 h-6 rounded-sm bg-red-200 mt-1" />
             {/* Title */}
             <div className="h-4 w-40 bg-red-200 rounded" />
           </div>
@@ -39,7 +39,7 @@ const CancellationSkeleton = () => {
           <div className="h-3 w-2/3 bg-red-100 rounded" />
 
           {/* Amount card */}
-          <div className="bg-white rounded-md p-3 border border-red-200 space-y-3">
+          <div className="bg-white rounded-sm p-3 border border-red-200 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-2">
@@ -52,7 +52,7 @@ const CancellationSkeleton = () => {
             {/* Refund status row */}
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
               <div className="h-3 w-24 bg-gray-200 rounded" />
-              <div className="h-6 w-20 bg-gray-300 rounded-full" />
+              <div className="h-6 w-20 bg-gray-300 rounded-sm" />
             </div>
           </div>
 
@@ -190,7 +190,7 @@ export default function BookingDetailsSection({
       )}
 
       {booking.bookingStatus === "CANCELLED" && cancellation && (
-        <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-md ">
+        <div className=" bg-linear-to-r from-red-50 to-orange-50  p-4 rounded-sm ">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <div className="flex justify-start gap-2 items-center mb-2 ">
@@ -206,7 +206,7 @@ export default function BookingDetailsSection({
               </p>
 
               {cancellation && cancellation.refundAmount > 0 && (
-                <div className="bg-white rounded-md p-3 border border-red-200">
+                <div className="bg-white rounded-sm p-3 border border-red-200">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div>
                       <p className="text-xs text-gray-500 mb-1">
@@ -317,7 +317,7 @@ export default function BookingDetailsSection({
       {/* ------------------------- PENDING PAYMENT ------------------------- */}
       {isPendingPayment ? (
         <div className="w-full">
-          <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-md">
+          <div className="p-5 bg-yellow-50 border border-yellow-200 rounded-sm">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h5 className="font-semibold text-yellow-800 mb-1">
@@ -354,7 +354,7 @@ export default function BookingDetailsSection({
               {/* SERVICE DETAILS */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                  <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
+                  <div className="w-1 h-4 bg-gray-700 rounded-sm"></div>
                   Service Details
                 </h4>
 
@@ -384,7 +384,7 @@ export default function BookingDetailsSection({
               {/* BOOKING INFO */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                  <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
+                  <div className="w-1 h-4 bg-gray-700 rounded-sm"></div>
                   Booking Information
                 </h4>
 
@@ -431,7 +431,7 @@ export default function BookingDetailsSection({
               {/* BUSINESS DETAILS */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                  <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
+                  <div className="w-1 h-4 bg-gray-700 rounded-sm"></div>
                   Business Details
                 </h4>
 
@@ -465,51 +465,51 @@ export default function BookingDetailsSection({
               {(booking.assignedStaff ||
                 (booking.trackingStatus &&
                   booking.trackingStatus !== "NOT_STARTED")) && (
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                    <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
-                    Service Tracking
-                  </h4>
-                  <div className="space-y-3 pl-3">
-                    {booking.assignedStaff && (
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">
-                          Assigned Staff
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold uppercase">
-                            {booking.assignedStaff.name.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {booking.assignedStaff.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {booking.assignedStaff.mobile}
-                            </p>
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
+                      <div className="w-1 h-4 bg-gray-700 rounded-sm"></div>
+                      Service Tracking
+                    </h4>
+                    <div className="space-y-3 pl-3">
+                      {booking.assignedStaff && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">
+                            Assigned Staff
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-sm bg-blue-100 flex items-center justify-center text-blue-700 font-bold uppercase">
+                              {booking.assignedStaff.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {booking.assignedStaff.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {booking.assignedStaff.mobile}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {booking.trackingStatus && (
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">
-                          Current Status
-                        </p>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                          {booking.trackingStatus.replace(/_/g, " ")}
-                        </span>
-                      </div>
-                    )}
+                      {booking.trackingStatus && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">
+                            Current Status
+                          </p>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-sm text-xs font-medium bg-indigo-100 text-indigo-800">
+                            {booking.trackingStatus.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* ADDRESS DETAILS */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                  <div className="w-1 h-4 bg-gray-700 rounded-full"></div>
+                  <div className="w-1 h-4 bg-gray-700 rounded-sm"></div>
                   Service Address
                 </h4>
 
@@ -568,7 +568,7 @@ export default function BookingDetailsSection({
 
                         {/* Show reason if cancel is not allowed */}
                         {!actions.canCancel && actions.cancelReason && (
-                          <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-md text-xs text-orange-800">
+                          <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-sm text-xs text-orange-800">
                             <AlertTriangle className="w-3.5 h-3.5" />
                             <span className="font-medium">{actions.cancelReason}</span>
                           </div>
@@ -660,20 +660,19 @@ function CustomerTrackingProgress({
   const displayPercent = isCancelled
     ? (currentIndex / (TRACKING_STEPS.length - 1)) * 100
     : TRACKING_STEPS.length <= 1
-    ? 0
-    : (currentIndex / (TRACKING_STEPS.length - 1)) * 100;
+      ? 0
+      : (currentIndex / (TRACKING_STEPS.length - 1)) * 100;
 
   return (
     <div className="w-full py-3">
       <div className="relative">
         {/* base line - always gray */}
-        <div className="absolute left-0 right-0 top-[6px] h-[2px] bg-gray-200 rounded-full" />
+        <div className="absolute left-0 right-0 top-[6px] h-[2px] bg-gray-200 rounded-sm" />
 
         {/* active line - green for active, red line for cancelled */}
         <div
-          className={`absolute left-0 top-[6px] h-[2px] rounded-full transition-all duration-700 ease-out ${
-            isCancelled ? "bg-red-400" : "bg-green-500"
-          }`}
+          className={`absolute left-0 top-[6px] h-[2px] rounded-sm transition-all duration-700 ease-out ${isCancelled ? "bg-red-400" : "bg-green-500"
+            }`}
           style={{ width: `${displayPercent}%` }}
         />
 
@@ -690,14 +689,13 @@ function CustomerTrackingProgress({
                 {/* small connector dot */}
                 <div
                   className={`
-                    z-10 w-3 h-3 rounded-full border
+                    z-10 w-3 h-3 rounded-sm border
                     transition-all duration-300
-                    ${
-                      isCancelled
-                        ? done
-                          ? "bg-red-400 border-red-400"
-                          : "bg-white border-gray-300"
-                        : done
+                    ${isCancelled
+                      ? done
+                        ? "bg-red-400 border-red-400"
+                        : "bg-white border-gray-300"
+                      : done
                         ? "bg-green-500 border-green-500"
                         : "bg-white border-gray-300"
                     }
@@ -711,12 +709,11 @@ function CustomerTrackingProgress({
                     mt-2 text-[10px] sm:text-xs font-medium
                     text-center leading-tight
                     transition-colors duration-300
-                    ${
-                      isCancelled
-                        ? done
-                          ? "text-red-700"
-                          : "text-gray-500"
-                        : done
+                    ${isCancelled
+                      ? done
+                        ? "text-red-700"
+                        : "text-gray-500"
+                      : done
                         ? "text-green-700"
                         : "text-gray-500"
                     }
@@ -736,7 +733,7 @@ function CustomerTrackingProgress({
           {isCancelled && (
             <div className="flex flex-col items-center flex-1 min-w-0 px-1">
               {/* X icon for cancellation */}
-              <div className="z-10 w-3 h-3 rounded-full bg-red-600 border-2 border-red-600 flex items-center justify-center">
+              <div className="z-10 w-3 h-3 rounded-sm bg-red-600 border-2 border-red-600 flex items-center justify-center">
                 <X className="w-2 h-2 text-white" strokeWidth={3} />
               </div>
 
@@ -750,7 +747,7 @@ function CustomerTrackingProgress({
 
         {/* Cancellation message - show below stepper when cancelled */}
         {isCancelled && (
-          <div className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
+          <div className="mt-4 flex items-center justify-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-sm">
             <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
             <p className="text-xs sm:text-sm font-medium text-red-800 text-center">
               Service was cancelled at{" "}
@@ -758,9 +755,9 @@ function CustomerTrackingProgress({
                 {current === "NOT_STARTED"
                   ? "the beginning"
                   : current
-                      .charAt(0)
-                      .toUpperCase() +
-                    current.toLocaleLowerCase().slice(1).replaceAll("_", " ").toLowerCase()}
+                    .charAt(0)
+                    .toUpperCase() +
+                  current.toLocaleLowerCase().slice(1).replaceAll("_", " ").toLowerCase()}
               </span>{" "}
               stage
             </p>

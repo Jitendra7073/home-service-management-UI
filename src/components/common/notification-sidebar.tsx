@@ -87,7 +87,7 @@ const NotificationItem = ({
           e.stopPropagation(); // Prevent drag interference if any
           onDismiss(notify.id);
         }}
-        className="ml-2 text-gray-400 hover:text-gray-600 shrink-0 p-1 rounded-full hover:bg-gray-100 transition-colors pointer-events-auto">
+        className="ml-2 text-gray-400 hover:text-gray-600 shrink-0 p-1 rounded-sm hover:bg-gray-100 transition-colors pointer-events-auto">
         <X size={16} />
       </button>
     </motion.div>
@@ -167,7 +167,7 @@ const NotificationSideBar = () => {
           <Bell size={26} className="text-primary" />
 
           {unreadNotifications.length > 0 && (
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-xs flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-sm bg-red-600 text-white text-xs flex items-center justify-center">
               {unreadNotifications.length}
             </span>
           )}
@@ -207,7 +207,7 @@ const NotificationSideBar = () => {
             <NotificationSkeleton />
           ) : isError ? (
             <div className="flex flex-col justify-center items-center py-12">
-              <div className="p-3 bg-red-100 rounded-full mb-3">
+              <div className="p-3 bg-red-100 rounded-sm mb-3">
                 <AlertTriangle className="text-red-600" size={24} />
               </div>
               <p className="text-center text-sm text-gray-600">

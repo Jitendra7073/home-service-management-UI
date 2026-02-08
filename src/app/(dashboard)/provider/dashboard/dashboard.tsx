@@ -99,7 +99,7 @@ const DashboardComponents = () => {
       {/* MAIN CONTAINER */}
       <div className="max-w-7xl mx-auto md:px-6 py-6 md:py-8 space-y-8">
         {/* HEADER BAR */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border bg-card rounded-xl p-2 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border bg-card rounded-sm p-2 shadow-sm">
           {/* LEFT SIDE */}
           <Welcome
             username={data?.user?.name}
@@ -146,13 +146,12 @@ const DashboardComponents = () => {
         <section className="space-y-8">
           {/* TOP GRID TABLES */}
           <div
-            className={`grid gap-6 ${
-              !showServices && !showFeedback
+            className={`grid gap-6 ${!showServices && !showFeedback
                 ? "hidden"
                 : showServices && showFeedback
-                ? "grid-cols-1 xl:grid-cols-2"
-                : "grid-cols-1"
-            }`}>
+                  ? "grid-cols-1 xl:grid-cols-2"
+                  : "grid-cols-1"
+              }`}>
             {showServices && <ServicesTable />}
 
             {showFeedback && <FeedbackTable />}
@@ -166,7 +165,7 @@ const DashboardComponents = () => {
 
           {/* EMPTY STATE */}
           {!isPlanActive && (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 p-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-sm border border-dashed bg-muted/30 p-12 text-center">
               <h3 className="text-lg font-semibold">
                 No Dashboard Data Available
               </h3>

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function BookingSkeleton() {
     return (
-        <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-sm border border-gray-200 overflow-hidden">
             <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center justify-between">
 

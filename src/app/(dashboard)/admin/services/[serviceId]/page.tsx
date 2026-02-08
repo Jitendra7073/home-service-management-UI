@@ -294,7 +294,7 @@ export default function ServiceDetailsPage() {
                   {service.images.map((image, index) => (
                     <div
                       key={index}
-                      className="relative aspect-video rounded-md overflow-hidden border">
+                      className="relative aspect-video rounded-sm overflow-hidden border">
                       {/* Using img tag since Next.js Image requires domain config */}
                       <img
                         src={image}
@@ -320,7 +320,7 @@ export default function ServiceDetailsPage() {
                 <p className="mt-1 leading-relaxed">
                   {service.description &&
                     service.description.charAt(0).toUpperCase() +
-                      service.description.slice(1)}
+                    service.description.slice(1)}
                 </p>
               </div>
 
@@ -425,13 +425,13 @@ export default function ServiceDetailsPage() {
                       <p className="font-semibold text-sm mb-1">
                         Appeal from Provider:
                       </p>
-                      <p className="text-sm text-muted-foreground p-3 bg-secondary/50 rounded-md border italic">
+                      <p className="text-sm text-muted-foreground p-3 bg-secondary/50 rounded-sm border italic">
                         "
                         {service.restrictionRequestMessage &&
                           service.restrictionRequestMessage
                             .charAt(0)
                             .toUpperCase() +
-                            service.restrictionRequestMessage.slice(1)}
+                          service.restrictionRequestMessage.slice(1)}
                         "
                       </p>
                     </div>
@@ -449,7 +449,7 @@ export default function ServiceDetailsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className="h-10 w-10 rounded-sm bg-primary/10 flex items-center justify-center text-primary font-bold">
                   {service.businessProfile.businessName[0]}
                 </div>
                 <div>
@@ -490,8 +490,7 @@ export default function ServiceDetailsPage() {
                 className="w-full cursor-pointer"
                 onClick={() =>
                   router.push(
-                    `/admin/businesses/${
-                      service.businessProfile._id || service.businessProfile.id
+                    `/admin/businesses/${service.businessProfile._id || service.businessProfile.id
                     }`
                   )
                 }>

@@ -100,11 +100,11 @@ export default function PlansPage() {
 
               <TableCell>
                 {plan.isActive ? (
-                  <Badge className="bg-green-700 hover:bg-green-600 rounded-md w-15 text-center">
+                  <Badge className="bg-green-700 hover:bg-green-600 rounded-sm w-15 text-center">
                     Active
                   </Badge>
                 ) : (
-                  <Badge className="bg-red-700 hover:bg-red-600 rounded-md w-15 text-center">
+                  <Badge className="bg-red-700 hover:bg-red-600 rounded-sm w-15 text-center">
                     Inactive
                   </Badge>
                 )}

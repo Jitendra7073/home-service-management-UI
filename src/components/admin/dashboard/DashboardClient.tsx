@@ -19,7 +19,7 @@ export function DashboardClient() {
         <div className="space-y-6 max-w-7xl mx-auto">
             {/* Stats Grid */}
             {error ? (
-                <div className="p-4 border border-red-200 rounded-md bg-red-50 text-red-800">
+                <div className="p-4 border border-red-200 rounded-sm bg-red-50 text-red-800">
                     <h3 className="font-semibold">Error loading stats</h3>
                     <p>{error.message || "Failed to load dashboard statistics. Please try again."}</p>
                 </div>

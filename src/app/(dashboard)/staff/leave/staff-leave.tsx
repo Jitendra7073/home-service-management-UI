@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { StaffLeaveSkeleton } from "@/components/staff/skeletons/staff-leave-skeleton";
 
 type LeaveStatus = "PENDING" | "APPROVED" | "REJECTED";
 type LeaveType = "SICK" | "VACATION" | "PERSONAL" | "OTHER";
@@ -275,7 +276,7 @@ export default function StaffLeave() {
                     value={formData.endTime}
                     onChange={(e) =>
                       setFormData({ ...formData, endTime: e.target.value })
-                  }
+                    }
                   />
                 </div>
               </div>
@@ -335,27 +336,19 @@ export default function StaffLeave() {
           Leave History
         </h2>
         {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="h-32 bg-gray-200 animate-pulse rounded-lg"
-              />
-            ))}
-          </div>
+          <StaffLeaveSkeleton />
         ) : leaves.length > 0 ? (
           <div className="space-y-4">
             {leaves.map((leave) => (
               <Card
                 key={leave.id}
-                className={`hover:shadow-md transition-shadow ${
-                  leave.status === "PENDING"
-                    ? "border-yellow-200 bg-yellow-50/30"
-                    : leave.status === "APPROVED"
+                className={`hover:shadow-md transition-shadow ${leave.status === "PENDING"
+                  ? "border-yellow-200 bg-yellow-50/30"
+                  : leave.status === "APPROVED"
                     ? "border-green-200 bg-green-50/30"
                     : "border-red-200 bg-red-50/30"
-                }`}>
-                <CardContent className="p-6">
+                  }`}>
+                <CardContent className="px-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-4">
                       {/* Header: Status and Type */}
@@ -397,7 +390,7 @@ export default function StaffLeave() {
 
                       {/* Reason */}
                       {leave.reason && (
-                        <div className="text-sm text-gray-600 bg-white/50 p-3 rounded-md border border-gray-200">
+                        <div className="text-sm text-gray-600 bg-white/50 p-3 rounded-sm border border-gray-200">
                           <span className="font-medium">Reason: </span>
                           {leave.reason}
                         </div>
@@ -405,7 +398,7 @@ export default function StaffLeave() {
 
                       {/* Additional Info for Approved/Rejected */}
                       {leave.status === "APPROVED" && leave.approvedAt && (
-                        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-2 rounded-md">
+                        <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 p-2 rounded-sm">
                           <CheckCircle2 className="w-4 h-4" />
                           <span>
                             Approved on {formatDate(leave.approvedAt)}
@@ -416,7 +409,7 @@ export default function StaffLeave() {
                       {leave.status === "REJECTED" && (
                         <div className="space-y-2">
                           {leave.rejectedAt && (
-                            <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 p-2 rounded-md">
+                            <div className="flex items-center gap-2 text-sm text-red-700 bg-red-50 p-2 rounded-sm">
                               <XCircle className="w-4 h-4" />
                               <span>
                                 Rejected on {formatDate(leave.rejectedAt)}
@@ -424,7 +417,7 @@ export default function StaffLeave() {
                             </div>
                           )}
                           {leave.rejectReason && (
-                            <div className="text-sm text-red-700 bg-red-50 p-3 rounded-md border border-red-200">
+                            <div className="text-sm text-red-700 bg-red-50 p-3 rounded-sm border border-red-200">
                               <span className="font-medium">Reason: </span>
                               {leave.rejectReason}
                             </div>
@@ -436,6 +429,7 @@ export default function StaffLeave() {
                 </CardContent>
               </Card>
             ))}
+
           </div>
         ) : (
           <Card>

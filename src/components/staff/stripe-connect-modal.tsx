@@ -81,7 +81,7 @@ export function StripeConnectModal({
 
         <div className="space-y-4 py-4">
           {/* Why Stripe */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-sm p-4">
             <div className="flex items-start gap-3">
               <Shield className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
@@ -97,7 +97,7 @@ export function StripeConnectModal({
           </div>
 
           {/* What you need */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div className="bg-gray-50 border border-gray-200 rounded-sm p-4">
             <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
               <IndianRupee className="w-4 h-4" />
               What You'll Need
@@ -133,7 +133,7 @@ export function StripeConnectModal({
           </div>
 
           {/* Important note */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-sm p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
@@ -149,7 +149,7 @@ export function StripeConnectModal({
           </div>
 
           {/* Payout timing */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-green-50 border border-green-200 rounded-sm p-4">
             <h4 className="font-semibold text-green-900 mb-2">
               When Will You Receive Payments?
             </h4>

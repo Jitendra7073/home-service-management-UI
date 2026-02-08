@@ -221,7 +221,7 @@ export default function BusinessProfileForm({
   const headerImage = "/images/p/business-profile.avif";
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white rounded-md shadow-md border overflow-hidden">
+    <div className="w-full max-w-3xl mx-auto bg-white rounded-sm shadow-md border overflow-hidden">
       {/* HEADER */}
       <div className="relative w-full h-36 sm:h-44 md:h-70">
         <img src={headerImage} className="w-full h-full object-contain" />

@@ -13,8 +13,9 @@ import StaffStatsCards from "@/components/staff/staff-stats-cards";
 import StaffBookingsList from "@/components/staff/staff-bookings-list";
 import { StaffDashboardSkeleton } from "@/components/staff/skeletons";
 import { StaffProfileCompletionAlert } from "@/components/staff/profile-completion-alert";
+import { StaffUnlinkHistoryAlert } from "@/components/staff/staff-unlink-history-alert";
 import { StaffAvailabilityToggle } from "@/components/staff/staff-availability-toggle";
-import { StripeAlertBanner } from "@/components/shared/stripe-alert-banner";
+import { StaffLeaveAlert } from "@/components/staff/staff-leave-alert";
 import Link from "next/link";
 
 export default function StaffDashboard() {
@@ -49,7 +50,7 @@ export default function StaffDashboard() {
   return (
     <>
       <StaffProfileCompletionAlert />
-      <StripeAlertBanner userType="staff" apiPath="/api/staff/payments/stripe/status" />
+      <StaffUnlinkHistoryAlert />
       <div className="flex w-full justify-center min-h-screen">
         <div className="w-full max-w-7xl px-2 md:px-6 py-8 space-y-8">
           {/* Header */}
@@ -63,6 +64,10 @@ export default function StaffDashboard() {
           </div>
 
           {/* Stats Cards */}
+          <StaffLeaveAlert
+            isOnLeave={stats?.stats?.isOnLeave}
+            leaveDetails={stats?.stats?.leaveDetails}
+          />
           {stats?.stats && (
             <StaffStatsCards stats={stats.stats} isLoading={statsLoading} />
           )}
@@ -72,7 +77,7 @@ export default function StaffDashboard() {
             {/* Upcoming Bookings */}
             <div className="lg:col-span-2">
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="px-6">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-gray-900">
                       Upcoming Bookings
@@ -89,7 +94,7 @@ export default function StaffDashboard() {
                       {[1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="h-24 bg-gray-200 animate-pulse rounded-lg"
+                          className="h-24 bg-gray-200 animate-pulse rounded-sm"
                         />
                       ))}
                     </div>
@@ -113,17 +118,18 @@ export default function StaffDashboard() {
             {/* Quick Stats & Actions */}
             <div className="space-y-6">
               {/* Availability Toggle */}
-              {user?.availability && (
+              {(user?.availability || stats?.stats?.isOnLeave) && (
                 <StaffAvailabilityToggle
-                  currentAvailability={user.availability}
+                  currentAvailability={user?.availability || "AVAILABLE"}
+                  isOnLeave={stats?.stats?.isOnLeave}
                 />
               )}
 
               {/* Earnings Summary */}
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="px-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-green-100 rounded-lg">
+                    <div className="p-2 bg-green-100 rounded-sm">
                       <IndianRupee className="w-5 h-5 text-green-600" />
                     </div>
                     <h3 className="font-semibold text-gray-900">
@@ -142,35 +148,6 @@ export default function StaffDashboard() {
                     className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-4 inline-flex items-center hover:underline">
                     View Earnings <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">
-                    Quick Actions
-                  </h3>
-                  <div className="space-y-3">
-                    <a
-                      href="/staff/bookings"
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                      <Calendar className="w-5 h-5 text-gray-600" />
-                      <span className="text-gray-900">View All Bookings</span>
-                    </a>
-                    <a
-                      href="/staff/earnings"
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                      <IndianRupee className="w-5 h-5 text-gray-600" />
-                      <span className="text-gray-900">View Earnings</span>
-                    </a>
-                    <a
-                      href="/staff/profile"
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                      <CheckCircle className="w-5 h-5 text-gray-600" />
-                      <span className="text-gray-900">Update Profile</span>
-                    </a>
-                  </div>
                 </CardContent>
               </Card>
             </div>

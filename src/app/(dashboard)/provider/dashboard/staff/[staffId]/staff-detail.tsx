@@ -43,11 +43,17 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
     queryKey: ["staff", staffId],
     queryFn: async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/provider/staff/${staffId}/details`,
+        `/api/provider/staff/${staffId}/details`,
         {
           credentials: "include",
         },
       );
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(
+          errorData.msg || "Failed to fetch staff details",
+        );
+      }
       return res.json();
     },
   });
@@ -145,7 +151,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
             <div className="flex items-start gap-6">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
+                <div className="w-24 h-24 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
                   {staff.name.charAt(0).toUpperCase()}
                 </div>
               </div>
@@ -164,17 +170,33 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                       <Badge className="bg-green-100 text-green-700">
                         Approved
                       </Badge>
-                      <Badge
-                        className={
-                          staff.availability === "AVAILABLE"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-orange-100 text-orange-700"
-                        }>
-                        {staff.availability === "AVAILABLE"
-                          ? "Available"
-                          : "Busy"}
-                      </Badge>
+                      {staff.availability === "NOT_AVAILABLE" && staff.leaveDetails ? (
+                        <Badge className="bg-red-100 text-red-700 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-sm bg-red-600 animate-pulse"></span>
+                          On Leave
+                        </Badge>
+                      ) : staff.availability === "ON_WORK" ? (
+                        <Badge className="bg-blue-100 text-blue-700 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-sm bg-blue-600 animate-pulse"></span>
+                          On Work
+                        </Badge>
+                      ) : staff.availability === "BUSY" ? (
+                        <Badge className="bg-orange-100 text-orange-700 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-sm bg-orange-600 animate-pulse"></span>
+                          Busy
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-green-100 text-green-700 flex items-center gap-1">
+                          <span className="h-2 w-2 rounded-sm bg-green-600"></span>
+                          Available
+                        </Badge>
+                      )}
                     </div>
+                  </div>
+
+                  {/* Availability Toggle Removed - Provider cannot change staff availability */}
+                  <div className="flex items-center gap-3">
+                    {/* Placeholder or nothing */}
                   </div>
                 </div>
 
@@ -197,7 +219,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
 
                 {/* Current Booking */}
                 {staff.currentBooking && (
-                  <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-sm">
                     <div className="flex items-center gap-2 text-orange-800">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm font-medium">
@@ -222,7 +244,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
+                <div className="p-2 bg-blue-100 rounded-sm">
                   <Briefcase className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
@@ -238,7 +260,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
+                <div className="p-2 bg-purple-100 rounded-sm">
                   <CheckCircle2 className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
@@ -254,7 +276,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
+                <div className="p-2 bg-green-100 rounded-sm">
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
@@ -270,7 +292,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 rounded-lg">
+                <div className="p-2 bg-yellow-100 rounded-sm">
                   <Star className="w-5 h-5 text-yellow-600" />
                 </div>
                 <div>
@@ -310,7 +332,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                     {recentActivity.slice(0, 10).map((booking: any) => (
                       <div
                         key={booking.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                        className="flex items-center justify-between p-4 border rounded-sm hover:bg-gray-50">
                         <div>
                           <p className="font-medium text-gray-900">
                             {booking.service?.name || "Service"}
@@ -326,8 +348,8 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                             booking.bookingStatus === "COMPLETED"
                               ? "bg-green-100 text-green-700"
                               : booking.bookingStatus === "CONFIRMED"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-gray-100 text-gray-700"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-700"
                           }>
                           {booking.bookingStatus}
                         </Badge>
@@ -354,7 +376,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                     {bookingHistory.map((booking: any) => (
                       <div
                         key={booking.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                        className="flex items-center justify-between p-4 border rounded-sm hover:bg-gray-50">
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">
                             {booking.service?.name || "Service"}
@@ -374,10 +396,10 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                               booking.bookingStatus === "CANCELLED"
                                 ? "bg-red-100 text-red-700"
                                 : booking.trackingStatus === "COMPLETED"
-                                ? "bg-green-100 text-green-700"
-                                : booking.trackingStatus === "SERVICE_STARTED"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
+                                  ? "bg-green-100 text-green-700"
+                                  : booking.trackingStatus === "SERVICE_STARTED"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-700"
                             }>
                             {booking.bookingStatus === "CANCELLED"
                               ? "Cancelled"

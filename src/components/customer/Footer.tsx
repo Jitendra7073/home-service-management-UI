@@ -140,7 +140,7 @@ const Footer: React.FC = () => {
               {/* LOGO */}
               <Link
                 href="/customer"
-                className="bg-white h-20 w-40 flex items-center justify-center rounded-md">
+                className="bg-white h-20 w-40 flex items-center justify-center rounded-sm">
                 <Image
                   src="/HSM-logo.png"
                   alt="ServiceHub Logo"
@@ -160,7 +160,7 @@ const Footer: React.FC = () => {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center transition ${social.color}`}
+                    className={`w-10 h-10 bg-gray-700 rounded-sm flex items-center justify-center transition ${social.color}`}
                     aria-label={social.platform}>
                     <social.icon className="w-5 h-5" />
                   </a>
@@ -214,7 +214,7 @@ const Footer: React.FC = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center ${social.color}`}>
+                  className={`w-12 h-12 bg-gray-700 rounded-sm flex items-center justify-center ${social.color}`}>
                   <social.icon className="w-6 h-6" />
                 </a>
               ))}

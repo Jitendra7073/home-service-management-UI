@@ -297,7 +297,7 @@ export default function CategoryManagement() {
                     editingCategory?.id === category.id
                   }>
                   {updateMutation.isPending &&
-                  editingCategory?.id === category.id ? (
+                    editingCategory?.id === category.id ? (
                     <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
                   ) : (
                     <div className="flex ">
@@ -315,7 +315,7 @@ export default function CategoryManagement() {
                     deletingCategory?.id === category.id
                   }>
                   {deleteMutation.isPending &&
-                  deletingCategory?.id === category.id ? (
+                    deletingCategory?.id === category.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Trash2 className="h-4 w-4" />
@@ -404,7 +404,7 @@ export default function CategoryManagement() {
               </span>
               .
               {deletingCategory && deletingCategory.totalProvidersCount > 0 && (
-                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md flex gap-2 text-red-800 items-start">
+                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-sm flex gap-2 text-red-800 items-start">
                   <AlertTriangle className="h-5 w-5 shrink-0" />
                   <span className="text-sm font-medium">
                     Warning: This category is used by{" "}

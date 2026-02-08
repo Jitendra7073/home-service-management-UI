@@ -162,19 +162,18 @@ export function StaffCardList({ cards, onRefresh }: StaffCardListProps) {
           return (
             <Card
               key={card.id}
-              className={`${
-                card.isExpired
-                  ? "border-red-200 bg-red-50"
-                  : "border-gray-200 hover:shadow-md"
-              } transition-shadow`}>
+              className={`${card.isExpired
+                ? "border-red-200 bg-red-50"
+                : "border-gray-200 hover:shadow-md"
+                } transition-shadow`}>
               <CardContent className="p-6">
                 <div className="flex flex-col gap-4">
                   {/* Card Preview - Full Width */}
                   <div
-                    className={`w-full h-36 rounded-md bg-gradient-to-br ${config.color} p-5 text-white flex flex-col justify-between relative overflow-hidden`}>
+                    className={`w-full h-36 rounded-sm bg-gradient-to-br ${config.color} p-5 text-white flex flex-col justify-between relative overflow-hidden`}>
                     {/* Background Pattern */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-15 rounded-full -mr-16 -mt-16" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-15 rounded-sm -mr-16 -mt-16" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-sm -ml-12 -mb-12" />
 
                     {/* Card Content */}
                     <div className="relative z-10 flex justify-between items-start">
@@ -284,7 +283,7 @@ export function StaffCardList({ cards, onRefresh }: StaffCardListProps) {
                               onClick={() => deleteMutation.mutate(card.id)}
                               className="bg-red-600 hover:bg-red-700">
                               {deleteMutation.isPending &&
-                              deleteId === card.id ? (
+                                deleteId === card.id ? (
                                 <>
                                   <Loader2 className="animate-spin w-4 h-4 mr-2" />
                                   Deleting...

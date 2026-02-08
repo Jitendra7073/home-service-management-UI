@@ -233,7 +233,7 @@ export default function StaffAssignmentsPage({ params }: PageProps) {
                 {assignments.map((assignment: any) => (
                   <div
                     key={assignment.id}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                    className="flex items-center justify-between p-4 border border-gray-200 rounded-sm hover:shadow-sm transition-shadow">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <h3 className="font-semibold text-gray-900">

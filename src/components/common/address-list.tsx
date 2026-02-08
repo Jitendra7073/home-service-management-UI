@@ -118,7 +118,7 @@ export function StaffAddressList({
     return (
       <Card className="border-dashed">
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="p-4 bg-gray-50 rounded-full mb-4">
+          <div className="p-4 bg-gray-50 rounded-sm mb-4">
             <MapPin className="w-8 h-8 text-gray-400" />
           </div>
           <h3 className="text-base font-semibold text-gray-900 mb-2">
@@ -148,7 +148,7 @@ export function StaffAddressList({
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2.5 rounded-lg ${getAddressIconColor(
+                    className={`p-2.5 rounded-sm ${getAddressIconColor(
                       address.type,
                     )}`}>
                     <AddressIcon className="w-4 h-4" />
@@ -158,8 +158,8 @@ export function StaffAddressList({
                       {address.type === "HOME"
                         ? "Home"
                         : address.type === "OFFICE"
-                        ? "Office"
-                        : "Other"}
+                          ? "Office"
+                          : "Other"}
                     </h4>
                     <Badge
                       variant="outline"
@@ -234,8 +234,8 @@ export function StaffAddressList({
                 {/* Landmark */}
                 {address.landmark && address.landmark !== "N/A" && (
                   <div className="flex items-start gap-2.5 pt-2.5 mt-2.5 border-t border-gray-100">
-                    <div className="w-4 h-4 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <div className="w-4 h-4 rounded-sm bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-sm bg-amber-500" />
                     </div>
                     <p className="text-xs text-gray-500">
                       <span className="font-medium text-gray-600">

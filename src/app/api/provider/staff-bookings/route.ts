@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const trackingStatus = searchParams.get("trackingStatus");
 
     // First get provider's business profile
-    const { ok: businessOk, data: businessData } = await backend("/api/v1/business/my-business", {
+    const { ok: businessOk, data: businessData } = await backend("/api/v1/provider/business", {
       method: "GET",
     });
 
@@ -38,9 +38,10 @@ export async function GET(request: Request) {
     }
 
     // Fetch all bookings and filter for staff-assigned ones
-    const { ok, data } = await backend(`/api/v1/provider/bookings?${query}`, {
+    const { ok, data } = await backend(`/api/v1/provider/booking?${query}`, {
       method: "GET",
     });
+    console.log("Details of the staff booking", data?.bookings)
 
     if (!ok) {
       return NextResponse.json(
