@@ -19,6 +19,7 @@ const REVERSE_STEP_MAP: Record<number, string> = {
   1: "address",
   2: "business",
   3: "slots",
+  4: "complete",
 };
 
 export default function OnboardSteps() {
@@ -56,8 +57,9 @@ export default function OnboardSteps() {
         console.log("(onboard-steps) businessRes", businessRes);
         console.log("(onboard-steps) slotRes", slotRes);
 
+        // TODO: if there have on onboarding related error then it may be appear here
         const hasAddress =
-          addressRes && addressRes.address.length > 0 ? true : false;
+          addressRes && addressRes?.addresses?.length > 0 ? true : false;
         const hasBusiness = businessRes && businessRes.business ? true : false;
         const hasSlots =
           slotRes && Array.isArray(slotRes.slots) && slotRes.slots.length > 0
@@ -74,6 +76,12 @@ export default function OnboardSteps() {
         if (hasAddress && hasBusiness && hasSlots) nextIncompleteStep = 4;
 
         console.log("(onboard-steps) nextIncompleteStep", nextIncompleteStep);
+
+        // If all steps completed, redirect to dashboard
+        if (nextIncompleteStep === 4) {
+          router.push("/provider/dashboard");
+          return;
+        }
 
         const requestedStepId = stepParam ? STEP_MAP[stepParam] : null;
 
@@ -181,9 +189,10 @@ export default function OnboardSteps() {
                         className={`
                           w-11 h-11 rounded-sm flex items-center justify-center
                           mb-2 transition-all duration-300
-                          ${active
-                            ? "bg-blue-600 text-white shadow-lg scale-110"
-                            : completed
+                          ${
+                            active
+                              ? "bg-blue-600 text-white shadow-lg scale-110"
+                              : completed
                               ? "bg-green-600 text-white"
                               : "bg-gray-200 text-gray-400"
                           }
@@ -198,9 +207,10 @@ export default function OnboardSteps() {
                       <span
                         className={`
                           text-xs sm:text-sm font-medium text-center whitespace-nowrap
-                          ${active
-                            ? "text-blue-600"
-                            : completed
+                          ${
+                            active
+                              ? "text-blue-600"
+                              : completed
                               ? "text-green-600"
                               : "text-gray-500"
                           }

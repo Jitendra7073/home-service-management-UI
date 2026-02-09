@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StaffPaymentsSkeleton } from "@/components/staff/skeletons";
+import { toast } from "sonner";
 
 const STATUS_COLORS = {
   PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -52,12 +53,9 @@ export function StaffPaymentsClient() {
       params.append("page", page.toString());
       params.append("limit", "20");
 
-      const res = await fetch(
-        `/api/staff/payments/history?${params}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/staff/payments/history?${params}`, {
+        credentials: "include",
+      });
       const result = await res.json();
       return result;
     },
@@ -174,39 +172,37 @@ export function StaffPaymentsClient() {
               stripeData.hasConnected
                 ? "border-green-200 bg-green-50"
                 : "border-amber-200 bg-amber-50"
-            }
-          >
+            }>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2 rounded-sm ${stripeData.hasConnected
-                        ? "bg-green-100"
-                        : "bg-amber-100"
-                      }`}
-                  >
+                    className={`p-2 rounded-sm ${
+                      stripeData.hasConnected ? "bg-green-100" : "bg-amber-100"
+                    }`}>
                     <CreditCard
-                      className={`w-6 h-6 ${stripeData.hasConnected
+                      className={`w-6 h-6 ${
+                        stripeData.hasConnected
                           ? "text-green-600"
                           : "text-amber-600"
-                        }`}
+                      }`}
                     />
                   </div>
                   <div>
                     <h3
-                      className={`font-semibold ${stripeData.hasConnected
+                      className={`font-semibold ${
+                        stripeData.hasConnected
                           ? "text-green-900"
                           : "text-amber-900"
-                        }`}
-                    >
+                      }`}>
                       Stripe Account Status
                     </h3>
                     <p
-                      className={`text-sm ${stripeData.hasConnected
+                      className={`text-sm ${
+                        stripeData.hasConnected
                           ? "text-green-700"
                           : "text-amber-700"
-                        }`}
-                    >
+                      }`}>
                       {stripeData.hasConnected
                         ? "Connected - Ready to receive payments"
                         : "Not Connected - Connect to receive payments"}
@@ -225,8 +221,7 @@ export function StaffPaymentsClient() {
                       setTimeout(() => {
                         window.location.href = "/staff/profile?tab=payment";
                       }, 1000);
-                    }}
-                  >
+                    }}>
                     Connect Account
                   </Button>
                 )}
@@ -298,7 +293,7 @@ export function StaffPaymentsClient() {
                               variant="outline"
                               className={
                                 STATUS_COLORS[
-                                payment.status as keyof typeof STATUS_COLORS
+                                  payment.status as keyof typeof STATUS_COLORS
                                 ]
                               }>
                               <StatusIcon className="w-3 h-3 mr-1" />
@@ -316,8 +311,8 @@ export function StaffPaymentsClient() {
                               <span>
                                 {payment.paidAt
                                   ? new Date(
-                                    payment.paidAt,
-                                  ).toLocaleDateString()
+                                      payment.paidAt,
+                                    ).toLocaleDateString()
                                   : "Pending"}
                               </span>
                             </div>

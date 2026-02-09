@@ -210,7 +210,7 @@ function CreateSlotDialog({
 
   return (
     <>
-      {open && <div className="fixed inset-0 bg-black/50 z-[40]" />}
+      {open && <div className="fixed inset-0 bg-black/50 z-[40] h-screen" />}
 
       <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
         <DialogContent className="max-w-md z-[50]">

@@ -1,8 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function StaffApplicationsSkeleton() {
   return (
@@ -14,11 +10,11 @@ export function StaffApplicationsSkeleton() {
       </div>
 
       {/* Tabs Skeleton */}
-      <div className="flex gap-2 border-b border-gray-200">
+      <div className="flex gap-2">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="h-12 bg-gray-200 rounded w-20 animate-pulse"
+            className="h-10 bg-gray-200 rounded w-25 animate-pulse"
           />
         ))}
       </div>

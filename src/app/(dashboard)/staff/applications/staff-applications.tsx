@@ -32,9 +32,11 @@ export default function StaffApplications() {
 
   // Initialize activeTab from URL or default to "all"
   const [activeTab, setActiveTab] = useState<TabType>(
-    (statusParam === "approved" || statusParam === "rejected" || statusParam === "pending")
+    statusParam === "approved" ||
+      statusParam === "rejected" ||
+      statusParam === "pending"
       ? statusParam
-      : "all"
+      : "all",
   );
 
   // Update URL when tab changes
@@ -61,9 +63,12 @@ export default function StaffApplications() {
         params.append("status", activeTab);
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/applications?${params}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/applications?${params}`,
+        {
+          credentials: "include",
+        },
+      );
       const data = await res.json();
       return data;
     },
@@ -80,10 +85,13 @@ export default function StaffApplications() {
     if (!confirm("Are you sure you want to cancel this application?")) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/applications/${applicationId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/staff/applications/${applicationId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
       const result = await res.json();
 
       if (result.success) {
@@ -150,22 +158,28 @@ export default function StaffApplications() {
       {/* Tabs */}
       <div className="flex gap-2 border-b border-gray-200">
         {tabs.map((tab) => {
-          const count = tab.key === "all"
-            ? allApplications.length
-            : allApplications.filter((app: any) => app.status.toLowerCase() === tab.key).length;
+          const count =
+            tab.key === "all"
+              ? allApplications.length
+              : allApplications.filter(
+                  (app: any) => app.status.toLowerCase() === tab.key,
+                ).length;
 
           return (
             <button
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 -mb-px ${activeTab === tab.key
-                ? "text-blue-600 border-blue-600"
-                : "text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300"
-                }`}>
+              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm transition-colors border-b-2 -mb-px ${
+                activeTab === tab.key
+                  ? "text-blue-600 border-blue-600"
+                  : "text-gray-600 border-transparent hover:text-gray-900 hover:border-gray-300"
+              }`}>
               {tab.label}
-              <span className={`text-xs px-2 py-0.5 rounded-sm ${activeTab === tab.key
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-600"
+              <span
+                className={`text-xs px-2 py-0.5 rounded-sm ${
+                  activeTab === tab.key
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-600"
                 }`}>
                 {count}
               </span>
@@ -227,7 +241,8 @@ export default function StaffApplications() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span>
-                    Category: {application.businessProfile?.category?.name || "N/A"}
+                    Category:{" "}
+                    {application.businessProfile?.category?.name || "N/A"}
                   </span>
                   <span>
                     Contact: {application.businessProfile?.contactEmail}

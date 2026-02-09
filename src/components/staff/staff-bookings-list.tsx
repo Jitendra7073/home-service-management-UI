@@ -1,6 +1,13 @@
 "use client";
 
-import { Calendar, Clock, MapPin, User, ChevronRight } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  User,
+  ChevronRight,
+  IndianRupee,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Booking {
@@ -67,8 +74,9 @@ export default function StaffBookingsList({
         <div
           key={booking.id}
           className="border border-gray-200 rounded-sm p-4 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => (window.location.href = `/staff/bookings/${booking.id}`)}
-        >
+          onClick={() =>
+            (window.location.href = `/staff/bookings/${booking.id}`)
+          }>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {/* Header */}
@@ -106,9 +114,11 @@ export default function StaffBookingsList({
                     {booking.address ? (
                       <>
                         {booking.address.street}
-                        {booking.address.landmark && ` (Landmark: ${booking.address.landmark})`}
+                        {booking.address.landmark &&
+                          ` (Landmark: ${booking.address.landmark})`}
                         <br />
-                        {booking.address.city}, {booking.address.state} {booking.address.postalCode || ""}
+                        {booking.address.city}, {booking.address.state}{" "}
+                        {booking.address.postalCode || ""}
                       </>
                     ) : (
                       "Address not provided"
@@ -118,8 +128,8 @@ export default function StaffBookingsList({
               </div>
 
               {/* Price */}
-              <p className="text-lg font-semibold text-gray-900">
-                ${booking.service.price}
+              <p className="flex items-center gap-1 text-lg font-semibold text-gray-900">
+                <IndianRupee className="w-4 h-4" /> {booking.service.price}
               </p>
             </div>
 

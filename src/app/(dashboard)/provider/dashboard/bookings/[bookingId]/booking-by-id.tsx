@@ -135,7 +135,7 @@ export default function BookingDetailsDashboard({
     staleTime: 0,
   });
 
-  const booking: BookingData | null = data?.bookings ?? null;
+  const booking: BookingData | null = data?.booking ?? null;
 
   if (isLoading) {
     return (
@@ -403,11 +403,11 @@ function TrackingProgress({
               {current === "NOT_STARTED"
                 ? "the beginning"
                 : current.charAt(0).toUpperCase() +
-                current
-                  .toLocaleLowerCase()
-                  .slice(1)
-                  .replaceAll("_", " ")
-                  .toLowerCase()}
+                  current
+                    .toLocaleLowerCase()
+                    .slice(1)
+                    .replaceAll("_", " ")
+                    .toLowerCase()}
             </span>{" "}
             stage
           </p>
@@ -426,15 +426,17 @@ function TrackingProgress({
             <div key={step} className="flex gap-3 pb-6 relative">
               {i !== TRACKING_STEPS.length - 1 && (
                 <div
-                  className={`absolute left-3 top-7 w-1 h-full rounded ${i < currentIndex ? displayColor : "bg-gray-200"
-                    }`}
+                  className={`absolute left-3 top-7 w-1 h-full rounded ${
+                    i < currentIndex ? displayColor : "bg-gray-200"
+                  }`}
                 />
               )}
 
               {/* Step circle - show X icon for cancelled state beyond current step */}
               <div
-                className={`w-7 h-7 rounded-sm flex items-center justify-center text-white shadow ${done ? displayColor : "bg-gray-300"
-                  }`}>
+                className={`w-7 h-7 rounded-sm flex items-center justify-center text-white shadow ${
+                  done ? displayColor : "bg-gray-300"
+                }`}>
                 {done ? (
                   isCancelled ? (
                     <X size={16} strokeWidth={3} />
@@ -448,12 +450,13 @@ function TrackingProgress({
 
               <div>
                 <p
-                  className={`${done
-                    ? isCancelled
-                      ? "font-semibold text-red-700"
-                      : "font-semibold"
-                    : "text-gray-500"
-                    }`}>
+                  className={`${
+                    done
+                      ? isCancelled
+                        ? "font-semibold text-red-700"
+                        : "font-semibold"
+                      : "text-gray-500"
+                  }`}>
                   {step.replaceAll("_", " ")}
                 </p>
               </div>

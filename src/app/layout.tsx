@@ -3,6 +3,23 @@ import "./globals.css";
 import AuthProvider from "@/components/common/AuthProvider";
 import TanstackProvider from "@/app/tanstackProvider";
 import { Metadata } from "next";
+import { Rubik, Noto_Sans } from "next/font/google";
+
+// Configure heading font - Rubik
+const rubik = Rubik({
+  subsets: ["latin"],
+  variable: "--font-rubik",
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+// Configure body font - Noto Sans
+const notoSans = Noto_Sans({
+  subsets: ["latin"],
+  variable: "--font-noto-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -146,7 +163,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${rubik.variable} ${notoSans.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta

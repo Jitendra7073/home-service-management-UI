@@ -7,7 +7,14 @@ import { BlockDialog } from "@/components/admin/block-dialog";
 import { UserCard } from "@/components/admin/user-card";
 import { EmptyState } from "@/components/admin/empty-state";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { User, Building, Shield, Users, Search } from "lucide-react";
+import {
+  User,
+  Building,
+  Shield,
+  Users,
+  Search,
+  UsersRound,
+} from "lucide-react";
 import {
   useAdminUsers,
   useRestrictUser,
@@ -25,7 +32,7 @@ interface User {
   restrictionReason?: string;
 }
 
-type UserRole = "customer" | "provider" | "admin";
+type UserRole = "customer" | "provider" | "admin" | "staff";
 
 export function UserManagement() {
   const router = useRouter();
@@ -143,7 +150,7 @@ export function UserManagement() {
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as UserRole)}
         className="space-y-6 gap-0">
-        <TabsList className="grid w-full rounded-sm grid-cols-3 px-2 lg:w-[400px]">
+        <TabsList className="grid w-full rounded-sm grid-cols-4 px-2 lg:w-[520px]">
           <TabsTrigger value="customer" className="gap-2 rounded-sm">
             <User className="h-4 w-4" />
             Customers
@@ -152,13 +159,17 @@ export function UserManagement() {
             <Building className="h-4 w-4" />
             Providers
           </TabsTrigger>
+          <TabsTrigger value="staff" className="gap-2 rounded-sm">
+            <UsersRound className="h-4 w-4" />
+            Staff
+          </TabsTrigger>
           <TabsTrigger value="admin" className="gap-2 rounded-sm">
             <Shield className="h-4 w-4" />
             Admins
           </TabsTrigger>
         </TabsList>
 
-        {(["customer", "provider", "admin"] as const).map((role) => (
+        {(["customer", "provider", "staff", "admin"] as const).map((role) => (
           <TabsContent key={role} value={role} className="space-y-4">
             {error ? (
               <EmptyState
@@ -193,7 +204,13 @@ export function UserManagement() {
                     role={user.role}
                     isRestricted={user.isRestricted ?? false}
                     restrictionReason={user.restrictionReason || ""}
-                    onViewDetails={() => router.push(`/admin/users/${user.id}`)}
+                    onViewDetails={() =>
+                      router.push(
+                        role === "staff"
+                          ? `/admin/staff/${user.id}`
+                          : `/admin/users/${user.id}`,
+                      )
+                    }
                     onBlock={
                       role !== "admin" && !user.isRestricted
                         ? () => openBlockDialog(user)

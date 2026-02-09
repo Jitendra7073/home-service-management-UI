@@ -298,7 +298,7 @@ export default function ProviderPaymentsPage() {
             value={activeTab}
             onValueChange={setActiveTab}
             className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
+            <TabsList className="grid w-full grid-cols-2 w-[600px]">
               <TabsTrigger value="statistics">Statistics</TabsTrigger>
               <TabsTrigger value="requests">
                 Requests
@@ -310,7 +310,6 @@ export default function ProviderPaymentsPage() {
                   </Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
             </TabsList>
 
             {/* STATISTICS TAB */}
@@ -459,14 +458,14 @@ export default function ProviderPaymentsPage() {
                           </div>
                           <div className="text-3xl font-bold text-gray-900">
                             {stats?.approvedRequests &&
-                              stats?.approvedRequests + stats?.rejectedRequests >
+                            stats?.approvedRequests + stats?.rejectedRequests >
                               0
                               ? Math.round(
-                                (stats.approvedRequests /
-                                  (stats.approvedRequests +
-                                    stats.rejectedRequests)) *
-                                100,
-                              )
+                                  (stats.approvedRequests /
+                                    (stats.approvedRequests +
+                                      stats.rejectedRequests)) *
+                                    100,
+                                )
                               : 0}
                             %
                           </div>
@@ -486,8 +485,8 @@ export default function ProviderPaymentsPage() {
                             ₹
                             {stats?.totalPayments && stats?.totalPayments > 0
                               ? Math.round(
-                                stats.totalPaidAmount / stats.totalPayments,
-                              )
+                                  stats.totalPaidAmount / stats.totalPayments,
+                                )
                               : 0}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -502,10 +501,10 @@ export default function ProviderPaymentsPage() {
                           <div className="text-3xl font-bold text-gray-900">
                             {stats?.totalPayments && stats?.totalPayments > 0
                               ? Math.round(
-                                (stats.totalPaidAmount /
-                                  stats.totalRequestedAmount) *
-                                100,
-                              )
+                                  (stats.totalPaidAmount /
+                                    stats.totalRequestedAmount) *
+                                    100,
+                                )
                               : 0}
                             %
                           </div>
@@ -636,7 +635,7 @@ export default function ProviderPaymentsPage() {
                         {requests.map((request: any) => {
                           const StatusIcon =
                             STATUS_ICONS[
-                            request.requestStatus as keyof typeof STATUS_ICONS
+                              request.requestStatus as keyof typeof STATUS_ICONS
                             ];
                           return (
                             <div
@@ -652,7 +651,7 @@ export default function ProviderPaymentsPage() {
                                       variant="outline"
                                       className={
                                         STATUS_COLORS[
-                                        request.requestStatus as keyof typeof STATUS_COLORS
+                                          request.requestStatus as keyof typeof STATUS_COLORS
                                         ]
                                       }>
                                       <StatusIcon className="w-3 h-3 mr-1" />
@@ -725,194 +724,6 @@ export default function ProviderPaymentsPage() {
                             </div>
                           );
                         })}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* HISTORY TAB */}
-            <TabsContent value="history" className="space-y-6 mt-6">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-6 flex-wrap">
-                    <div className="flex items-center gap-3">
-                      <Filter className="w-5 h-5 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-700">
-                        Filters:
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Label htmlFor="status">Status:</Label>
-                      <Select
-                        value={historyStatusFilter}
-                        onValueChange={setHistoryStatusFilter}>
-                        <SelectTrigger className="w-[180px]" id="status">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Statuses</SelectItem>
-                          <SelectItem value="PAID">Paid</SelectItem>
-                          <SelectItem value="PENDING">Pending</SelectItem>
-                          <SelectItem value="FAILED">Failed</SelectItem>
-                          <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Label htmlFor="staff">Staff ID:</Label>
-                      <Input
-                        id="staff"
-                        placeholder="Filter by staff..."
-                        value={staffFilter}
-                        onChange={(e) => setStaffFilter(e.target.value)}
-                        className="w-[200px]"
-                      />
-                    </div>
-                    <Button variant="outline" onClick={handleExport}>
-                      <Download className="w-4 h-4 mr-2" />
-                      Export
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {historyLoading ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="animate-spin w-8 h-8" />
-                </div>
-              ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Payment Records</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {payments.length === 0 ? (
-                      <div className="text-center py-12">
-                        <IndianRupee className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          No payments found
-                        </h3>
-                        <p className="text-gray-600">
-                          {staffFilter || historyStatusFilter !== "all"
-                            ? "Try adjusting your filters."
-                            : "No payment records available yet."}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {payments.map((payment: any) => (
-                          <div
-                            key={payment.id}
-                            className="border rounded-sm p-4 hover:shadow-md transition-shadow">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <h3 className="font-semibold text-gray-900">
-                                    {payment.serviceName}
-                                  </h3>
-                                  <Badge
-                                    variant="outline"
-                                    className={
-                                      STATUS_COLORS[
-                                      payment.status as keyof typeof STATUS_COLORS
-                                      ]
-                                    }>
-                                    {payment.status}
-                                  </Badge>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mb-3">
-                                  <div className="flex items-center gap-2 text-gray-600">
-                                    <User className="w-4 h-4" />
-                                    <div>
-                                      <p className="font-medium">
-                                        {payment.staffName}
-                                      </p>
-                                      <p className="text-xs">
-                                        {payment.staffMobile}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-gray-600">
-                                    <Calendar className="w-4 h-4" />
-                                    <span>
-                                      {payment.paidAt
-                                        ? new Date(
-                                          payment.paidAt,
-                                        ).toLocaleDateString()
-                                        : "Pending"}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-gray-600">
-                                    <IndianRupee className="w-4 h-4" />
-                                    <span>
-                                      Transfer:{" "}
-                                      {payment.stripeTransferId || "N/A"}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center justify-between bg-gray-50 rounded-sm p-3">
-                                  <div className="flex gap-6 text-sm">
-                                    <div>
-                                      <span className="text-gray-500">
-                                        Service Price:
-                                      </span>
-                                      <span className="ml-2 font-semibold">
-                                        ₹{payment.requestedAmount}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-gray-500">
-                                        Percentage:
-                                      </span>
-                                      <span className="ml-2 font-semibold">
-                                        {payment.percentage}%
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-sm text-gray-500">
-                                      Staff Received
-                                    </p>
-                                    <p className="text-2xl font-bold text-green-600">
-                                      ₹{payment.staffAmount}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Pagination */}
-                    {pagination && pagination.totalPages > 1 && (
-                      <div className="flex items-center justify-center gap-2 mt-6 pt-6 border-t">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          disabled={page === 1}>
-                          Previous
-                        </Button>
-                        <span className="text-sm text-gray-600">
-                          Page {page} of {pagination.totalPages}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setPage((p) =>
-                              Math.min(pagination.totalPages, p + 1),
-                            )
-                          }
-                          disabled={page === pagination.totalPages}>
-                          Next
-                        </Button>
                       </div>
                     )}
                   </CardContent>

@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Ban, Eye, Shield, User, Building } from "lucide-react";
+import { Ban, Eye, Shield, User, Building, UsersRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserCardProps {
@@ -10,7 +10,7 @@ interface UserCardProps {
   name: string;
   email: string;
   mobile?: string;
-  role: "customer" | "provider" | "admin";
+  role: "customer" | "provider" | "admin" | "staff";
   isRestricted: boolean;
   restrictionReason?: string;
   onViewDetails: () => void;
@@ -42,6 +42,8 @@ export function UserCard({
         return <Building className="h-4 w-4" />;
       case "admin":
         return <Shield className="h-4 w-4" />;
+      case "staff":
+        return <UsersRound className="h-4 w-4" />;
       default:
         return <User className="h-4 w-4" />;
     }
@@ -115,8 +117,8 @@ export function UserCard({
                   ? "Unblocking..."
                   : "Blocking..."
                 : isRestricted
-                  ? "Unblock"
-                  : "Block"}
+                ? "Unblock"
+                : "Block"}
             </Button>
           )}
         </div>

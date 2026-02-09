@@ -70,8 +70,8 @@ export const metadata: Metadata = {
     siteName: "HomHelpers",
   },
   robots: {
-    index: true,
-    follow: true,
+    index: false, // Customer dashboard should not be indexed
+    follow: false,
   },
 };
 

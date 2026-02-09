@@ -19,20 +19,13 @@ export const metadata: Metadata = {
     "staff earnings",
     "service staff management",
   ],
-  alternates: {
-    canonical: "/staff",
-  },
-  openGraph: {
-    title: "HomHelpers Staff Portal - Manage Your Work",
-    description:
-      "View your assignments, track earnings, and manage your availability.",
-    url: "/staff",
-    type: "website",
-    siteName: "HomHelpers",
-  },
   robots: {
-    index: true,
-    follow: true,
+    index: false, // Prevent indexing
+    follow: false, // Prevent following
+    googleBot: {
+      index: false,
+      follow: false,
+    },
   },
 };
 

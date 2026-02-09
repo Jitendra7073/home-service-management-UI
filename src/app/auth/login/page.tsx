@@ -16,6 +16,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Login",
   description: "Access your account securely.",
+  robots: {
+    index: false, // Prevent indexing
+    follow: false,
+  },
 };
 
 export default function LoginPage() {

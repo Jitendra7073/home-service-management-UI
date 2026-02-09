@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, XCircle, Loader2, CalendarClock } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  CalendarClock,
+  Workflow,
+  Loader,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -70,14 +77,14 @@ export function StaffAvailabilityToggle({
       case "ON_WORK":
         return (
           <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+            <Workflow className="w-3 h-3 mr-1" />
             On Work
           </Badge>
         );
       case "BUSY":
         return (
           <Badge className="bg-orange-100 text-orange-700 border-orange-200">
-            <Loader2 className="w-3 h-3 mr-1" />
+            <Loader className="w-3 h-3 mr-1 animate-spin" />
             Busy
           </Badge>
         );
@@ -111,12 +118,18 @@ export function StaffAvailabilityToggle({
               Current Availability
             </h3>
             <div className="flex items-center gap-3 mb-2">
-              {isOnLeave ? <Badge className="bg-gray-100 text-gray-700 border-gray-200">
-                <CalendarClock className="w-3 h-3 mr-1" />
-                On Leave
-              </Badge> : getStatusBadge()}
+              {isOnLeave ? (
+                <Badge className="bg-gray-100 text-gray-700 border-gray-200">
+                  <CalendarClock className="w-3 h-3 mr-1" />
+                  On Leave
+                </Badge>
+              ) : (
+                getStatusBadge()
+              )}
             </div>
-            {!isOnLeave && <p className="text-sm text-gray-600">{getStatusMessage()}</p>}
+            {!isOnLeave && (
+              <p className="text-sm text-gray-600">{getStatusMessage()}</p>
+            )}
           </div>
 
           {canToggle && (
@@ -146,7 +159,6 @@ export function StaffAvailabilityToggle({
             </Button>
           )}
         </div>
-
       </CardContent>
     </Card>
   );

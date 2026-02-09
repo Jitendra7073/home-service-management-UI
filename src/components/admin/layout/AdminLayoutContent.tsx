@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
+  UsersRound,
   Building2,
   List,
   LogOut,
@@ -76,6 +77,11 @@ export function AdminLayoutContent({
       icon: Users,
     },
     {
+      href: "/admin/staff",
+      label: "Staff",
+      icon: UsersRound,
+    },
+    {
       href: "/admin/businesses",
       label: "Businesses",
       icon: Building2,
@@ -120,6 +126,7 @@ export function AdminLayoutContent({
   };
 
   const userName = userDetails ? userDetails.name || "Admin" : "Admin";
+  const Logo = "/HSM-logo.png";
 
   return (
     <SidebarProvider>
@@ -136,8 +143,8 @@ export function AdminLayoutContent({
                   className="flex justify-center items-center">
                   <div className="flex aspect-squar items-center justify-center rounded-sm w-full hover:bg-gray-100">
                     <Image
-                      src="/HSM-logo.png"
-                      alt="ServiceHub Logo"
+                      src={Logo}
+                      alt="HomHelpers Logo"
                       width={140}
                       height={70}
                       className="object-contain"

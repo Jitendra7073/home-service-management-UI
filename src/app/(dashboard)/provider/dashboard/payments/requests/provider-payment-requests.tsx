@@ -15,6 +15,9 @@ import {
   X,
   Loader2,
   Filter,
+  Building2,
+  CreditCard,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,6 +64,9 @@ export function ProviderPaymentRequestsClient() {
   const [percentage, setPercentage] = useState<number>(50);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [requestDetails, setRequestDetails] = useState<any>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("UPI");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["provider-payment-requests", statusFilter],
@@ -89,7 +95,7 @@ export function ProviderPaymentRequestsClient() {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ percentage }),
+          body: JSON.stringify({ percentage, paymentMethod }),
         },
       );
       return res.json();
@@ -100,6 +106,7 @@ export function ProviderPaymentRequestsClient() {
         setShowApproveDialog(false);
         setSelectedRequest(null);
         setPercentage(50);
+        setPaymentMethod("UPI");
         queryClient.invalidateQueries({
           queryKey: ["provider-payment-requests"],
         });
@@ -160,6 +167,34 @@ export function ProviderPaymentRequestsClient() {
     }
     setIsProcessing(true);
     rejectMutation.mutate(selectedRequest.id);
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied to clipboard!`);
+  };
+
+  // Fetch request details when opening approve dialog
+  const fetchRequestDetails = async (requestId: string) => {
+    setIsLoadingDetails(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/provider/staff/payments/${requestId}/details`,
+        {
+          credentials: "include",
+        },
+      );
+      const result = await res.json();
+      if (result.success) {
+        setRequestDetails(result.request);
+      } else {
+        toast.error("Failed to load payment details");
+      }
+    } catch (error) {
+      toast.error("Error loading payment details");
+    } finally {
+      setIsLoadingDetails(false);
+    }
   };
 
   const calculateStaffAmount = (
@@ -260,7 +295,7 @@ export function ProviderPaymentRequestsClient() {
                   {requests.map((request: any) => {
                     const StatusIcon =
                       STATUS_ICONS[
-                      request.requestStatus as keyof typeof STATUS_ICONS
+                        request.requestStatus as keyof typeof STATUS_ICONS
                       ];
                     return (
                       <div
@@ -276,7 +311,7 @@ export function ProviderPaymentRequestsClient() {
                                 variant="outline"
                                 className={
                                   STATUS_COLORS[
-                                  request.requestStatus as keyof typeof STATUS_COLORS
+                                    request.requestStatus as keyof typeof STATUS_COLORS
                                   ]
                                 }>
                                 <StatusIcon className="w-3 h-3 mr-1" />
@@ -336,6 +371,7 @@ export function ProviderPaymentRequestsClient() {
                                     className="bg-green-600 hover:bg-green-700"
                                     onClick={() => {
                                       setSelectedRequest(request);
+                                      fetchRequestDetails(request.id);
                                       setShowApproveDialog(true);
                                     }}>
                                     <CheckCircle2 className="w-4 h-4 mr-1" />
@@ -384,6 +420,113 @@ export function ProviderPaymentRequestsClient() {
                   {selectedRequest.staffEmail}
                 </p>
               </div>
+
+              {/* Bank Account Details */}
+              {isLoadingDetails ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-sm p-4">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm text-blue-700">
+                      Loading bank details...
+                    </span>
+                  </div>
+                </div>
+              ) : requestDetails?.bankDetails ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-sm p-4">
+                  <h4 className="font-semibold text-sm text-blue-900 mb-3 flex items-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Staff Payment Details
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">Bank Name:</span>
+                      <span className="font-medium text-gray-900">
+                        {requestDetails.bankDetails.bankName}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        Account Holder:
+                      </span>
+                      <span className="font-medium text-gray-900">
+                        {requestDetails.bankDetails.accountHolderName}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">
+                        Account Number:
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 font-mono">
+                          {requestDetails.bankDetails.accountNumber}
+                        </span>
+                        <button
+                          onClick={() =>
+                            copyToClipboard(
+                              requestDetails.bankDetails.accountNumber,
+                              "Account number",
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Copy account number">
+                          <Copy className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">IFSC Code:</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 font-mono">
+                          {requestDetails.bankDetails.ifscCode}
+                        </span>
+                        <button
+                          onClick={() =>
+                            copyToClipboard(
+                              requestDetails.bankDetails.ifscCode,
+                              "IFSC code",
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-800"
+                          title="Copy IFSC code">
+                          <Copy className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                    {requestDetails.bankDetails.upiId && (
+                      <div className="flex items-center justify-between border-t border-blue-200 pt-2 mt-2">
+                        <span className="text-sm text-gray-600">UPI ID:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-green-700 font-mono">
+                            {requestDetails.bankDetails.upiId}
+                          </span>
+                          <button
+                            onClick={() =>
+                              copyToClipboard(
+                                requestDetails.bankDetails.upiId,
+                                "UPI ID",
+                              )
+                            }
+                            className="text-blue-600 hover:text-blue-800"
+                            title="Copy UPI ID">
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-blue-700 mt-3 border-t border-blue-200 pt-2">
+                    💡 Transfer the payment to this account after clicking "Pay"
+                    below
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-sm p-4">
+                  <p className="text-sm text-yellow-800">
+                    ⚠️ Staff has not added their bank account details. They will
+                    need to add payment information before receiving funds.
+                  </p>
+                </div>
+              )}
 
               {/* Service Info */}
               <div className="bg-gray-50 rounded-sm p-4">
@@ -456,6 +599,39 @@ export function ProviderPaymentRequestsClient() {
                   </div>
                 </div>
               </div>
+              {/* Payment Method Selection */}
+              <div className="space-y-3">
+                <Label>Select Payment Method Used</Label>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setPaymentMethod("UPI")}
+                    className={`flex-1 p-3 border rounded-sm flex items-center justify-center gap-2 transition-colors ${
+                      paymentMethod === "UPI"
+                        ? "border-green-600 bg-green-50 text-green-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                    <span className="font-semibold">UPI</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("BANK_TRANSFER")}
+                    className={`flex-1 p-3 border rounded-sm flex items-center justify-center gap-2 transition-colors ${
+                      paymentMethod === "BANK_TRANSFER"
+                        ? "border-green-600 bg-green-50 text-green-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                    <span className="font-semibold">Bank Transfer</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod("CASH")}
+                    className={`flex-1 p-3 border rounded-sm flex items-center justify-center gap-2 transition-colors ${
+                      paymentMethod === "CASH"
+                        ? "border-green-600 bg-green-50 text-green-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}>
+                    <span className="font-semibold">Cash</span>
+                  </button>
+                </div>
+              </div>
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-2">
@@ -464,7 +640,9 @@ export function ProviderPaymentRequestsClient() {
                   onClick={() => {
                     setShowApproveDialog(false);
                     setSelectedRequest(null);
+                    setRequestDetails(null);
                     setPercentage(50);
+                    setPaymentMethod("UPI");
                   }}
                   disabled={isProcessing}>
                   Cancel
@@ -481,7 +659,7 @@ export function ProviderPaymentRequestsClient() {
                   ) : (
                     <>
                       <Send className="w-4 h-4 mr-2" />
-                      Pay ₹
+                      Confirm Payment of ₹
                       {calculateStaffAmount(
                         selectedRequest.servicePrice,
                         percentage,

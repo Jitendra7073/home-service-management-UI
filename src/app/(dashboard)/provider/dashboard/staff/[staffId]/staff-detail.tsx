@@ -42,17 +42,12 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["staff", staffId],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/provider/staff/${staffId}/details`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/provider/staff/${staffId}/details`, {
+        credentials: "include",
+      });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(
-          errorData.msg || "Failed to fetch staff details",
-        );
+        throw new Error(errorData.msg || "Failed to fetch staff details");
       }
       return res.json();
     },
@@ -84,6 +79,31 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
       toast.error("Failed to update availability");
     },
   });
+
+  // Mutation to update staff application status
+  const updateStatusMutation = useMutation({
+    mutationFn: async (status: "APPROVED" | "REJECTED") => {
+      const res = await fetch(`/api/provider/staff/${staffId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.msg || "Failed to update status");
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(data.msg);
+      queryClient.invalidateQueries({ queryKey: ["staff", staffId] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleApprove = () => updateStatusMutation.mutate("APPROVED");
+  const handleReject = () => updateStatusMutation.mutate("REJECTED");
 
   const handleToggleAvailability = () => {
     const newAvailability =
@@ -137,12 +157,14 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Staff
           </button>
-          <div className="flex items-center gap-3">
-            <Button variant="destructive" onClick={handleUnlinkStaff}>
-              <UserCircle className="w-4 h-4 mr-2" />
-              Unlink from Business
-            </Button>
-          </div>
+          {staff.applicationStatus !== "PENDING" && (
+            <div className="flex items-center gap-3">
+              <Button variant="destructive" onClick={handleUnlinkStaff}>
+                <UserCircle className="w-4 h-4 mr-2" />
+                Unlink from Business
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Profile Header */}
@@ -151,7 +173,7 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
             <div className="flex items-start gap-6">
               {/* Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-24 h-24 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
+                <div className="w-24 h-24 rounded-md bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">
                   {staff.name.charAt(0).toUpperCase()}
                 </div>
               </div>
@@ -167,10 +189,17 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                       <Badge className="bg-purple-100 text-purple-700">
                         Business Staff
                       </Badge>
-                      <Badge className="bg-green-100 text-green-700">
-                        Approved
-                      </Badge>
-                      {staff.availability === "NOT_AVAILABLE" && staff.leaveDetails ? (
+                      {staff.applicationStatus === "PENDING" ? (
+                        <Badge className="bg-yellow-100 text-yellow-700">
+                          Pending Approval
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-green-100 text-green-700">
+                          Approved
+                        </Badge>
+                      )}
+                      {staff.availability === "NOT_AVAILABLE" &&
+                      staff.leaveDetails ? (
                         <Badge className="bg-red-100 text-red-700 flex items-center gap-1">
                           <span className="h-2 w-2 rounded-sm bg-red-600 animate-pulse"></span>
                           On Leave
@@ -348,8 +377,8 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                             booking.bookingStatus === "COMPLETED"
                               ? "bg-green-100 text-green-700"
                               : booking.bookingStatus === "CONFIRMED"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-gray-100 text-gray-700"
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-gray-100 text-gray-700"
                           }>
                           {booking.bookingStatus}
                         </Badge>
@@ -396,10 +425,10 @@ export default function StaffDetail({ staffId }: StaffDetailProps) {
                               booking.bookingStatus === "CANCELLED"
                                 ? "bg-red-100 text-red-700"
                                 : booking.trackingStatus === "COMPLETED"
-                                  ? "bg-green-100 text-green-700"
-                                  : booking.trackingStatus === "SERVICE_STARTED"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : "bg-gray-100 text-gray-700"
+                                ? "bg-green-100 text-green-700"
+                                : booking.trackingStatus === "SERVICE_STARTED"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-700"
                             }>
                             {booking.bookingStatus === "CANCELLED"
                               ? "Cancelled"

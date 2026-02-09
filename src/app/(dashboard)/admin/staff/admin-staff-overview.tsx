@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users, UserCheck, Globe, TrendingUp, Filter } from "lucide-react";
+import {
+  Users,
+  UserCheck,
+  Globe,
+  TrendingUp,
+  Filter,
+  Briefcase,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,12 +43,9 @@ export default function AdminStaffOverview() {
         params.append("employmentType", employmentTypeFilter);
       if (approvalFilter) params.append("status", approvalFilter);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/admin/staff?${params}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`/api/admin/staff?${params}`, {
+        credentials: "include",
+      });
       return res.json();
     },
   });
@@ -54,7 +58,7 @@ export default function AdminStaffOverview() {
   // Note: Backend doesn't distinguish "Business Based" vs "Freelance" easily without more schema info
   // Assuming all are "Business Based" for now if they have applications.
   const businessBased = staffMembers.filter(
-    (s: any) => s.associatedBusinesses > 0,
+    (s: any) => s.associatedBusinesses && s.associatedBusinesses.length > 0,
   ).length;
   const globalFreelancers = totalStaff - businessBased; // Fallback
   const pendingApproval = 0; // Backend doesn't return pending apps count per staff yet easily
@@ -226,12 +230,13 @@ export default function AdminStaffOverview() {
                       <TableCell>{staff.totalBookings || 0}</TableCell>
                       <TableCell>
                         <span
-                          className={`font-medium ${staff.completionRate >= 80
+                          className={`font-medium ${
+                            staff.completionRate >= 80
                               ? "text-green-600"
                               : staff.completionRate >= 50
-                                ? "text-yellow-600"
-                                : "text-red-600"
-                            }`}>
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                          }`}>
                           {staff.completionRate || 0}%
                         </span>
                       </TableCell>
@@ -282,6 +287,3 @@ export default function AdminStaffOverview() {
     </div>
   );
 }
-
-// Import Briefcase icon
-import { Briefcase } from "lucide-react";

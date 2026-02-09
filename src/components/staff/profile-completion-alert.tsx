@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, MapPin, CreditCard, X } from "lucide-react";
+import { AlertCircle, MapPin, CreditCard, X, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -10,6 +10,7 @@ interface ProfileCompletionData {
   isComplete: boolean;
   hasAddress: boolean;
   hasCard: boolean;
+  hasBankAccount: boolean;
   addressCount: number;
   cardCount: number;
 }
@@ -31,6 +32,7 @@ export function StaffProfileCompletionAlert() {
       isComplete: true,
       hasAddress: true,
       hasCard: true,
+      hasBankAccount: true,
       addressCount: 0,
       cardCount: 0,
     };
@@ -53,6 +55,13 @@ export function StaffProfileCompletionAlert() {
       name: "Payment Method",
       icon: CreditCard,
       link: "/staff/profile?tab=payment",
+    });
+  }
+  if (!profileCompletion.hasBankAccount) {
+    missingItems.push({
+      name: "Bank Account",
+      icon: Landmark,
+      link: "/staff/profile?tab=bank-account",
     });
   }
 
@@ -82,7 +91,9 @@ export function StaffProfileCompletionAlert() {
                       className="flex-shrink-0 h-6 w-6 text-blue-600 hover:text-blue-800 hover:bg-blue-100"
                       onClick={() => {
                         // Dismiss by hiding - it will reappear on page refresh
-                        const el = document.querySelector(".fixed.bottom-4.right-4");
+                        const el = document.querySelector(
+                          ".fixed.bottom-4.right-4",
+                        );
                         if (el) el.remove();
                       }}>
                       <X className="w-4 h-4" />
