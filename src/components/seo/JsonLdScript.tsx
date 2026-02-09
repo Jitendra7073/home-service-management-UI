@@ -5,6 +5,17 @@
  */
 
 import React from "react";
+import {
+  generateOrganizationSchema,
+  generateLocalBusinessSchema,
+  generateServiceSchema,
+  generateReviewSchema,
+  generateBreadcrumbSchema,
+  generateFAQSchema,
+  generateArticleSchema,
+  generateWebsiteSchema,
+  generateCollectionPageSchema,
+} from "@/lib/seo/schema";
 
 interface JsonLdScriptProps {
   data: Record<string, any> | Record<string, any>[];
@@ -49,7 +60,7 @@ export function OrganizationSchema(props?: {
     country: string;
   };
 }) {
-  const { generateOrganizationSchema } = "@/lib/seo/schema";
+
   const schema = generateOrganizationSchema(props);
   return <JsonLdScript data={schema} />;
 }
@@ -77,7 +88,7 @@ export function LocalBusinessSchema(props: {
   rating?: number;
   reviewCount?: number;
 }) {
-  const { generateLocalBusinessSchema } = "@/lib/seo/schema";
+
   const schema = generateLocalBusinessSchema(props);
   return <JsonLdScript data={schema} />;
 }
@@ -98,7 +109,7 @@ export function ServiceSchema(props: {
   rating?: number;
   reviewCount?: number;
 }) {
-  const { generateServiceSchema } = "@/lib/seo/schema";
+
   const schema = generateServiceSchema(props);
   return <JsonLdScript data={schema} />;
 }
@@ -119,7 +130,7 @@ export function ReviewSchema(props: {
     reviewCount: number;
   };
 }) {
-  const { generateReviewSchema } = "@/lib/seo/schema";
+
   const schema = generateReviewSchema(props);
   return <JsonLdScript data={schema} />;
 }
@@ -133,7 +144,7 @@ export function BreadcrumbSchema(props: {
     href: string;
   }>;
 }) {
-  const { generateBreadcrumbSchema } = "@/lib/seo/schema";
+
   const schema = generateBreadcrumbSchema(props.breadcrumbs);
   return <JsonLdScript data={schema} />;
 }
@@ -147,7 +158,7 @@ export function FAQSchema(props: {
     answer: string;
   }>;
 }) {
-  const { generateFAQSchema } = "@/lib/seo/schema";
+
   const schema = generateFAQSchema(props.faqs);
   return <JsonLdScript data={schema} />;
 }
@@ -164,7 +175,7 @@ export function ArticleSchema(props: {
   image?: string;
   url?: string;
 }) {
-  const { generateArticleSchema } = "@/lib/seo/schema";
+
   const schema = generateArticleSchema(props);
   return <JsonLdScript data={schema} />;
 }
@@ -173,7 +184,7 @@ export function ArticleSchema(props: {
  * Website Schema Component
  */
 export function WebsiteSchema() {
-  const { generateWebsiteSchema } = "@/lib/seo/schema";
+
   const schema = generateWebsiteSchema();
   return <JsonLdScript data={schema} />;
 }
@@ -187,7 +198,7 @@ export function CollectionPageSchema(props: {
   url?: string;
   image?: string;
 }) {
-  const { generateCollectionPageSchema } = "@/lib/seo/schema";
+
   const schema = generateCollectionPageSchema(props);
   return <JsonLdScript data={schema} />;
 }

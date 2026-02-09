@@ -6,7 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans);
+  --font-sans: var(--font-open-sans);
   --font-heading: var(--font-rubik);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -120,22 +120,45 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: var(--font-noto-sans), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
   }
 
   /* Headings use Rubik font */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-rubik), system-ui, -apple-system, sans-serif;
   }
 
-  /* Ensure all text elements use Noto Sans */
-  p, span, div, li, td, th, label, input, textarea, select, button, a {
-    font-family: var(--font-noto-sans), system-ui, -apple-system, sans-serif;
+  /* Ensure all text elements use Open Sans */
+  p,
+  span,
+  div,
+  li,
+  td,
+  th,
+  label,
+  input,
+  textarea,
+  select,
+  button,
+  a {
+    font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
   }
 
   /* Headings specifically use Rubik */
-  h1, h2, h3, h4, h5, h6,
-  .heading, .title, .font-heading {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .heading,
+  .title,
+  .font-heading {
     font-family: var(--font-rubik), system-ui, -apple-system, sans-serif;
   }
 }
@@ -143,7 +166,7 @@
 /* Utility classes for explicit font control */
 @layer components {
   .font-body {
-    font-family: var(--font-noto-sans), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-open-sans), system-ui, -apple-system, sans-serif;
   }
 
   .font-heading {

@@ -3,7 +3,7 @@ import "./globals.css";
 import AuthProvider from "@/components/common/AuthProvider";
 import TanstackProvider from "@/app/tanstackProvider";
 import { Metadata } from "next";
-import { Rubik, Noto_Sans } from "next/font/google";
+import { Rubik, Open_Sans } from "next/font/google";
 
 // Configure heading font - Rubik
 const rubik = Rubik({
@@ -13,10 +13,10 @@ const rubik = Rubik({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-// Configure body font - Noto Sans
-const notoSans = Noto_Sans({
+// Configure body font - Open Sans (Google Sans alternative)
+const openSans = Open_Sans({
   subsets: ["latin"],
-  variable: "--font-noto-sans",
+  variable: "--font-open-sans",
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });
@@ -166,7 +166,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${rubik.variable} ${notoSans.variable}`}>
+      className={`${rubik.variable} ${openSans.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta
